@@ -1,5 +1,4 @@
 import torch
-import numpy as np
 import cv2
 
 
@@ -49,10 +48,25 @@ class ObjectDetection:
 
     def __call__(self):
 
+        HOGCV = cv2.HOGDescriptor()
+        HOGCV.setSVMDetector(cv2.HOGDescriptor_getDefaultPeopleDetector())
+
         while True:
-            img = cv2.imread('test_img2.jpg')
+            img = cv2.imread('test_img4.jpg') # best image for pedestrian detection
+
+            bbox_human, weights = HOGCV.detectMultiScale(img, winStride = (8,8), padding = (4,4), scale = 1.5)
+
+            i = 1
+            for x,y,w,h in bbox_human:
+                if i == 1:
+                    cv2.rectangle(img, (x,y), (x+w, y+h), (0,255,0), 2)
+                elif i == 2:
+                    cv2.rectangle(img, (x,y), (x+w, y+h), (255,0,0), 2)
+                i += 1
+
             results = self.score_frame(img)
             frame = self.plot_boxes(results, img)
+
 
             cv2.imshow("img", frame)
 
