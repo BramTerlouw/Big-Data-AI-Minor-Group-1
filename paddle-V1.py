@@ -60,9 +60,9 @@ class ObjectDetection:
         HOGCV = cv2.HOGDescriptor()
         HOGCV.setSVMDetector(cv2.HOGDescriptor_getDefaultPeopleDetector())
 
-        img = cv2.imread('KoolKidsKlubTest.jpeg')  # best image for pedestrian detection
+        img = cv2.imread('test_img5.jpg')  # best image for pedestrian detection
 
-        bbox_human, weights = HOGCV.detectMultiScale(img, winStride=(8, 8), padding=(4, 4), scale=1.5)
+        bbox_human, weights = HOGCV.detectMultiScale(img, winStride=(8, 8), padding=(8, 8), scale=1.5)
 
         for x, y, w, h in bbox_human:
             cv2.rectangle(img, (x, y), (x + w, y + h), (randint(0, 255), randint(0, 255), randint(0, 255)), 2)
