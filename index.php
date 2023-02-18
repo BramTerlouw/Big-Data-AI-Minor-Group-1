@@ -1,5 +1,5 @@
 <?php
 
-$res = exec('python ./paddle-v5.py');
+$res = exec('python .\python\ObjectDetectionV8.py');
 
 var_dump(json_decode($res));
