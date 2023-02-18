@@ -3,6 +3,7 @@ import torch
 import cv2
 import math
 import numpy as np
+import datetime
 
 class ObjectDetection:
     def __init__(self, model_name):
@@ -114,7 +115,26 @@ class ObjectDetection:
 
         cv2.line(frame, (px2, py1), (int(right_border_human), int(py1)), (255,0,0), 2)
         cv2.putText(frame, f"{distance_between_paddle_and_human} CM", (px2, py1-5), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 0, 0), 1)
+        return distance_between_paddle_and_human
     
+
+
+    def summarize_results(self, frame, results_paddle, results_human, distance):
+        px1, py1, px2, py2 = self.get_paddle_bbox(results_paddle[1][0], frame.shape[1], frame.shape[0])
+        hx1, hy1, hw, hh = results_human
+
+        file = open('scores.txt', 'a')
+        file.write(f'Score: {datetime.datetime.now()}\n')
+
+        file.write('Paddle bounding box (top-left(px1), bottom-left(py1), top-right(px2), bottom-right(py2):)\n')
+        file.write(f'{px1, py1, px2, py2}\n\n')
+
+        file.write('Right human bounding box (top-left(hx1), bottom-left(hy1), width(hw), height(hh):)\n')
+        file.write(f'{hx1, hy1, hw, hh}\n\n')
+
+        file.write('Distance measured between paddle and human:\n')
+        file.write(f'{distance} CM \n\n')
+        file.close()
 
 
     def generate_image(self):
@@ -128,7 +148,8 @@ class ObjectDetection:
         frame = self.plot_boxes_paddle(results_paddle, img)
         if most_right_human is not None:
             frame = self.plot_boxes_humans([most_right_human], frame)
-            self.get_distance_between_human_and_paddle(frame, most_right_human, results_paddle)
+            distance = self.get_distance_between_human_and_paddle(frame, most_right_human, results_paddle)
+            self.summarize_results(frame, results_paddle, most_right_human, distance)
 
         cv2.imshow("Processed Image", frame)
         cv2.waitKey(0)
