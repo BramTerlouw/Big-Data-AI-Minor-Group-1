@@ -25,23 +25,24 @@ class ObjectDetection:
         cv2.putText(frame, f"Label {self.class_to_label(clsID)}, confidence: {conf}", (int(bb[0]), int(bb[1])-5), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 0), 2)
         return frame
     
-    def score_frame_paddle(self, frame):
+    def score_frame(self, frame):
         detection_output = self.model.predict(source=frame, conf=0.25, save=False)
-        
         np_result = detection_output[0].cpu()
-        boxes = np_result[0].boxes
-        box = boxes[0]
         
-        bb = box.xyxy.numpy()[0]
-        clsID = box.cls.numpy()[0]
-        conf = box.conf.numpy()[0]
+        for result in np_result:
+            boxes = result.boxes
+            box = boxes[0]
+            
+            bb = box.xyxy.numpy()[0]
+            clsID = box.cls.numpy()[0]
+            conf = box.conf.numpy()[0]
 
-        self.plot_boxes(frame, bb, conf, clsID)
+            self.plot_boxes(frame, bb, conf, clsID)
         return frame
     
     def generate_image(self):
         img = cv2.imread('images/test_img4.jpg')  # best image for pedestrian detection
-        processed_frame = self.score_frame_paddle(img)
+        processed_frame = self.score_frame(img)
 
         cv2.imshow("Processed Image", processed_frame)
         cv2.waitKey(0)
