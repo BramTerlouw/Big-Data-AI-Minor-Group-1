@@ -65,8 +65,8 @@ class ObjectDetection:
 
 
 
-    def score_is_sufficient(self, coincidence, min_value):
-        return coincidence >= min_value
+    def score_is_sufficient(self, confidence, min_value):
+        return confidence >= min_value
     
 
 
