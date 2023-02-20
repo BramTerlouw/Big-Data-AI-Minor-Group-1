@@ -8,25 +8,38 @@ from ultralytics import YOLO
 
 
 class ObjectDetectionV8:
-    def __init__(self, model_name: str):
-        self.model = self.load_model(model_name)
-        self.classes = self.model.names
-        self.device = 'cuda' if torch.cuda.is_available() else 'cpu'
-        self.generate_frame()
+    __instance = None
 
-    def class_id_to_label(
+    def __init__(self):
+        if ObjectDetectionV8.__instance is not None:
+            raise Exception("Singleton instance already exists. Use get_instance() method to get the instance.")
+        else:
+            self.model_name = 'model/YOLOv8/model_paddle_v8.1.pt'
+            self.model = self._load_model(self.model_name)
+            self.classes = self.model.names
+            self.device = 'cuda' if torch.cuda.is_available() else 'cpu'
+            ObjectDetectionV8.__instance = self
+
+    @classmethod
+    def get_instance(cls) -> 'ObjectDetectionV8':
+        if ObjectDetectionV8.__instance is None:
+            ObjectDetectionV8()
+        return ObjectDetectionV8.__instance
+
+    def _class_id_to_label(
             self,
             class_id: int
     ) -> str:
         return self.classes[class_id]
 
-    def load_model(self, model_name: str) -> YOLO:
+    @classmethod
+    def _load_model(cls, model_name: str) -> YOLO:
         if model_name:
             return YOLO(model_name)
         else:
             raise ValueError("Model not found: " + model_name)
 
-    def plot_boxes(
+    def _plot_boxes(
             self,
             frame: numpy.ndarray,
             bounding_box: numpy.ndarray,
@@ -44,7 +57,7 @@ class ObjectDetectionV8:
 
         cv2.putText(
             frame,
-            f"Label {self.class_id_to_label(class_id)}, confidence: {confidence}",
+            f"Label {self._class_id_to_label(class_id)}, confidence: {confidence}",
             (int(bounding_box[0]), int(bounding_box[1]) + 15),
             cv2.FONT_HERSHEY_SIMPLEX,
             0.6,
@@ -84,7 +97,7 @@ class ObjectDetectionV8:
             else:
                 dict_coordinates[class_id] = [bounding_box]
 
-            self.plot_boxes(frame, bounding_box, confidence, class_id)
+            self._plot_boxes(frame, bounding_box, confidence, class_id)
 
         self.process_score(frame, dict_coordinates)
         return frame
@@ -99,4 +112,5 @@ class ObjectDetectionV8:
 
 
 # Create a new object and execute.
-detection = ObjectDetectionV8(model_name='model/YOLOv8/model_paddle-human_v8.1.pt')
+object_detection = ObjectDetectionV8.get_instance()
+object_detection.generate_frame()
