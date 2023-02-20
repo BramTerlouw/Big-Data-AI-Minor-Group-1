@@ -14,7 +14,7 @@ class ObjectDetectionV8:
         if ObjectDetectionV8.__instance is not None:
             raise Exception("Singleton instance already exists. Use get_instance() method to get the instance.")
         else:
-            self.model_name = 'model/YOLOv8/model_paddle_v8.1.pt'
+            self.model_name = 'model/YOLOv8/model_paddle-human_v8.1.pt'
             self.model = self._load_model(self.model_name)
             self.classes = self.model.names
             self.device = 'cuda' if torch.cuda.is_available() else 'cpu'
@@ -72,6 +72,7 @@ class ObjectDetectionV8:
         frame: numpy.ndarray, 
         scores: dict
     ):
+        print(scores)
         return frame
 
     def score_frame(
