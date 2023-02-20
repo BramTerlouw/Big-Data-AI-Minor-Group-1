@@ -72,7 +72,8 @@ class ObjectDetectionV8:
         frame: numpy.ndarray, 
         scores: dict
     ):
-        print(scores)
+        print(scores[0], '\n')
+        print(scores[1], '\n')
         return frame
 
     def score_frame(
