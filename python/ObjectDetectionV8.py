@@ -58,7 +58,7 @@ class ObjectDetectionV8:
         cv2.putText(
             frame,
             f"Label {self._class_id_to_label(class_id)}, confidence: {confidence}",
-            (int(bounding_box[0]), int(bounding_box[1]) - 5),
+            (int(bounding_box[0]), int(bounding_box[1]) + 15),
             cv2.FONT_HERSHEY_SIMPLEX,
             0.6,
             (0, 255, 0),
