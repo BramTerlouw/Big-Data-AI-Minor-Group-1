@@ -84,9 +84,13 @@ class ObjectDetectionV8:
     def process_score(
         cls,
         frame: numpy.ndarray,
-        scores: dict
+        coordinates: dict
     ):
-        distance.calc_distance(frame, scores[0], scores[1])
+        paddle_width = distance.calc_width_paddle(coordinates[0])
+        
+        distance.calc_distance_humans(frame, paddle_width, coordinates[1])
+        distance.set_player_pos(frame, coordinates)
+        distance.calc_distance(frame, coordinates[0], coordinates[1])
         return frame
 
     def score_frame(
@@ -106,7 +110,6 @@ class ObjectDetectionV8:
             confidence = box.conf.numpy()[0]
             bounding_box = box.xyxy.numpy()[0]
 
-            # Can be used in Distance class, dictionary with all detected classes and all corresponding cords
             if class_id in dict_coordinates:
                 dict_coordinates[class_id].append(bounding_box)
             else:
@@ -118,7 +121,7 @@ class ObjectDetectionV8:
         return frame
 
     def generate_frame(self):
-        frame = cv2.imread('images/test_img4.jpg')  # best image for pedestrian detection
+        frame = cv2.imread('images/test_img4.jpg')
         processed_frame = self.score_frame(frame)
 
         cv2.imshow("Processed Image", processed_frame)
