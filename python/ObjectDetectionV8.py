@@ -67,10 +67,11 @@ class ObjectDetectionV8:
         )
 
         return frame
-    
+
+    @classmethod
     def process_score(
-        self,
-        frame: numpy.ndarray, 
+        cls,
+        frame: numpy.ndarray,
         scores: dict
     ):
         ds = Distance()
