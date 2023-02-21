@@ -26,19 +26,18 @@ class Distance:
         coordinates_paddle: numpy.ndarray, 
         coordinates_human: numpy.ndarray
     ):
-        
-        paddle_x1, paddle_y1, paddle_x2, paddle_y2 = coordinates_paddle
-        human_x1, human_y1, human_x2, human_y2 = coordinates_human
+        px1, py1, px2, py2 = coordinates_paddle[0]
+        hx1, hy1, hx2, hy2 = coordinates_human[0]
 
-        if self.human_is_left:
-            distance = int(self.reference_width / (paddle_x2, paddle_y1) * (human_x1 - paddle_x2))
-        else:
-            distance = int(self.reference_width / (paddle_x2, paddle_y1) * (paddle_x1 - human_x2))
+        distance = int(
+            32 / (px2 - px1) 
+            * (hx1 - px2)
+        )
 
         cv2.line(
             frame, 
-            (paddle_x2, paddle_y1), 
-            (human_x1, int(paddle_y1)), 
+            (int(px2), int(py1)), 
+            (int(hx1), int(py1)), 
             (255, 0, 0), 
             2
         )
@@ -46,12 +45,13 @@ class Distance:
         cv2.putText(
             frame, 
             f"{distance} CM", 
-            (paddle_x2, paddle_y1 - 5), 
+            (int(px2), int(py1) - 5), 
             cv2.FONT_HERSHEY_SIMPLEX, 
             0.6,
             (255, 0, 0), 
             1
         )
+
 
     # Extra. If we need to calc height from ground or for example speed or time Make
     #        another class of it that uses this class internal. Always make sure these

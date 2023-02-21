@@ -121,7 +121,7 @@ class ObjectDetectionV5:
         }))
 
     def generate_image(self):
-        img = cv2.imread('images/test_img4_reversed.png')  # best image for pedestrian detection
+        img = cv2.imread('images/test_img4.jpg')  # best image for pedestrian detection
 
         results_humans, weights = self.score_frame_humans(img)
         results_paddle = self.score_frame_paddle(img)

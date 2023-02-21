@@ -6,6 +6,7 @@ import torch
 from numpy import ndarray
 from ultralytics import YOLO
 
+from Distance import Distance
 
 class ObjectDetectionV8:
     __instance = None
@@ -14,7 +15,7 @@ class ObjectDetectionV8:
         if ObjectDetectionV8.__instance is not None:
             raise Exception("Singleton instance already exists. Use get_instance() method to get the instance.")
         else:
-            self.model_name = 'model/YOLOv8/model_paddle-human_v8.1.pt'
+            self.model_name = 'model/YOLOv8/paddle_and_human_yolov8m_v2.pt'
             self.model = self._load_model(self.model_name)
             self.classes = self.model.names
             self.device = 'cuda' if torch.cuda.is_available() else 'cpu'
@@ -72,8 +73,8 @@ class ObjectDetectionV8:
         frame: numpy.ndarray, 
         scores: dict
     ):
-        print(scores[0], '\n')
-        print(scores[1], '\n')
+        ds = Distance()
+        ds.calc_distance(frame, scores[0], scores[1])
         return frame
 
     def score_frame(
@@ -105,7 +106,7 @@ class ObjectDetectionV8:
         return frame
 
     def generate_frame(self):
-        frame = cv2.imread('images/test_img3.jpg')  # best image for pedestrian detection
+        frame = cv2.imread('images/test_img4.jpg')  # best image for pedestrian detection
         processed_frame = self.score_frame(frame)
 
         cv2.imshow("Processed Image", processed_frame)
