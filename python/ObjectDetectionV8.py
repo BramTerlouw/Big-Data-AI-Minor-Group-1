@@ -66,10 +66,11 @@ class ObjectDetectionV8:
         )
 
         return frame
-    
+
+    @classmethod
     def process_score(
-        self,
-        frame: numpy.ndarray, 
+        cls,
+        frame: numpy.ndarray,
         scores: dict
     ):
         print(scores[0], '\n')
