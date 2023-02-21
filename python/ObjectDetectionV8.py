@@ -7,6 +7,10 @@ from numpy import ndarray
 from ultralytics import YOLO
 
 from Distance import Distance
+distance = Distance()
+
+from Debug import Debug
+debug = Debug()
 
 class ObjectDetectionV8:
     __instance = None
@@ -48,24 +52,32 @@ class ObjectDetectionV8:
             class_id: int
     ) -> Union[ndarray, ndarray]:
 
-        cv2.rectangle(
-            frame,
-            (int(bounding_box[0]), int(bounding_box[1])),
-            (int(bounding_box[2]), int(bounding_box[3])),
-            (0, 255, 0),
+        if class_id == 0:
+            debug.draw_paddle(
+                frame,
+                int(bounding_box[0]),
+                int(bounding_box[1]),
+                int(bounding_box[2]),
+                int(bounding_box[3])
+            )
+        else:
+            debug.draw_human(
+                frame,
+                int(bounding_box[0]),
+                int(bounding_box[1]),
+                int(bounding_box[2]),
+                int(bounding_box[3])
+            )
+
+        debug.draw_text(
+            frame, 
+            f"Label: {self._class_id_to_label(class_id)}",
+            int(bounding_box[0]),
+            int(bounding_box[1]),
+            0.5,
+            (0, 0, 255),
             2
         )
-
-        cv2.putText(
-            frame,
-            f"Label {self._class_id_to_label(class_id)}, confidence: {confidence}",
-            (int(bounding_box[0]), int(bounding_box[1]) + 15),
-            cv2.FONT_HERSHEY_SIMPLEX,
-            0.6,
-            (0, 255, 0),
-            2
-        )
-
         return frame
 
     @classmethod
@@ -74,8 +86,7 @@ class ObjectDetectionV8:
         frame: numpy.ndarray,
         scores: dict
     ):
-        ds = Distance()
-        ds.calc_distance(frame, scores[0], scores[1])
+        distance.calc_distance(frame, scores[0], scores[1])
         return frame
 
     def score_frame(

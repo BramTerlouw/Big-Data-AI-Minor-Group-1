@@ -2,6 +2,9 @@
 import numpy
 import cv2
 
+from Debug import Debug
+debug = Debug()
+
 class Distance:
     def __init__(self, reference_width: int):
         self.reference_width = reference_width
@@ -34,22 +37,24 @@ class Distance:
             * (hx1 - px2)
         )
 
-        cv2.line(
-            frame, 
-            (int(px2), int(py1)), 
-            (int(hx1), int(py1)), 
-            (255, 0, 0), 
+        debug.draw_line(
+            frame,
+            int(px2),
+            int(py1),
+            int(hx1),
+            int(py1),
+            (255, 200, 0),
             2
         )
 
-        cv2.putText(
-            frame, 
-            f"{distance} CM", 
-            (int(px2), int(py1) - 5), 
-            cv2.FONT_HERSHEY_SIMPLEX, 
+        debug.draw_text(
+            frame,
+            f"{distance} CM",
+            int(px2) + 15,
+            int(py1) - 5,
             0.6,
-            (255, 0, 0), 
-            1
+            (255, 200, 0),
+            2
         )
 
 
