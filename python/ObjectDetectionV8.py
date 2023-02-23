@@ -6,11 +6,9 @@ import torch
 from numpy import ndarray
 from ultralytics import YOLO
 
-from Distance import Distance
-distance = Distance()
 
-from Debug import Debug
-debug = Debug()
+from Score import Score
+score = Score()
 
 class ObjectDetectionV8:
     __instance = None
@@ -25,17 +23,13 @@ class ObjectDetectionV8:
             self.device = 'cuda' if torch.cuda.is_available() else 'cpu'
             ObjectDetectionV8.__instance = self
 
+
     @classmethod
     def get_instance(cls) -> 'ObjectDetectionV8':
         if ObjectDetectionV8.__instance is None:
             ObjectDetectionV8()
         return ObjectDetectionV8.__instance
 
-    def _class_id_to_label(
-            self,
-            class_id: int
-    ) -> str:
-        return self.classes[class_id]
 
     @classmethod
     def _load_model(cls, model_name: str) -> YOLO:
@@ -44,95 +38,19 @@ class ObjectDetectionV8:
         else:
             raise ValueError("Model not found: " + model_name)
 
-    def _plot_boxes(
-            self,
-            frame: numpy.ndarray,
-            bounding_box: numpy.ndarray,
-            confidence: numpy.float32,
-            class_id: int
-    ) -> Union[ndarray, ndarray]:
 
-        if class_id == 0:
-            debug.draw_paddle(
-                frame,
-                int(bounding_box[0]),
-                int(bounding_box[1]),
-                int(bounding_box[2]),
-                int(bounding_box[3])
-            )
-            debug.draw_text(
-                frame, 
-                f"Label: {self._class_id_to_label(class_id)}",
-                int(bounding_box[0]),
-                int(bounding_box[1]),
-                0.5,
-                (153, 204, 0),
-                2
-            )
-        else:
-            debug.draw_human(
-                frame,
-                int(bounding_box[0]),
-                int(bounding_box[1]),
-                int(bounding_box[2]),
-                int(bounding_box[3])
-            )
-            debug.draw_text(
-                frame, 
-                f"Label: {self._class_id_to_label(class_id)}",
-                int(bounding_box[0]),
-                int(bounding_box[1]),
-                0.5,
-                (0, 255, 0),
-                2
-            )
-        return frame
+    def generate_frame(self, frame):
+        frame1 = cv2.imread('images/test_img4.jpg')
+        frame2 = cv2.imread('images/test_img5.jpg')
 
-    @classmethod
-    def process_score(
-        cls,
-        frame: numpy.ndarray,
-        coordinates: dict
-    ):
-        paddle_width = distance.calc_width_paddle(coordinates[0])
+        score_frame1 = self.model.predict(source=frame1, conf=0.25, save=False)
+        score_frame2 = self.model.predict(source=frame2, conf=0.25, save=False)
         
-        distance.get_distance_humans(frame, paddle_width, coordinates[1])
-        distance.set_player_pos(frame, coordinates)
-        distance.get_distance(frame, coordinates[0], coordinates[1])
-        return frame
+        processed_frame1 = score.score_frame(frame1, self.classes, score_frame1)
+        processed_frame2 = score.score_frame(frame2, self.classes, score_frame2)
 
-    def score_frame(
-            self,
-            frame: numpy.ndarray
-    ) -> Union[ndarray, ndarray]:
-
-        detection_output = self.model.predict(source=frame, conf=0.25, save=False)
-        bounding_box_data_result = detection_output[0].cpu()
-        dict_coordinates = {}
-
-        for result in bounding_box_data_result:
-            boxes = result.boxes
-            box = boxes[0]
-
-            class_id = box.cls.numpy()[0]
-            confidence = box.conf.numpy()[0]
-            bounding_box = box.xyxy.numpy()[0]
-
-            if class_id in dict_coordinates:
-                dict_coordinates[class_id].append(bounding_box)
-            else:
-                dict_coordinates[class_id] = [bounding_box]
-
-            self._plot_boxes(frame, bounding_box, confidence, class_id)
-
-        self.process_score(frame, dict_coordinates)
-        return frame
-
-    def generate_frame(self):
-        frame = cv2.imread('images/test_img5.jpg')
-        processed_frame = self.score_frame(frame)
-
-        cv2.imshow("Processed Image", processed_frame)
+        cv2.imshow("Processed Image 1", processed_frame1)
+        cv2.imshow("Processed Image 2", processed_frame2)
         cv2.waitKey(0)
         cv2.destroyAllWindows()
 

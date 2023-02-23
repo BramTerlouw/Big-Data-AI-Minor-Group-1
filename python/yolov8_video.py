@@ -5,7 +5,7 @@ import numpy as np
 from ultralytics import YOLO
 
 # opening the file in read mode
-my_file = open("../utils/coco.txt", "r")
+my_file = open("utils/coco.txt", "r")
 # reading the file
 data = my_file.read()
 # replacing end splitting the text | when newline ('\n') is seen.
@@ -30,7 +30,7 @@ frame_wid = 640
 frame_hyt = 480
 
 # cap = cv2.VideoCapture(1)
-cap = cv2.VideoCapture("../videos/camera4.mp4")
+cap = cv2.VideoCapture("videos/camera4.mp4")
 
 if not cap.isOpened():
     print("Cannot open camera")

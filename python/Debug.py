@@ -1,3 +1,6 @@
+from typing import Union
+from numpy import ndarray
+
 import cv2
 import numpy
 
@@ -12,7 +15,7 @@ class Debug:
         y2: int,
         color: tuple,
         thickness: int
-    ):
+    ) -> None:
         cv2.line(
             frame, 
             (x1, y1), 
@@ -30,7 +33,7 @@ class Debug:
         font_size: float,
         color: tuple,
         thickness: int
-    ):
+    ) -> None:
         cv2.putText(
             frame, 
             text, 
@@ -48,7 +51,7 @@ class Debug:
         y1: int,
         x2: int,
         y2: int
-    ):
+    ) -> None:
         cv2.rectangle(
             frame,
             (x1, y1),
@@ -64,7 +67,7 @@ class Debug:
         y1: int,
         x2: int,
         y2: int
-    ):
+    ) -> None:
         cv2.rectangle(
             frame,
             (x1, y1),
@@ -82,7 +85,7 @@ class Debug:
         x2: int,
         y2: int,
         text
-    ):
+    ) -> None:
         cv2.rectangle(
             frame,
             (x1, y1),
