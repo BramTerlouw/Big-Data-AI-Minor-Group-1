@@ -5,7 +5,7 @@ import numpy as np
 from ultralytics import YOLO
 
 # opening the file in read mode
-my_file = open("utils/coco.txt", "r")
+my_file = open("../utils/coco.txt", "r")
 # reading the file
 data = my_file.read()
 # replacing end splitting the text | when newline ('\n') is seen.
@@ -23,14 +23,14 @@ for i in range(len(class_list)):
     detection_colors.append((b, g, r))
 
 # load a pretrained YOLOv8n model
-model = YOLO("model/YOLOv8/paddle_and_human_yolov8m_v2.pt", "v8")
+model = YOLO("../model/YOLOv8/paddle_and_human_yolov8m_v2.pt", "v8")
 
 # Vals to resize video frames | small frame optimise the run
 frame_wid = 640
 frame_hyt = 480
 
 # cap = cv2.VideoCapture(1)
-cap = cv2.VideoCapture("videos/camera4.mp4")
+cap = cv2.VideoCapture("../videos/camera4.mp4")
 
 if not cap.isOpened():
     print("Cannot open camera")
