@@ -96,9 +96,9 @@ class ObjectDetectionV8:
     ):
         paddle_width = distance.calc_width_paddle(coordinates[0])
         
-        distance.calc_distance_humans(frame, paddle_width, coordinates[1])
+        distance.get_distance_humans(frame, paddle_width, coordinates[1])
         distance.set_player_pos(frame, coordinates)
-        distance.calc_distance(frame, coordinates[0], coordinates[1])
+        distance.get_distance(frame, coordinates[0], coordinates[1])
         return frame
 
     def score_frame(
