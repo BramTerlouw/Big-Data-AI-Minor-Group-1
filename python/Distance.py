@@ -22,24 +22,24 @@ debug = Debug()
 # Extra note !!!PLEASE USE OBJECT TYPE HINTING!!! and make file name same as class.
 
 class Distance:
-    def __init__(self, reference_width: int):
-        self.reference_width = reference_width
+    def __init__(self):
+        self.reference_width = 32
         self.human_is_left = None
 
     def get_frame_dimensions(frame: numpy.ndarray):
         return frame.shape[1], frame.shape[0]
     
-    def calc_width_paddle(self, coordinates_paddle: numpy.ndarray):
-        return int(coordinates_paddle[0][2] - coordinates_paddle[0][0])
+    def calc_width_paddle(self, coords_paddle: numpy.ndarray):
+        return int(coords_paddle[0][2] - coords_paddle[0][0])
     
     def calc_distance_humans(
         self,
         frame: numpy.ndarray,
         paddle_width: int,
-        coordinates_human: numpy.ndarray
+        coords_human: numpy.ndarray
     ):
-        h1_x1, h1_y1, h1_x2, h1_y2 = coordinates_human[0]
-        h2_x1, h2_y1, h2_x2, h2_y2 = coordinates_human[1]
+        h1_x1, h1_y1, h1_x2, h1_y2 = coords_human[0]
+        h2_x1, h2_y1, h2_x2, h2_y2 = coords_human[1]
 
         if h1_x1 < h2_x1:
             distance = int(32 / paddle_width * (h2_x1 - h1_x2))
@@ -87,13 +87,13 @@ class Distance:
     def calc_distance(
         self, 
         frame: numpy.ndarray, 
-        coordinates_paddle: numpy.ndarray, 
-        coordinates_human: numpy.ndarray
+        coords_paddle: numpy.ndarray, 
+        coords_humans: numpy.ndarray
     ):
-        px1, py1, px2, py2 = coordinates_paddle[0]
+        px1, py1, px2, py2 = coords_paddle[0]
 
         if self.human_is_left:
-            hx1, hy1, hx2, hy2 = coordinates_human[0] if coordinates_human[0][0] < coordinates_human[1][0] else coordinates_human[1]
+            hx1, hy1, hx2, hy2 = self.get_human_left(coords_humans)
             distance = int(32 / (px2 - px1) * (px1 - hx2))
 
             debug.draw_line(
@@ -115,7 +115,7 @@ class Distance:
                 2
             )
         else:
-            hx1, hy1, hx2, hy2 = coordinates_human[0] if coordinates_human[0][0] > coordinates_human[1][0] else coordinates_human[1]
+            hx1, hy1, hx2, hy2 = self.get_human_right(coords_humans)
             distance = int(32 / (px2 - px1) * (hx1 - px2))
 
             debug.draw_line(
@@ -136,11 +136,19 @@ class Distance:
                 (255, 255, 255),
                 2
             )
+    
 
-    def set_player_pos(self, frame, coordinates: dict):
-        h1_x1, h1_y1, h1_x2, h1_y2 = coordinates[1][0]
-        h2_x1, h2_y1, h2_x2, h2_y2 = coordinates[1][1]
-        px1, py1, px2, py2 = coordinates[0][0]
+    def get_human_left(self, coords_humans):
+        return coords_humans[0] if coords_humans[0][0] < coords_humans[0][1] else coords_humans[1]
+    
+    def get_human_right(self, coords_human):
+        return coords_humans[0] if coords_humans[0][0] > coords_humans[0][1] else coords_humans[1]
+    
+
+    def set_player_pos(self, frame, coords: dict):
+        h1_x1, h1_y1, h1_x2, h1_y2 = coords[1][0]
+        h2_x1, h2_y1, h2_x2, h2_y2 = coords[1][1]
+        px1, py1, px2, py2 = coords[0][0]
 
         h1_center = h1_x2 - ((h1_x2 - h1_x1) / 2)
         h2_center = h2_x2 - ((h2_x2 - h2_x1) / 2)
@@ -154,11 +162,9 @@ class Distance:
         if has_paddle < p_center:
             self.human_is_left = False
             debug.draw_text_box(frame, 10, (frame.shape[0] - 3), 325, (frame.shape[0] - 20), 'Human without paddle is on the right')
-            # debug.draw_text(frame, 'Human without paddle is on the right', 10, frame.shape[0] - 10, 0.5, (0,0,0), 2)
         else:
             self.human_is_left = True
-            # debug.draw_text(frame, 'Human without paddle is on the Left', 10, frame.shape[0] - 10, 0.5, (0,0,0), 2)
-            debug.draw_text_box(frame, 10, (frame.shape[0] - 3), 325, (frame.shape[0] - 20), 'Human without paddle is on the right')
+            debug.draw_text_box(frame, 10, (frame.shape[0] - 3), 325, (frame.shape[0] - 20), 'Human without paddle is on the left')
 
     def __init__(self):
         print('init')
