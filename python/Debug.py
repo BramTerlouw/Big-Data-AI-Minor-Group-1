@@ -54,7 +54,7 @@ class Debug:
             (x1, y1),
             (x2, y2),
             (0, 255, 0),
-            2
+            1
         )
     
     def draw_paddle(
@@ -69,6 +69,33 @@ class Debug:
             frame,
             (x1, y1),
             (x2, y2),
-            (255, 0, 0),
-            2
+            (153, 204, 0),
+            1
+        )
+    
+
+    def draw_text_box(
+        self,
+        frame,
+        x1: int,
+        y1: int,
+        x2: int,
+        y2: int,
+        text
+    ):
+        cv2.rectangle(
+            frame,
+            (x1, y1),
+            (x2, y2),
+            (255,255,255),
+            -1
+        )
+        cv2.putText(
+            frame, 
+            text, 
+            (x1, y1 - 5), 
+            cv2.FONT_HERSHEY_SIMPLEX, 
+            0.5,
+            (0, 0, 0), 
+            1
         )

@@ -60,6 +60,15 @@ class ObjectDetectionV8:
                 int(bounding_box[2]),
                 int(bounding_box[3])
             )
+            debug.draw_text(
+                frame, 
+                f"Label: {self._class_id_to_label(class_id)}",
+                int(bounding_box[0]),
+                int(bounding_box[1]),
+                0.5,
+                (153, 204, 0),
+                2
+            )
         else:
             debug.draw_human(
                 frame,
@@ -68,16 +77,15 @@ class ObjectDetectionV8:
                 int(bounding_box[2]),
                 int(bounding_box[3])
             )
-
-        debug.draw_text(
-            frame, 
-            f"Label: {self._class_id_to_label(class_id)}",
-            int(bounding_box[0]),
-            int(bounding_box[1]),
-            0.5,
-            (0, 0, 255),
-            2
-        )
+            debug.draw_text(
+                frame, 
+                f"Label: {self._class_id_to_label(class_id)}",
+                int(bounding_box[0]),
+                int(bounding_box[1]),
+                0.5,
+                (0, 255, 0),
+                2
+            )
         return frame
 
     @classmethod
@@ -121,7 +129,7 @@ class ObjectDetectionV8:
         return frame
 
     def generate_frame(self):
-        frame = cv2.imread('images/test_img4.jpg')
+        frame = cv2.imread('images/test_img5.jpg')
         processed_frame = self.score_frame(frame)
 
         cv2.imshow("Processed Image", processed_frame)

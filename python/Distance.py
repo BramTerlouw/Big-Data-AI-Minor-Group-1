@@ -50,7 +50,7 @@ class Distance:
                 int(max(h1_y1, h2_y1)),
                 int(h2_x1),
                 int(max(h1_y1, h2_y1)),
-                (255, 0, 50),
+                (255, 255, 255),
                 2
             )
             debug.draw_text(
@@ -59,7 +59,7 @@ class Distance:
                 int(h1_x2) + 15,
                 int(max(h1_y1, h2_y1)) - 5,
                 0.6,
-                (255, 0, 50),
+                (255, 255, 255),
                 2
             )
         else:
@@ -71,7 +71,7 @@ class Distance:
                 int(max(h1_y1, h2_y1)),
                 int(h1_x1),
                 int(max(h1_y1, h2_y1)),
-                (255, 0, 50),
+                (255, 255, 255),
                 2
             )
             debug.draw_text(
@@ -80,7 +80,7 @@ class Distance:
                 int(h2_x2) + 15,
                 int(max(h1_y1, h2_y1)) - 5,
                 0.6,
-                (255, 0, 50),
+                (255, 255, 255),
                 2
             )
 
@@ -102,7 +102,7 @@ class Distance:
                 int(py1),
                 int(px1),
                 int(py1),
-                (255, 200, 0),
+                (255, 255, 255),
                 2
             )
             debug.draw_text(
@@ -111,7 +111,7 @@ class Distance:
                 int(hx2) + 15,
                 int(py1) - 5,
                 0.6,
-                (255, 200, 0),
+                (255, 255, 255),
                 2
             )
         else:
@@ -124,7 +124,7 @@ class Distance:
                 int(py1),
                 int(hx1),
                 int(py1),
-                (255, 200, 0),
+                (255, 255, 255),
                 2
             )
             debug.draw_text(
@@ -133,7 +133,7 @@ class Distance:
                 int(px2) + 15,
                 int(py1) - 5,
                 0.6,
-                (255, 200, 0),
+                (255, 255, 255),
                 2
             )
 
@@ -153,10 +153,12 @@ class Distance:
         
         if has_paddle < p_center:
             self.human_is_left = False
-            debug.draw_text(frame, 'Human without paddle is on the right', 10, frame.shape[0] - 10, 0.5, (0,0,0), 2)
+            debug.draw_text_box(frame, 10, (frame.shape[0] - 3), 325, (frame.shape[0] - 20), 'Human without paddle is on the right')
+            # debug.draw_text(frame, 'Human without paddle is on the right', 10, frame.shape[0] - 10, 0.5, (0,0,0), 2)
         else:
             self.human_is_left = True
-            debug.draw_text(frame, 'Human without paddle is on the Left', 10, frame.shape[0] - 10, 0.5, (0,0,0), 2)
+            # debug.draw_text(frame, 'Human without paddle is on the Left', 10, frame.shape[0] - 10, 0.5, (0,0,0), 2)
+            debug.draw_text_box(frame, 10, (frame.shape[0] - 3), 325, (frame.shape[0] - 20), 'Human without paddle is on the right')
 
     def __init__(self):
         print('init')
