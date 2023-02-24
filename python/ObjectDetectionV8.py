@@ -40,21 +40,25 @@ class ObjectDetectionV8:
 
 
     def generate_frame(self, frame):
-        frame1 = cv2.imread('images/test_img4.jpg')
-        frame2 = cv2.imread('images/test_img5.jpg')
+        # frame1 = cv2.imread('images/test_img4.jpg')
+        # frame2 = cv2.imread('images/test_img5.jpg')
 
-        score_frame1 = self.model.predict(source=frame1, conf=0.25, save=False)
-        score_frame2 = self.model.predict(source=frame2, conf=0.25, save=False)
+        # score_frame1 = self.model.predict(source=frame1, conf=0.25, save=False)
+        # score_frame2 = self.model.predict(source=frame2, conf=0.25, save=False)
+        score_frame = self.model.predict(source=frame, conf=0.25, save=False)
         
-        processed_frame1 = score.score_frame(frame1, self.classes, score_frame1)
-        processed_frame2 = score.score_frame(frame2, self.classes, score_frame2)
+        # processed_frame1 = score.score_frame(frame1, self.classes, score_frame1)
+        # processed_frame2 = score.score_frame(frame2, self.classes, score_frame2)
+        processed_frame = score.score_frame(frame, self.classes, score_frame)
 
-        cv2.imshow("Processed Image 1", processed_frame1)
-        cv2.imshow("Processed Image 2", processed_frame2)
-        cv2.waitKey(0)
-        cv2.destroyAllWindows()
+        # cv2.imshow("Processed Image 1", processed_frame1)
+        # cv2.imshow("Processed Image 2", processed_frame2)
+        # cv2.imshow("Processed Image ", processed_frame)
+        # cv2.waitKey(0)
+        # cv2.destroyAllWindows()
+        return processed_frame
 
 
 # Create a new object and execute.
 object_detection = ObjectDetectionV8.get_instance()
-object_detection.generate_frame()
+# object_detection.generate_frame()
