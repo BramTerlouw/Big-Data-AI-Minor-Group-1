@@ -1,0 +1,42 @@
+services:
+  app:
+    container_name: paddle_app
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "80:8080"
+      - "2222:22"
+    depends_on:
+      - db
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [ gpu ]
+  db:
+    container_name: paddle_db
+    image: mariadb:latest
+    restart: always
+    environment:
+      - MYSQL_ROOT_PASSWORD=password
+      - MYSQL_DATABASE=mydb
+      - MYSQL_USER=myuser
+      - MYSQL_PASSWORD=password
+    volumes:
+      - ./db:/var/lib/mysql
+  phpmyadmin:
+    container_name: my_phpmyadmin
+    image: phpmyadmin:latest
+    environment:
+      - PMA_ARBITRARY=1
+      - MYSQL_ROOT_PASSWORD=password
+      - MYSQL_USER=myuser
+      - MYSQL_PASSWORD=password
+      - MYSQL_DATABASE=mydb
+    ports:
+      - "8081:80"
+    depends_on:
+      - db
