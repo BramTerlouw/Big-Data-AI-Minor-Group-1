@@ -22,7 +22,7 @@ func main() {
 		}
 
 		// Save the file to disk
-		err = c.SaveUploadedFile(file, "./input/"+file.Filename)
+		err = c.SaveUploadedFile(file, "input/"+file.Filename)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
@@ -44,12 +44,12 @@ func main() {
 	})
 
 	// Create the input directory if it does not exist
-	if _, err := os.Stat("./input"); os.IsNotExist(err) {
-		os.Mkdir("./input", 0755)
+	if _, err := os.Stat("input"); os.IsNotExist(err) {
+		os.Mkdir("input", 0755)
 	}
 	// Create the output directory if it does not exist
-	if _, err := os.Stat("./output"); os.IsNotExist(err) {
-		os.Mkdir("./output", 0755)
+	if _, err := os.Stat("output"); os.IsNotExist(err) {
+		os.Mkdir("output", 0755)
 	}
 
 	// Start the server
