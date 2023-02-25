@@ -31,7 +31,7 @@ func main() {
 		// Respond with "Video will be processed"
 		c.JSON(http.StatusOK, gin.H{"message": "Video will be processed"})
 
-		cmd := exec.Command("python3.9", "./python/video_process.py")
+		cmd := exec.Command("python3.9", "python/video_process.py")
 
 		// Execute the command
 		output, err := cmd.Output()
