@@ -3,3 +3,7 @@ __pycache__
 .vscode
 python/__pycache__/
 .idea
+
+db/ibtmp1
+
+db/ddl_recovery.log

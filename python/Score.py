@@ -15,7 +15,7 @@ class Score:
     # Extra note !!!PLEASE USE OBJECT TYPE HINTING!!! and make file name same as class.
     def __init__(self):
         print('init')
-    
+
 
     @classmethod
     def _load_model(cls, model_name: str) -> YOLO:
@@ -23,7 +23,7 @@ class Score:
             return YOLO(model_name)
         else:
             raise ValueError("Model not found: " + model_name)
-    
+
 
     def _class_id_to_label(
         self,
@@ -55,19 +55,19 @@ class Score:
                 dict_coordinates[class_id].append(bounding_box)
             else:
                 dict_coordinates[class_id] = [bounding_box]
-        
+
         if 0 not in dict_coordinates:
             return frame
-        
+
         dict_coordinates[1] = self.get_biggest_two_humans(dict_coordinates[1])
 
         for i in range(len(dict_coordinates)):
             for y in range(len(dict_coordinates[i])):
                 self._plot_boxes(frame, dict_coordinates[i][y], self._class_id_to_label(classes, i))
-        
+
         self.process_score(frame, dict_coordinates)
         return frame
-    
+
 
     @classmethod
     def process_score(
@@ -79,9 +79,9 @@ class Score:
         distance.get_distance_humans(frame, padel_width, coordinates[1])
         distance.set_player_pos(frame, coordinates)
         distance.get_distance(frame, padel_width, coordinates[0], coordinates[1])
-        
+
         return frame
-    
+
 
     def get_biggest_two_humans(self, coords_humans):
         first_height = float('-inf')
@@ -100,7 +100,7 @@ class Score:
                 second_index = i
                 second_height = height
         return [coords_humans[first_index], coords_humans[second_index]]
-    
+
 
     def _plot_boxes(
         self,
@@ -118,7 +118,7 @@ class Score:
                 int(bounding_box[3])
             )
             debug.draw_text(
-                frame, 
+                frame,
                 f"Label: {class_id}",
                 int(bounding_box[0]),
                 int(bounding_box[1]),
@@ -135,7 +135,7 @@ class Score:
                 int(bounding_box[3])
             )
             debug.draw_text(
-                frame, 
+                frame,
                 f"Label: {class_id}",
                 int(bounding_box[0]),
                 int(bounding_box[1]),
@@ -144,7 +144,7 @@ class Score:
                 2
             )
         return frame
-    
+
 
     @classmethod
     def calculate_score(cls):

@@ -6,9 +6,10 @@ import torch
 from numpy import ndarray
 from ultralytics import YOLO
 
-
 from Score import Score
+
 score = Score()
+
 
 class ObjectDetectionV8:
     __instance = None
@@ -17,19 +18,17 @@ class ObjectDetectionV8:
         if ObjectDetectionV8.__instance is not None:
             raise Exception("Singleton instance already exists. Use get_instance() method to get the instance.")
         else:
-            self.model_name = 'model/YOLOv8/paddle_and_human_yolov8m_v2.pt'
+            self.model_name = 'python/model/paddle_and_human_yolov8m_v2.pt'
             self.model = self._load_model(self.model_name)
             self.classes = self.model.names
             self.device = 'cuda' if torch.cuda.is_available() else 'cpu'
             ObjectDetectionV8.__instance = self
-
 
     @classmethod
     def get_instance(cls) -> 'ObjectDetectionV8':
         if ObjectDetectionV8.__instance is None:
             ObjectDetectionV8()
         return ObjectDetectionV8.__instance
-
 
     @classmethod
     def _load_model(cls, model_name: str) -> YOLO:
@@ -38,7 +37,6 @@ class ObjectDetectionV8:
         else:
             raise ValueError("Model not found: " + model_name)
 
-
     def generate_frame(self, frame):
         # frame1 = cv2.imread('images/test_img4.jpg')
         # frame2 = cv2.imread('images/test_img5.jpg')
@@ -46,7 +44,7 @@ class ObjectDetectionV8:
         # score_frame1 = self.model.predict(source=frame1, conf=0.25, save=False)
         # score_frame2 = self.model.predict(source=frame2, conf=0.25, save=False)
         score_frame = self.model.predict(source=frame, conf=0.25, save=False)
-        
+
         # processed_frame1 = score.score_frame(frame1, self.classes, score_frame1)
         # processed_frame2 = score.score_frame(frame2, self.classes, score_frame2)
         processed_frame = score.score_frame(frame, self.classes, score_frame)
