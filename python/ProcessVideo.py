@@ -11,14 +11,14 @@ class ProcessVideo:
         print('init')
 
     def load_input(self):
-        video = cv2.VideoCapture("../input/camera4.mp4")
+        video = cv2.VideoCapture("input/camera4.mp4")
         fps = video.get(cv2.CAP_PROP_FPS)
 
         frame_width = int(video.get(cv2.CAP_PROP_FRAME_WIDTH))
         frame_height = int(video.get(cv2.CAP_PROP_FRAME_HEIGHT))
 
         fourcc = cv2.VideoWriter_fourcc(*'mp4v')  # Codec for the new video file
-        out_video = cv2.VideoWriter("../output/output_video.mp4", fourcc, fps, (frame_width, frame_height))
+        out_video = cv2.VideoWriter("output/output_video.mp4", fourcc, fps, (frame_width, frame_height))
 
         while True:
             ret, frame = video.read()

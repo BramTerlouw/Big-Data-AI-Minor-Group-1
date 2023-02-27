@@ -31,7 +31,7 @@ func main() {
 		// Respond with "Video will be processed"
 		c.JSON(http.StatusOK, gin.H{"message": "Video will be processed"})
 
-		cmd := exec.Command("python3.9", "python/ProcessVideo.py")
+		cmd := exec.Command("python", "python/ProcessVideo.py")
 
 		// Execute the command
 		output, err := cmd.Output()
@@ -41,6 +41,7 @@ func main() {
 		}
 		// Print the output
 		fmt.Println(string(output))
+
 	})
 
 	// Create the input directory if it does not exist

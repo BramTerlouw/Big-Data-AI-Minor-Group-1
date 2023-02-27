@@ -5,19 +5,17 @@ import numpy
 from typing import Union
 
 from Distance import Distance
-
 distance = Distance()
 
-from python.Debug import Debug
-
+from Debug import Debug
 debug = Debug()
-
 
 class Score:
 
     # Extra note !!!PLEASE USE OBJECT TYPE HINTING!!! and make file name same as class.
     def __init__(self):
         print('init')
+
 
     @classmethod
     def _load_model(cls, model_name: str) -> YOLO:
@@ -26,18 +24,20 @@ class Score:
         else:
             raise ValueError("Model not found: " + model_name)
 
+
     def _class_id_to_label(
-            self,
-            classes,
-            class_id: int
+        self,
+        classes,
+        class_id: int
     ) -> str:
         return classes[class_id]
 
+
     def score_frame(
-            self,
-            frame,
-            classes,
-            detection_output
+        self,
+        frame,
+        classes,
+        detection_output
     ) -> Union[ndarray, ndarray]:
 
         bounding_box_data_result = detection_output[0].cpu()
@@ -68,11 +68,12 @@ class Score:
         self.process_score(frame, dict_coordinates)
         return frame
 
+
     @classmethod
     def process_score(
-            cls,
-            frame: numpy.ndarray,
-            coordinates: dict
+        cls,
+        frame: numpy.ndarray,
+        coordinates: dict
     ) -> Union[ndarray, ndarray]:
         padel_width = distance.calc_width_paddle(coordinates[0])
         distance.get_distance_humans(frame, padel_width, coordinates[1])
@@ -80,6 +81,7 @@ class Score:
         distance.get_distance(frame, padel_width, coordinates[0], coordinates[1])
 
         return frame
+
 
     def get_biggest_two_humans(self, coords_humans):
         first_height = float('-inf')
@@ -99,11 +101,12 @@ class Score:
                 second_height = height
         return [coords_humans[first_index], coords_humans[second_index]]
 
+
     def _plot_boxes(
-            self,
-            frame: numpy.ndarray,
-            bounding_box: numpy.ndarray,
-            class_id: int
+        self,
+        frame: numpy.ndarray,
+        bounding_box: numpy.ndarray,
+        class_id: int
     ) -> Union[ndarray, ndarray]:
 
         if class_id == 0:
@@ -142,9 +145,11 @@ class Score:
             )
         return frame
 
+
     @classmethod
     def calculate_score(cls):
         print('aveage score')
+
 
     @classmethod
     def serialize(cls, scores: dict) -> print():
