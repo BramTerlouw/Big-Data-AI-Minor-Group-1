@@ -77,7 +77,7 @@ class Debug:
             1
         )
 
-    def draw_text_box(
+    def draw_pos_player_without_padel(
             self,
             frame,
             x1: int,
@@ -102,3 +102,66 @@ class Debug:
             (0, 0, 0),
             1
         )
+    
+    def draw_distance(self, frame, x1, x2, y, txt_coord, distance):
+        self.draw_line(
+                frame,
+                int(x1),
+                int(y),
+                int(x2),
+                int(y),
+                (255, 255, 255),
+                2
+            )
+        self.draw_text(
+            frame,
+            f"{distance} CM",
+            int(txt_coord) + 15,
+            int(y) - 5,
+            0.6,
+            (255, 255, 255),
+            2
+        )
+    
+    def show_class(
+        self,
+        frame: numpy.ndarray,
+        bounding_box: numpy.ndarray,
+        class_id: int
+    ) -> Union[ndarray, ndarray]:
+
+        if class_id == 0:
+            self.draw_paddle(
+                frame,
+                int(bounding_box[0]),
+                int(bounding_box[1]),
+                int(bounding_box[2]),
+                int(bounding_box[3])
+            )
+            self.draw_text(
+                frame,
+                f"Label: {class_id}",
+                int(bounding_box[0]),
+                int(bounding_box[1]),
+                0.5,
+                (153, 204, 0),
+                2
+            )
+        else:
+            self.draw_human(
+                frame,
+                int(bounding_box[0]),
+                int(bounding_box[1]),
+                int(bounding_box[2]),
+                int(bounding_box[3])
+            )
+            self.draw_text(
+                frame,
+                f"Label: {class_id}",
+                int(bounding_box[0]),
+                int(bounding_box[1]),
+                0.5,
+                (0, 255, 0),
+                2
+            )
+        return frame

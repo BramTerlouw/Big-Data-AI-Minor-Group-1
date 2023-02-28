@@ -37,26 +37,47 @@ class ObjectDetectionV8:
         else:
             raise ValueError("Model not found: " + model_name)
 
-    def generate_frame(self, frame):
-        # frame1 = cv2.imread('images/test_img4.jpg')
-        # frame2 = cv2.imread('images/test_img5.jpg')
 
-        # score_frame1 = self.model.predict(source=frame1, conf=0.25, save=False)
-        # score_frame2 = self.model.predict(source=frame2, conf=0.25, save=False)
-        score_frame = self.model.predict(source=frame, conf=0.25, save=False)
+    def generate_predictions(self, frame):
+        frame_predictions = self.model.predict(source=frame, conf=0.25, save=False)
+        return self.convert_to_coordinates(frame_predictions)
 
-        # processed_frame1 = score.score_frame(frame1, self.classes, score_frame1)
-        # processed_frame2 = score.score_frame(frame2, self.classes, score_frame2)
-        processed_frame = score.score_frame(frame, self.classes, score_frame)
 
-        # cv2.imshow("Processed Image 1", processed_frame1)
-        # cv2.imshow("Processed Image 2", processed_frame2)
-        # cv2.imshow("Processed Image ", processed_frame)
-        # cv2.waitKey(0)
-        # cv2.destroyAllWindows()
-        return processed_frame
+    def convert_to_coordinates(
+        self,
+        detection_output
+    ) -> Union[ndarray, ndarray]:
+
+        data_results = detection_output[0].cpu()
+        dict_coordinates = {}
+
+        for result in data_results:
+            box = result.boxes[0]
+
+            class_id = box.cls.numpy()[0]
+            bounding_box = box.xyxy.numpy()[0]
+
+            if class_id in dict_coordinates:
+                dict_coordinates[class_id].append(bounding_box)
+            else:
+                dict_coordinates[class_id] = [bounding_box]
+
+        if self.predictions_are_valid(dict_coordinates):
+            return dict_coordinates
+        else:
+            return None
+    
+    def predictions_are_valid(self, dict_coordinates):
+        if 0 not in dict_coordinates:
+            return False
+        elif len(dict_coordinates[1]) < 2:
+            return False
+        return True
+    
+
+    def get_classes(self):
+        return self.classes
 
 
 # Create a new object and execute.
 object_detection = ObjectDetectionV8.get_instance()
-# object_detection.generate_frame()
