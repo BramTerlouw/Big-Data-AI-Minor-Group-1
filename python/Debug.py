@@ -7,8 +7,9 @@ import numpy
 
 class Debug:
 
+    @classmethod
     def draw_line(
-            self,
+            cls,
             frame: numpy.ndarray,
             x1: int,
             y1: int,
@@ -25,8 +26,9 @@ class Debug:
             thickness
         )
 
+    @classmethod
     def draw_text(
-            self,
+            cls,
             frame: numpy.ndarray,
             text: str,
             x: int,
@@ -45,8 +47,9 @@ class Debug:
             thickness
         )
 
+    @classmethod
     def draw_human(
-            self,
+            cls,
             frame: numpy.ndarray,
             x1: int,
             y1: int,
@@ -61,8 +64,9 @@ class Debug:
             1
         )
 
+    @classmethod
     def draw_paddle(
-            self,
+            cls,
             frame: numpy.ndarray,
             x1: int,
             y1: int,
@@ -77,8 +81,9 @@ class Debug:
             1
         )
 
+    @classmethod
     def draw_pos_player_without_padel(
-            self,
+            cls,
             frame,
             x1: int,
             y1: int,
@@ -102,17 +107,17 @@ class Debug:
             (0, 0, 0),
             1
         )
-    
+
     def draw_distance(self, frame, x1, x2, y, txt_coord, distance):
         self.draw_line(
-                frame,
-                int(x1),
-                int(y),
-                int(x2),
-                int(y),
-                (255, 255, 255),
-                2
-            )
+            frame,
+            int(x1),
+            int(y),
+            int(x2),
+            int(y),
+            (255, 255, 255),
+            2
+        )
         self.draw_text(
             frame,
             f"{distance} CM",
@@ -122,12 +127,12 @@ class Debug:
             (255, 255, 255),
             2
         )
-    
+
     def show_class(
-        self,
-        frame: numpy.ndarray,
-        bounding_box: numpy.ndarray,
-        class_id: int
+            self,
+            frame: numpy.ndarray,
+            bounding_box: numpy.ndarray,
+            class_id: int
     ) -> Union[ndarray, ndarray]:
 
         if class_id == 0:

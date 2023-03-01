@@ -4,18 +4,19 @@ from numpy import ndarray
 import numpy
 from typing import Union
 
+
 class Score:
 
     def __init__(self):
         print('init')
 
-
     @classmethod
     def process_score(
-        cls,
-        frame: numpy.ndarray,
-        coordinates: dict
+            cls,
+            frame: numpy.ndarray,
+            coordinates: dict
     ) -> Union[ndarray, ndarray]:
+        # @TODO what is this distance for cause its not reference anywhere
         padel_width = distance.calc_width_paddle(coordinates[0])
         distance.get_distance_humans(frame, padel_width, coordinates[1])
         distance.set_player_pos(frame, coordinates)
@@ -23,14 +24,14 @@ class Score:
 
         return frame
 
-
     @classmethod
     def calculate_score(cls):
-        print('aveage score')
-
+        print('average score')
 
     @classmethod
     def serialize(cls, scores: dict) -> print():
-        return print(json.dumps(
-            scores
-        ))
+        return print(
+            json.dumps(
+                scores
+            )
+        )

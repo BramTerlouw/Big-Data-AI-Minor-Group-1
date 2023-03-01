@@ -10,14 +10,14 @@ class Distance:
     def __init__(self):
         self.reference_width = 32
 
-
     def get_distance_humans(
             self,
             frame: numpy.ndarray,
             paddle_width: int,
             coords_human: numpy.ndarray
-    ) -> None:
+    ) -> int:
         h1_x1, h1_y1, h1_x2, h1_y2 = coords_human[0]
+        print(coords_human[0])
         h2_x1, h2_y1, h2_x2, h2_y2 = coords_human[1]
 
         if h1_x1 < h2_x1:
@@ -43,7 +43,6 @@ class Distance:
             # )
             return self.calc_distance(paddle_width, h1_x1, h2_x2)
 
-
     def get_distance(
             self,
             frame: numpy.ndarray,
@@ -51,7 +50,7 @@ class Distance:
             coords_paddle: numpy.ndarray,
             coords_humans: numpy.ndarray,
             pos: str
-    ) -> None:
+    ) -> int:
 
         px1, py1, px2, py2 = coords_paddle[0]
         if pos == 'left':
@@ -87,7 +86,6 @@ class Distance:
             # )
             return distance
 
-
     def get_player_pos(
             self,
             frame: numpy.ndarray,
@@ -103,10 +101,10 @@ class Distance:
 
         has_paddle = self.get_player_with_padel(h1_center, h2_center, p_center)
         return self.set_player_without_padel(frame, has_paddle, p_center)
-    
 
+    @classmethod
     def set_player_without_padel(
-            self,
+            cls,
             frame: numpy.ndarray,
             has_paddle: float,
             p_center: float
@@ -131,35 +129,33 @@ class Distance:
             # )
             return 'left'
 
-
     def get_frame_dimensions(
             frame: numpy.ndarray
     ) -> tuple:
         return frame.shape[1], frame.shape[0]
 
-
+    @classmethod
     def calc_width_paddle(
-            self,
+            cls,
             coords_paddle: numpy.ndarray
     ) -> int:
         return int(coords_paddle[0][2] - coords_paddle[0][0])
 
-
+    @classmethod
     def calc_distance(
-            self,
+            cls,
             padel_width: int,
             big_coord: float,
             small_coord: float
     ) -> int:
         return int(32 / padel_width * (big_coord - small_coord))
 
-
+    @classmethod
     def get_human_xcoords(
-            self,
+            cls,
             coords_humans: dict
     ) -> tuple:
         return coords_humans[0][0], coords_humans[1][0]
-
 
     def get_human_left(
             self,
@@ -172,7 +168,6 @@ class Distance:
         else:
             return coords_humans[1]
 
-
     def get_human_right(
             self,
             coords_humans: dict
@@ -184,9 +179,9 @@ class Distance:
         else:
             return coords_humans[1]
 
-
+    @classmethod
     def get_player_with_padel(
-            self,
+            cls,
             h1_center: float,
             h2_center: float,
             p_center: float
@@ -195,9 +190,9 @@ class Distance:
             return h2_center
         else:
             return h1_center
-    
 
-    def get_biggest_two_humans(self, coords_humans):
+    @classmethod
+    def get_biggest_two_humans(cls, coords_humans):
         first_height = float('-inf')
         second_height = float('-inf')
         first_index = 0
@@ -214,6 +209,3 @@ class Distance:
                 second_index = i
                 second_height = height
         return [coords_humans[first_index], coords_humans[second_index]]
-
-    def __init__(self):
-        print('init')
