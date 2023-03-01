@@ -4,6 +4,10 @@ from typing import Union
 import numpy
 from numpy import ndarray
 
+from python.Distance import Distance
+
+distance = Distance()
+
 
 class Score:
 
