@@ -4,11 +4,6 @@ from typing import Union
 import numpy
 from numpy import ndarray
 
-from python.Distance import Distance
-
-distance = Distance()
-
-
 class Score:
 
     def __init__(self):
@@ -17,14 +12,8 @@ class Score:
     @classmethod
     def process_score(
             cls,
-            frame: numpy.ndarray,
-            coordinates: dict
+            frame: numpy.ndarray
     ) -> Union[ndarray, ndarray]:
-        # @TODO what is this distance for cause its not reference anywhere
-        padel_width = distance.calc_width_paddle(coordinates[0])
-        distance.get_distance_humans(frame, padel_width, coordinates[1])
-        distance.set_player_pos(frame, coordinates)
-        distance.get_distance(frame, padel_width, coordinates[0], coordinates[1])
 
         return frame
 
