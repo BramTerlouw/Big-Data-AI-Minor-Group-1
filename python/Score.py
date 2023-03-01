@@ -1,8 +1,8 @@
 import json
-from ultralytics import YOLO
-from numpy import ndarray
-import numpy
 from typing import Union
+
+import numpy
+from numpy import ndarray
 
 
 class Score:

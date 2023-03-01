@@ -1,7 +1,5 @@
 from typing import Union
 
-import cv2
-import numpy
 import torch
 from numpy import ndarray
 from ultralytics import YOLO

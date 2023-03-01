@@ -1,11 +1,8 @@
 import cv2
-from numpy import ndarray
-import numpy
-from typing import Union
 
-from ObjectDetectionV8 import ObjectDetectionV8
-from Distance import Distance
 from Debug import Debug
+from Distance import Distance
+from ObjectDetectionV8 import ObjectDetectionV8
 
 v8 = ObjectDetectionV8.get_instance()
 distance = Distance()

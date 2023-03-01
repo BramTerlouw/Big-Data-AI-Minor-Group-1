@@ -1,8 +1,8 @@
 from typing import Union
-from numpy import ndarray
 
 import cv2
 import numpy
+from numpy import ndarray
 
 
 class Debug:
