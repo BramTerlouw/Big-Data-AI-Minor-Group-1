@@ -3,6 +3,7 @@ import cv2
 from Debug import Debug
 from Distance import Distance
 from ObjectDetectionV8 import ObjectDetectionV8
+from DTO.CoordsDTO import CoordsDTO
 
 v8 = ObjectDetectionV8.get_instance()
 distance = Distance()
@@ -42,14 +43,15 @@ class ProcessVideo:
 
             if predictions is not None:
                 # !!!!! ----- Step 2: Calculation ----- !!!!!
-                predictions[1] = distance.get_biggest_two_humans(predictions[1])
+                coords_human = distance.get_biggest_two_humans(predictions[1])
+                coords_paddle = CoordsDTO(predictions[0][0])
 
-                padel_width = distance.calc_width_paddle(predictions[0])
-                distance_betw_humans = distance.get_distance_humans(frame, padel_width, predictions[1])
-                pos_player_without_padel = distance.get_player_pos(frame, predictions)
+                paddle_width = distance.calc_width_paddle(predictions[0])
+                distance_betw_humans = distance.get_distance_humans(paddle_width, coords_human)
+                pos_player_without_paddle = distance.get_player_pos(coords_paddle, coords_human)
                 distance_betw_human_player = distance.get_distance(
-                    frame, padel_width, predictions[0], predictions[1], pos_player_without_padel
-                    )
+                    paddle_width, coords_paddle, coords_human, pos_player_without_paddle
+                )
 
                 # !!!!! ----- Step 3: Show drawing (debug) ----- !!!!!
                 self.show_predictions(frame, predictions, classes)

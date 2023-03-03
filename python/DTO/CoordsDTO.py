@@ -1,9 +1,9 @@
 class CoordsDTO:
-    def __init__(self, coords_human):
-        self._top_left = coords_human[0]
-        self._top_right = coords_human[1]
-        self._bottom_left = coords_human[2]
-        self._bottom_right = coords_human[3]
+    def __init__(self, bounding_box):
+        self._top_left = bounding_box[0]
+        self._top_right = bounding_box[1]
+        self._bottom_left = bounding_box[2]
+        self._bottom_right = bounding_box[3]
 
     @property
     def top_left(self):

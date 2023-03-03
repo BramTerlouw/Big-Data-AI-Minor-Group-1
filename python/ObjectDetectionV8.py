@@ -1,7 +1,6 @@
-from typing import Union
+from typing import Optional, Any
 
 import torch
-from numpy import ndarray
 from ultralytics import YOLO
 
 from Score import Score
@@ -35,16 +34,14 @@ class ObjectDetectionV8:
         else:
             raise ValueError("Model not found: " + model_name)
 
-
     def generate_predictions(self, frame):
         frame_predictions = self.model.predict(source=frame, conf=0.25, save=False)
         return self.convert_to_coordinates(frame_predictions)
 
-
     def convert_to_coordinates(
-        self,
-        detection_output
-    ) -> Union[ndarray, ndarray]:
+            self,
+            detection_output
+    ) -> Optional[dict[Any, list[Any]]]:
 
         data_results = detection_output[0].cpu()
         dict_coordinates = {}
@@ -64,14 +61,14 @@ class ObjectDetectionV8:
             return dict_coordinates
         else:
             return None
-    
-    def predictions_are_valid(self, dict_coordinates):
+
+    @classmethod
+    def predictions_are_valid(cls, dict_coordinates):
         if 0 not in dict_coordinates:
             return False
         elif len(dict_coordinates[1]) < 2:
             return False
         return True
-    
 
     def get_classes(self):
         return self.classes
