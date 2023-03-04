@@ -1,4 +1,5 @@
 import cv2
+import numpy as np
 
 from Debug import Debug
 from Distance import Distance
@@ -54,7 +55,9 @@ class ProcessVideo:
                 )
 
                 # !!!!! ----- Step 3: Show drawing (debug) ----- !!!!!
-                self.show_predictions(frame, predictions, classes)
+                coords = np.array([[coords_paddle], [coords_human[0], coords_human[1]]])
+                self.show_predictions(frame, coords, classes)
+
                 # Show distance humans?
                 # Show who is without padel?
                 # Show distance player and padel?

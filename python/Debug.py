@@ -4,6 +4,8 @@ import cv2
 import numpy
 from numpy import ndarray
 
+from DTO.CoordsDTO import CoordsDTO
+
 
 class Debug:
 
@@ -131,23 +133,23 @@ class Debug:
     def show_class(
             self,
             frame: numpy.ndarray,
-            bounding_box: numpy.ndarray,
+            bounding_box: CoordsDTO,
             class_id: int
     ) -> Union[ndarray, ndarray]:
 
         if class_id == 0:
             self.draw_paddle(
                 frame,
-                int(bounding_box[0]),
-                int(bounding_box[1]),
-                int(bounding_box[2]),
-                int(bounding_box[3])
+                int(bounding_box.top_left),
+                int(bounding_box.top_right),
+                int(bounding_box.bottom_left),
+                int(bounding_box.bottom_right)
             )
             self.draw_text(
                 frame,
                 f"Label: {class_id}",
-                int(bounding_box[0]),
-                int(bounding_box[1]),
+                int(bounding_box.top_left),
+                int(bounding_box.top_right),
                 0.5,
                 (153, 204, 0),
                 2
@@ -155,16 +157,16 @@ class Debug:
         else:
             self.draw_human(
                 frame,
-                int(bounding_box[0]),
-                int(bounding_box[1]),
-                int(bounding_box[2]),
-                int(bounding_box[3])
+                int(bounding_box.top_left),
+                int(bounding_box.top_right),
+                int(bounding_box.bottom_left),
+                int(bounding_box.bottom_right)
             )
             self.draw_text(
                 frame,
                 f"Label: {class_id}",
-                int(bounding_box[0]),
-                int(bounding_box[1]),
+                int(bounding_box.top_left),
+                int(bounding_box.top_right),
                 0.5,
                 (0, 255, 0),
                 2
