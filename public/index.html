@@ -9,6 +9,41 @@
     <link rel="icon" type="image/x-icon" href="/assets/fav.ico">
 </head>
 <body>
+<h1>Upload Video</h1>
+<form id="upload-form">
+    <label for="video-file">Choose a video file:</label>
+    <input type="file" id="video-file" name="video-file"><br><br>
+    <button type="submit">Upload</button>
+</form>
+<script>
+    const host   = '127.0.0.1:8000'
+    const form   = document.getElementById('upload-form');
+    const apiKey = 'my-api-key';
 
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const formData = new FormData();
+        const uuid     = '1b449ab2-7667-4d4f-a183-0110791c3e53';
+
+        formData.append('video-file', document.getElementById('video-file').files[0]);
+        formData.append('uuid', uuid);
+
+        try {
+            const response = await fetch(host + '/upload', {
+                method: 'POST',
+                headers: {
+                    'api-key': `${apiKey}`
+                },
+                body: formData
+            });
+
+            const data = await response.json();
+            console.log(data);
+        } catch (error) {
+            console.error(error);
+        }
+    });
+</script>
 </body>
 </html>

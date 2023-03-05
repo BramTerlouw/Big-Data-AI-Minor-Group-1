@@ -1,5 +1,6 @@
 import json
 
+
 class Score:
     __instance = None
     scores = []
@@ -11,7 +12,7 @@ class Score:
             Score.__instance = self
 
     @classmethod
-    def get_instance(cls) -> 'ObjectDetectionV8':
+    def get_instance(cls) -> 'Score':
         if Score.__instance is None:
             Score()
         return Score.__instance
@@ -23,8 +24,11 @@ class Score:
             data_player_position,
             data_distance_player_paddle,
     ):
-        score_summary = {'dist_humans': data_distance_humans, 'player_pos': data_player_position,
-                         'dist_player_paddle': data_distance_player_paddle}
+        score_summary = {
+            'dist_humans': data_distance_humans,
+            'player_pos': data_player_position,
+            'dist_player_paddle': data_distance_player_paddle
+        }
         Score.scores.append(score_summary)
 
     @classmethod
@@ -36,9 +40,5 @@ class Score:
         print('average score')
 
     @classmethod
-    def serialize(cls, scores: dict) -> print():
-        return print(
-            json.dumps(
-                scores
-            )
-        )
+    def serialize(cls, scores: dict) -> print:
+        return print(json.dumps(scores))
