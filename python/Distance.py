@@ -12,6 +12,7 @@ class Distance:
 
     def get_distance_humans(
             self,
+            frame,
             paddle_width: int,
             coords_human: list[CoordsDTO]
     ) -> int:
@@ -19,12 +20,31 @@ class Distance:
         coords_human_2 = coords_human[1]
 
         if coords_human_1.top_left < coords_human_2.top_left:
-            return self.calc_distance(paddle_width, coords_human_2.top_left,  coords_human_1.top_left)
+            distance = self.calc_distance(paddle_width, coords_human_2.top_left,  coords_human_1.bottom_left)
+            debug.draw_distance(
+                frame,
+                coords_human_2.top_left,
+                coords_human_1.bottom_left,
+                max(coords_human_1.top_right, coords_human_2.top_right),
+                coords_human_1.bottom_left,
+                distance
+            )
+            return distance
         else:
-            return self.calc_distance(paddle_width, coords_human_1.top_left, coords_human_2.top_left)
+            distance = self.calc_distance(paddle_width, coords_human_1.top_left, coords_human_2.bottom_left)
+            debug.draw_distance(
+                frame,
+                coords_human_1.top_left,
+                coords_human_2.bottom_left,
+                max(coords_human_1.top_right, coords_human_2.top_right),
+                coords_human_2.bottom_left,
+                distance
+            )
+            return distance
 
     def get_distance(
             self,
+            frame,
             paddle_width: int,
             coords_paddle: CoordsDTO,
             coords_humans: list[CoordsDTO],
@@ -32,40 +52,75 @@ class Distance:
     ) -> int:
         if pos == 'left':
             coords = self.get_human_left(coords_humans)
-            return self.calc_distance(
+            distance = self.calc_distance(
                 paddle_width,
                 coords_paddle.top_left,
                 coords.bottom_left,
             )
+            debug.draw_distance(
+                frame,
+                coords.bottom_left,
+                coords_paddle.top_left,
+                coords_paddle.top_right,
+                coords.bottom_left,
+                distance
+            )
+            return distance
         else:
             coords = self.get_human_right(coords_humans)
-            return self.calc_distance(
+            distance = self.calc_distance(
                 paddle_width,
                 coords.top_left,
                 coords_paddle.bottom_left
             )
+            debug.draw_distance(
+                frame,
+                coords_paddle.bottom_left,
+                coords.top_left,
+                coords_paddle.top_right,
+                coords_paddle.bottom_left,
+                distance
+            )
+            return distance
 
     def get_player_pos(
             self,
+            frame,
             coords_paddle: CoordsDTO,
             coords_humans: list[CoordsDTO],
     ):
-        h1_center = coords_humans[0].bottom_left - ((coords_humans[0].bottom_left - coords_humans[0].top_right) / 2)
-        h2_center = coords_humans[1].bottom_left - ((coords_humans[1].bottom_left - coords_humans[1].top_right) / 2)
-        p_center = coords_paddle.bottom_left - ((coords_paddle.bottom_left - coords_paddle.top_right) / 2)
+        h1_center = coords_humans[0].bottom_left - ((coords_humans[0].bottom_left - coords_humans[0].top_left) / 2)
+        h2_center = coords_humans[1].bottom_left - ((coords_humans[1].bottom_left - coords_humans[1].top_left) / 2)
+        p_center = coords_paddle.bottom_left - ((coords_paddle.bottom_left - coords_paddle.top_left) / 2)
 
         has_paddle = self.get_human_with_paddle(h1_center, h2_center, p_center)
-        return self.set_player_without_paddle(has_paddle, p_center)
+        return self.set_player_without_paddle(frame, has_paddle, p_center)
 
     @classmethod
     def set_player_without_paddle(
             cls,
+            frame,
             has_paddle: float,
             p_center: float
     ) -> str:
         if has_paddle < p_center:
+            debug.draw_pos_player_without_padel(
+                frame,
+                10,
+                (frame.shape[0] - 3),
+                325, (frame.shape[0] - 20),
+                'Human without paddle is on the right'
+            )
             return 'right'
         else:
+            debug.draw_pos_player_without_padel(
+                frame,
+                10,
+                (frame.shape[0] - 3),
+                325,
+                (frame.shape[0] - 20),
+                'Human without paddle is on the left'
+            )
             return 'left'
 
     @classmethod

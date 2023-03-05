@@ -48,11 +48,14 @@ class ProcessVideo:
                 coords_paddle = CoordsDTO(predictions[0][0])
 
                 paddle_width = distance.calc_width_paddle(predictions[0])
-                distance_betw_humans = distance.get_distance_humans(paddle_width, coords_human)
-                pos_player_without_paddle = distance.get_player_pos(coords_paddle, coords_human)
+                distance_betw_humans = distance.get_distance_humans(frame, paddle_width, coords_human)
+                pos_player_without_paddle = distance.get_player_pos(frame, coords_paddle, coords_human)
                 distance_betw_human_player = distance.get_distance(
-                    paddle_width, coords_paddle, coords_human, pos_player_without_paddle
+                    frame, paddle_width, coords_paddle, coords_human, pos_player_without_paddle
                 )
+
+                print('distance between humans: ', distance_betw_humans)
+                print('distance between human and padel: ', distance_betw_human_player)
 
                 # !!!!! ----- Step 3: Show drawing (debug) ----- !!!!!
                 coords = np.array([[coords_paddle], [coords_human[0], coords_human[1]]])
