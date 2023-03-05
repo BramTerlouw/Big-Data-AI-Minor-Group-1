@@ -1,20 +1,26 @@
 import json
-from typing import Union
+import numpy as np
 
-import numpy
-from numpy import ndarray
 
 class Score:
 
+    __instance = None
+
     def __init__(self):
-        print('init')
+        if Score.__instance is not None:
+            raise Exception("Score class is a singleton! Use 'get_instance()' method to get the instance.")
+        else:
+            Score.__instance = self
+            print('init')
 
     @classmethod
-    def process_score(
-            cls,
-            frame: numpy.ndarray
-    ) -> Union[ndarray, ndarray]:
+    def get_instance(cls):
+        if Score.__instance is None:
+            Score()
+        return Score.__instance
 
+    @classmethod
+    def process_score(cls, frame: np.ndarray) -> np.ndarray:
         return frame
 
     @classmethod
@@ -22,9 +28,5 @@ class Score:
         print('average score')
 
     @classmethod
-    def serialize(cls, scores: dict) -> print():
-        return print(
-            json.dumps(
-                scores
-            )
-        )
+    def serialize(cls, scores: dict) -> print:
+        return print(json.dumps(scores))
