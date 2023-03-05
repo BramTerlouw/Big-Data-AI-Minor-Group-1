@@ -1,4 +1,5 @@
 import numpy
+import numpy as np
 
 from Debug import Debug
 from DTO.CoordsDTO import CoordsDTO
@@ -128,7 +129,7 @@ class Distance:
             cls,
             coords_paddle: numpy.ndarray
     ) -> int:
-        return int(coords_paddle[0][2] - coords_paddle[0][0])
+        return np.int32(np.round(coords_paddle[0][2] - coords_paddle[0][0]))
 
     @classmethod
     def calc_distance(
@@ -137,7 +138,7 @@ class Distance:
             big_coord: float,
             small_coord: float
     ) -> int:
-        return int(32 / paddle_width * (big_coord - small_coord))
+        return np.int32(np.round(32 / paddle_width * (big_coord - small_coord)))
 
     @classmethod
     def get_human_left(
