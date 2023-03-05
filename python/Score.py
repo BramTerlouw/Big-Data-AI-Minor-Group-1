@@ -1,21 +1,35 @@
 import json
-from typing import Union
-
-import numpy
-from numpy import ndarray
 
 class Score:
+    __instance = None
+    scores = []
 
     def __init__(self):
-        print('init')
+        if Score.__instance is not None:
+            raise Exception("Singleton instance already exists. Use get_instance() method to get the instance.")
+        else:
+            Score.__instance = self
+
+    @classmethod
+    def get_instance(cls) -> 'ObjectDetectionV8':
+        if Score.__instance is None:
+            Score()
+        return Score.__instance
 
     @classmethod
     def process_score(
             cls,
-            frame: numpy.ndarray
-    ) -> Union[ndarray, ndarray]:
+            data_distance_humans,
+            data_player_position,
+            data_distance_player_paddle,
+    ):
+        score_summary = {'dist_humans': data_distance_humans, 'player_pos': data_player_position,
+                         'dist_player_paddle': data_distance_player_paddle}
+        Score.scores.append(score_summary)
 
-        return frame
+    @classmethod
+    def print_scores(cls):
+        print(Score.scores)
 
     @classmethod
     def calculate_score(cls):

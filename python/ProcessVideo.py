@@ -3,10 +3,12 @@ import numpy as np
 
 from Debug import Debug
 from Distance import Distance
+from Score import Score
 from ObjectDetectionV8 import ObjectDetectionV8
 from DTO.CoordsDTO import CoordsDTO
 
 v8 = ObjectDetectionV8.get_instance()
+score = Score.get_instance()
 distance = Distance()
 debug = Debug()
 
@@ -17,7 +19,7 @@ class ProcessVideo:
         print('init')
 
     def load_input(self):
-        video = cv2.VideoCapture("input/camera4.mp4")
+        video = cv2.VideoCapture("../input/camera4.mp4")
         fps = video.get(cv2.CAP_PROP_FPS)
 
         frame_width = int(video.get(cv2.CAP_PROP_FRAME_WIDTH))
@@ -29,7 +31,7 @@ class ProcessVideo:
     @classmethod
     def create_output(cls, fps: float, frame_size: tuple):
         fourcc = cv2.VideoWriter_fourcc(*'mp4v')
-        return cv2.VideoWriter("output/output_video.mp4", fourcc, fps, (frame_size[0], frame_size[1]))
+        return cv2.VideoWriter("../output/output_video.mp4", fourcc, fps, (frame_size[0], frame_size[1]))
 
     def iterate_frames(self, video, out_video):
         while True:
@@ -48,14 +50,14 @@ class ProcessVideo:
                 coords_paddle = CoordsDTO(predictions[0][0])
 
                 paddle_width = distance.calc_width_paddle(predictions[0])
-                distance_betw_humans = distance.get_distance_humans(frame, paddle_width, coords_human)
+                distance_between_humans = distance.get_distance_humans(frame, paddle_width, coords_human)
                 pos_player_without_paddle = distance.get_player_pos(frame, coords_paddle, coords_human)
-                distance_betw_human_player = distance.get_distance(
+                distance_between_human_player = distance.get_distance(
                     frame, paddle_width, coords_paddle, coords_human, pos_player_without_paddle
                 )
 
                 # !!!!! ----- Step 3: Show drawing (debug) ----- !!!!!
-                coords = np.array([[coords_paddle], [coords_human[0], coords_human[1]]])
+                coords = np.array([[coords_paddle], [coords_human[0], coords_human[1]]], dtype=object)
                 self.show_predictions(frame, coords, classes)
 
                 # Show distance humans?
@@ -63,11 +65,13 @@ class ProcessVideo:
                 # Show distance player and padel?
 
                 # !!!!! ----- Step 4: Get/Show score ----- !!!!!
+                score.process_score(distance_between_humans, pos_player_without_paddle, distance_between_human_player)
 
             out_video.write(frame)
 
         video.release()
         out_video.release()
+        score.print_scores()
 
     def show_predictions(self, frame, predictions, classes):
         for i in range(len(predictions)):
