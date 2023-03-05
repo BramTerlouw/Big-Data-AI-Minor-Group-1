@@ -40,5 +40,5 @@ class Score:
         print('average score')
 
     @classmethod
-    def serialize(cls, scores: dict) -> print:
-        return print(json.dumps(scores))
+    def serialize(cls) -> print:
+        return print(json.dumps(Score.scores))
