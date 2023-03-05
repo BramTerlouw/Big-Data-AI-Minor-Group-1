@@ -54,9 +54,6 @@ class ProcessVideo:
                     frame, paddle_width, coords_paddle, coords_human, pos_player_without_paddle
                 )
 
-                print('distance between humans: ', distance_betw_humans)
-                print('distance between human and padel: ', distance_betw_human_player)
-
                 # !!!!! ----- Step 3: Show drawing (debug) ----- !!!!!
                 coords = np.array([[coords_paddle], [coords_human[0], coords_human[1]]])
                 self.show_predictions(frame, coords, classes)

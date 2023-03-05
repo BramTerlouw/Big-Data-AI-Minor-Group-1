@@ -19,25 +19,25 @@ class Distance:
         coords_human_1 = coords_human[0]
         coords_human_2 = coords_human[1]
 
-        if coords_human_1.top_left < coords_human_2.top_left:
-            distance = self.calc_distance(paddle_width, coords_human_2.top_left,  coords_human_1.bottom_left)
+        if coords_human_1.left < coords_human_2.left:
+            distance = self.calc_distance(paddle_width, coords_human_2.left,  coords_human_1.right)
             debug.draw_distance(
                 frame,
-                coords_human_2.top_left,
-                coords_human_1.bottom_left,
-                max(coords_human_1.top_right, coords_human_2.top_right),
-                coords_human_1.bottom_left,
+                coords_human_2.left,
+                coords_human_1.right,
+                max(coords_human_1.top, coords_human_2.top),
+                coords_human_1.right,
                 distance
             )
             return distance
         else:
-            distance = self.calc_distance(paddle_width, coords_human_1.top_left, coords_human_2.bottom_left)
+            distance = self.calc_distance(paddle_width, coords_human_1.left, coords_human_2.right)
             debug.draw_distance(
                 frame,
-                coords_human_1.top_left,
-                coords_human_2.bottom_left,
-                max(coords_human_1.top_right, coords_human_2.top_right),
-                coords_human_2.bottom_left,
+                coords_human_1.left,
+                coords_human_2.right,
+                max(coords_human_1.top, coords_human_2.top),
+                coords_human_2.right,
                 distance
             )
             return distance
@@ -54,15 +54,15 @@ class Distance:
             coords = self.get_human_left(coords_humans)
             distance = self.calc_distance(
                 paddle_width,
-                coords_paddle.top_left,
-                coords.bottom_left,
+                coords_paddle.left,
+                coords.right,
             )
             debug.draw_distance(
                 frame,
-                coords.bottom_left,
-                coords_paddle.top_left,
-                coords_paddle.top_right,
-                coords.bottom_left,
+                coords.right,
+                coords_paddle.left,
+                coords_paddle.top,
+                coords.right,
                 distance
             )
             return distance
@@ -70,15 +70,15 @@ class Distance:
             coords = self.get_human_right(coords_humans)
             distance = self.calc_distance(
                 paddle_width,
-                coords.top_left,
-                coords_paddle.bottom_left
+                coords.left,
+                coords_paddle.right
             )
             debug.draw_distance(
                 frame,
-                coords_paddle.bottom_left,
-                coords.top_left,
-                coords_paddle.top_right,
-                coords_paddle.bottom_left,
+                coords_paddle.right,
+                coords.left,
+                coords_paddle.top,
+                coords_paddle.right,
                 distance
             )
             return distance
@@ -89,9 +89,9 @@ class Distance:
             coords_paddle: CoordsDTO,
             coords_humans: list[CoordsDTO],
     ):
-        h1_center = coords_humans[0].bottom_left - ((coords_humans[0].bottom_left - coords_humans[0].top_left) / 2)
-        h2_center = coords_humans[1].bottom_left - ((coords_humans[1].bottom_left - coords_humans[1].top_left) / 2)
-        p_center = coords_paddle.bottom_left - ((coords_paddle.bottom_left - coords_paddle.top_left) / 2)
+        h1_center = coords_humans[0].right - ((coords_humans[0].right - coords_humans[0].left) / 2)
+        h2_center = coords_humans[1].right - ((coords_humans[1].right - coords_humans[1].left) / 2)
+        p_center = coords_paddle.right - ((coords_paddle.right - coords_paddle.left) / 2)
 
         has_paddle = self.get_human_with_paddle(h1_center, h2_center, p_center)
         return self.set_player_without_paddle(frame, has_paddle, p_center)
@@ -144,7 +144,7 @@ class Distance:
             cls,
             coords_humans: list[CoordsDTO]
     ) -> CoordsDTO:
-        if coords_humans[0].top_left < coords_humans[1].top_left:
+        if coords_humans[0].left < coords_humans[1].left:
             return coords_humans[0]
         else:
             return coords_humans[1]
@@ -154,7 +154,7 @@ class Distance:
             cls,
             coords_humans: list[CoordsDTO]
     ) -> CoordsDTO:
-        if coords_humans[0].top_left > coords_humans[1].top_left:
+        if coords_humans[0].left > coords_humans[1].left:
             return coords_humans[0]
         else:
             return coords_humans[1]

@@ -140,16 +140,16 @@ class Debug:
         if class_id == 0:
             self.draw_paddle(
                 frame,
-                int(bounding_box.top_left),
-                int(bounding_box.top_right),
-                int(bounding_box.bottom_left),
-                int(bounding_box.bottom_right)
+                int(bounding_box.left),
+                int(bounding_box.top),
+                int(bounding_box.right),
+                int(bounding_box.bottom)
             )
             self.draw_text(
                 frame,
                 f"Label: {class_id}",
-                int(bounding_box.top_left),
-                int(bounding_box.top_right),
+                int(bounding_box.left),
+                int(bounding_box.top),
                 0.5,
                 (153, 204, 0),
                 2
@@ -157,16 +157,16 @@ class Debug:
         else:
             self.draw_human(
                 frame,
-                int(bounding_box.top_left),
-                int(bounding_box.top_right),
-                int(bounding_box.bottom_left),
-                int(bounding_box.bottom_right)
+                int(bounding_box.left),
+                int(bounding_box.top),
+                int(bounding_box.right),
+                int(bounding_box.bottom)
             )
             self.draw_text(
                 frame,
                 f"Label: {class_id}",
-                int(bounding_box.top_left),
-                int(bounding_box.top_right),
+                int(bounding_box.left),
+                int(bounding_box.top),
                 0.5,
                 (0, 255, 0),
                 2

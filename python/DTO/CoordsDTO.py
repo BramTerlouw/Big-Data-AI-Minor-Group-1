@@ -1,38 +1,38 @@
 class CoordsDTO:
     def __init__(self, bounding_box):
-        self._top_left = bounding_box[0]
-        self._top_right = bounding_box[1]
-        self._bottom_left = bounding_box[2]
-        self._bottom_right = bounding_box[3]
+        self._left = bounding_box[0]
+        self._top = bounding_box[1]
+        self._right = bounding_box[2]
+        self._bottom = bounding_box[3]
 
     @property
-    def top_left(self):
-        return self._top_left
+    def left(self):
+        return self._left
 
-    @top_left.setter
-    def top_left(self, value):
-        self._top_left = value
-
-    @property
-    def top_right(self):
-        return self._top_right
-
-    @top_right.setter
-    def top_right(self, value):
-        self._top_right = value
+    @left.setter
+    def left(self, value):
+        self._left = value
 
     @property
-    def bottom_left(self):
-        return self._bottom_left
+    def right(self):
+        return self._right
 
-    @bottom_left.setter
-    def bottom_left(self, value):
-        self._bottom_left = value
+    @right.setter
+    def right(self, value):
+        self._right = value
 
     @property
-    def bottom_right(self):
-        return self._bottom_right
+    def bottom(self):
+        return self._bottom
 
-    @bottom_right.setter
-    def bottom_right(self, value):
-        self._bottom_right = value
+    @bottom.setter
+    def bottom(self, value):
+        self._bottom = value
+
+    @property
+    def top(self):
+        return self._top
+
+    @top.setter
+    def top(self, value):
+        self._top = value
