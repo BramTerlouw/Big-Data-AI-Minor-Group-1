@@ -110,6 +110,11 @@ class Debug:
             1
         )
 
+    @classmethod
+    def draw_possible_intersect(cls, frame, center):
+        cv2.ellipse(frame, center, (10, 10), 0, 0, 360, (255, 255, 255), -1)
+        cls.draw_text(frame, 'Possible Intersect', center[0] + 20, center[1], 0.6, (255, 255, 255), 2)
+
     def draw_distance(self, frame, x1, x2, y, txt_coord, distance):
         self.draw_line(
             frame,

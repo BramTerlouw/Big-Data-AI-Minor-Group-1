@@ -60,10 +60,6 @@ class ProcessVideo:
                 coords = np.array([[coords_paddle], [coords_human[0], coords_human[1]]], dtype=object)
                 self.show_predictions(frame, coords, classes)
 
-                # Show distance humans?
-                # Show who is without padel?
-                # Show distance player and padel?
-
                 # !!!!! ----- Step 4: Get/Show score ----- !!!!!
                 score.process_score(distance_between_humans, pos_player_without_paddle, distance_between_human_player)
 
@@ -71,7 +67,7 @@ class ProcessVideo:
 
         video.release()
         out_video.release()
-        score.print_scores()
+        score.serialize()
 
     def show_predictions(self, frame, predictions, classes):
         for i in range(len(predictions)):

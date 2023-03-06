@@ -58,14 +58,23 @@ class Distance:
                 coords_paddle.left,
                 coords.right,
             )
-            debug.draw_distance(
-                frame,
-                coords.right,
-                coords_paddle.left,
-                coords_paddle.top,
-                coords.right,
-                distance
-            )
+            # Duplicate code, optimized in future
+            if distance > 0:
+                debug.draw_distance(
+                    frame,
+                    coords.right,
+                    coords_paddle.left,
+                    coords_paddle.top,
+                    coords.right,
+                    distance
+                )
+            else:
+                debug.draw_possible_intersect(
+                    frame,
+                    (
+                        int(coords_paddle.left),
+                        int((coords_paddle.bottom - ((coords_paddle.bottom - coords_paddle.top) / 2))))
+                )
             return distance
         else:
             coords = self.get_human_right(coords_humans)
@@ -74,14 +83,23 @@ class Distance:
                 coords.left,
                 coords_paddle.right
             )
-            debug.draw_distance(
-                frame,
-                coords_paddle.right,
-                coords.left,
-                coords_paddle.top,
-                coords_paddle.right,
-                distance
-            )
+            # Duplicate code, optimized in future
+            if distance > 0:
+                debug.draw_distance(
+                    frame,
+                    coords_paddle.right,
+                    coords.left,
+                    coords_paddle.top,
+                    coords_paddle.right,
+                    distance
+                )
+            else:
+                debug.draw_possible_intersect(
+                    frame,
+                    (
+                        int(coords_paddle.right),
+                        int((coords_paddle.bottom - ((coords_paddle.bottom - coords_paddle.top) / 2))))
+                )
             return distance
 
     def get_player_pos(
