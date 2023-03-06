@@ -1,5 +1,15 @@
 import cv2
 import numpy as np
+import argparse
+
+parser = argparse.ArgumentParser(description="ProcessVideo args", formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+parser.add_argument("-v", "--video", type=str, help="Video that needs to be processed", required=True)
+parser.add_argument("-u", "--userid", type=int, help="User id", required=True)
+args = vars(parser.parse_args())
+
+userid = args['userid']
+video_file = args['video']
+
 
 from Debug import Debug
 from Distance import Distance
@@ -19,7 +29,7 @@ class ProcessVideo:
         print('init')
 
     def load_input(self):
-        video = cv2.VideoCapture("../input/camera4.mp4")
+        video = cv2.VideoCapture("input/"+video_file)
         fps = video.get(cv2.CAP_PROP_FPS)
 
         frame_width = int(video.get(cv2.CAP_PROP_FRAME_WIDTH))
@@ -31,7 +41,7 @@ class ProcessVideo:
     @classmethod
     def create_output(cls, fps: float, frame_size: tuple):
         fourcc = cv2.VideoWriter_fourcc(*'mp4v')
-        return cv2.VideoWriter("../output/output_video.mp4", fourcc, fps, (frame_size[0], frame_size[1]))
+        return cv2.VideoWriter("processedVideos/"+str(userid)+"/"+video_file, fourcc, fps, (frame_size[0], frame_size[1]))
 
     def iterate_frames(self, video, out_video):
         while True:
