@@ -14,7 +14,7 @@ func main() {
 	router := SetupRouter()
 
 	// Start the server
-	if err := router.Run(":8080"); err != nil {
+	if err := router.Run(":8081"); err != nil {
 		fmt.Println("Error starting server:", err)
 	}
 	log.Fatal(router.Run(":" + util.GodotEnv("GO_PORT")))

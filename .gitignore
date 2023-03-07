@@ -7,3 +7,6 @@ db/ibtmp1
 db/ddl_recovery.log
 input/*
 output/*
+.env
+main
+~

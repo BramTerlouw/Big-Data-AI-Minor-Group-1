@@ -24,16 +24,15 @@
         e.preventDefault();
 
         const formData = new FormData();
-        const uuid     = '1b449ab2-7667-4d4f-a183-0110791c3e53';
 
-        formData.append('video-file', document.getElementById('video-file').files[0]);
-        formData.append('uuid', uuid);
+        formData.append('file', document.getElementById('video-file').files[0]);
+        formData.append('user_id', 42);
 
         try {
-            const response = await fetch(host + '/upload', {
+            const response = await fetch('http://localhost:8081/api/v1/video/upload', {
                 method: 'POST',
                 headers: {
-                    'api-key': `${apiKey}`
+                    'Authorization': `Ht;2[u?P[fJoyNe1tZHZ/y?W@x.iSr".d,uCWQBYOE6v9:v2JbDy<Y!Cc**J]rR`
                 },
                 body: formData
             });
