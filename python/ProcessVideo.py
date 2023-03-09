@@ -2,16 +2,13 @@ import cv2
 import numpy as np
 import argparse
 
-# parser = argparse.ArgumentParser(description="ProcessVideo args", formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-# parser.add_argument("-v", "--video", type=str, help="Video that needs to be processed", required=True)
-# parser.add_argument("-u", "--userid", type=int, help="User id", required=True)
-# args = vars(parser.parse_args())
-#
-# userid = args['userid']
-# video_file = args['video']
+parser = argparse.ArgumentParser(description="ProcessVideo args", formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+parser.add_argument("-v", "--video", type=str, help="Video that needs to be processed", required=True)
+parser.add_argument("-u", "--userid", type=int, help="User id", required=True)
+args = vars(parser.parse_args())
 
-userid = "42"
-video_file = "camera4.mp4"
+userid = args['userid']
+video_file = args['video']
 
 
 from Debug import Debug
