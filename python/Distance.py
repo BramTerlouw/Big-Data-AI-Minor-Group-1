@@ -43,64 +43,46 @@ class Distance:
             )
             return distance
 
-    def get_distance(
-            self,
-            frame,
-            paddle_width: int,
-            coords_paddle: CoordsDTO,
-            coords_humans: list[CoordsDTO],
-            pos: str
-    ) -> int:
+    def get_distance(self, frame, paddle_width: int, coords_paddle: CoordsDTO, coords_humans: list[CoordsDTO],
+                     pos: str) -> int:
         if pos == 'left':
             coords = self.get_human_left(coords_humans)
             distance = self.calc_distance(
                 paddle_width,
                 coords_paddle.left,
+                coords.right)
+            self.draw_distance(
+                frame,
+                coords_paddle.left,
                 coords.right,
-            )
-            # Duplicate code, optimized in future
-            if distance > 0:
-                debug.draw_distance(
-                    frame,
-                    coords.right,
-                    coords_paddle.left,
-                    coords_paddle.top,
-                    coords.right,
-                    distance
-                )
-            else:
-                debug.draw_possible_intersect(
-                    frame,
-                    (
-                        int(coords_paddle.left),
-                        int((coords_paddle.bottom - ((coords_paddle.bottom - coords_paddle.top) / 2))))
-                )
+                coords_paddle.top,
+                distance,
+                pos)
             return distance
         else:
             coords = self.get_human_right(coords_humans)
             distance = self.calc_distance(
                 paddle_width,
                 coords.left,
-                coords_paddle.right
-            )
-            # Duplicate code, optimized in future
-            if distance > 0:
-                debug.draw_distance(
-                    frame,
-                    coords_paddle.right,
-                    coords.left,
-                    coords_paddle.top,
-                    coords_paddle.right,
-                    distance
-                )
-            else:
-                debug.draw_possible_intersect(
-                    frame,
-                    (
-                        int(coords_paddle.right),
-                        int((coords_paddle.bottom - ((coords_paddle.bottom - coords_paddle.top) / 2))))
-                )
+                coords_paddle.right)
+            self.handle_distance(
+                frame,
+                coords.left,
+                coords_paddle.right,
+                coords_paddle.top,
+                coords_paddle.bottom,
+                distance,
+                pos)
             return distance
+
+    @classmethod
+    def handle_distance(cls, frame, start_x: int, end_x: int, y: int, y2: int, distance: int, coords_paddle):
+        if distance > 0:
+            debug.draw_distance(frame, start_x, end_x, y, end_x, distance)
+        else:
+            debug.draw_possible_intersect(
+                frame,
+                (int(start_x), int(y + (y - (y - ((y2 - y) / 2))))))
 
     def get_player_pos(
             self,
