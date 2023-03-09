@@ -7,40 +7,97 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Demo JS</title>
     <link rel="icon" type="image/x-icon" href="/assets/fav.ico">
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<h1>Upload Video</h1>
+
 <form id="upload-form">
-    <label for="video-file">Choose a video file:</label>
-    <input type="file" id="video-file" name="video-file"><br><br>
-    <button type="submit">Upload</button>
+
+    <div class="container">
+
+        <div class="card">
+
+            <h3>Upload Files</h3>
+            <div class="drop_box" id="drop_box">
+
+                <header>
+                    <h4>Select File here</h4>
+                </header>
+
+                <p>Files Supported: .mp4X</p>
+
+                <input type="file" hidden accept=".mp4" id="video-file" name="video-file" style="display:none;" multiple>
+
+                <div class="advanced">
+                    <label for="rangeInput">Fps processing: <span id="rangeValue">10</span></label>
+                    <input type="range" id="rangeInput" name="rangeInput" min="1" max="10" value="10">
+                </div>
+
+                <button class="btn" id="choose">Choose File</button>
+            </div>
+        </div>
+    </div>
 </form>
+
+
 <script>
     const host   = '127.0.0.1:8000'
     const form   = document.getElementById('upload-form');
     const apiKey = 'my-api-key';
 
+    const container = document.getElementById("drop_box")
+    const header = document.querySelector("header")
+    const videoFile = document.getElementById("video-file")
+    const choose = document.getElementById("choose");
+
+    const rangeInput = document.getElementById('rangeInput');
+    const rangeValue = document.getElementById('rangeValue');
+
+    rangeInput.addEventListener('input', function() {
+        rangeValue.textContent = rangeInput.value;
+    });
+
+    choose.addEventListener("click", function (e) {
+        videoFile.click()
+    });
+
+    videoFile.addEventListener('change', function (e) {
+        choose.remove()
+        header.innerHTML = `<h4>${videoFile.files[0].name}</h4>`
+
+        const newButton = document.createElement("button");
+        newButton.setAttribute("type", "submit");
+        newButton.setAttribute("class", "btn");
+        newButton.textContent = "Upload";
+
+        container.appendChild(newButton);
+    })
+
+
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
 
         const formData = new FormData();
+        file = document.getElementById('video-file').files[0]
 
-        formData.append('file', document.getElementById('video-file').files[0]);
-        formData.append('user_id', 42);
+        if (file) {
+            formData.append('file', document.getElementById('video-file').files[0]);
+            formData.append('user_id', 42);
 
-        try {
-            const response = await fetch('http://localhost:8081/api/v1/video/upload', {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Ht;2[u?P[fJoyNe1tZHZ/y?W@x.iSr".d,uCWQBYOE6v9:v2JbDy<Y!Cc**J]rR`
-                },
-                body: formData
-            });
+            try {
+                const response = await fetch('http://localhost:8081/api/v1/video/upload', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Ht;2[u?P[fJoyNe1tZHZ/y?W@x.iSr".d,uCWQBYOE6v9:v2JbDy<Y!Cc**J]rR`
+                    },
+                    body: formData
+                });
 
-            const data = await response.json();
-            console.log(data);
-        } catch (error) {
-            console.error(error);
+                const data = await response.json();
+                console.log(data);
+            } catch (error) {
+                console.error(error);
+            }
         }
     });
 </script>

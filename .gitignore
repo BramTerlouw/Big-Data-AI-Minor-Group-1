@@ -10,3 +10,5 @@ output/*
 .env
 main
 ~
+processedVideos/*
+paddle_api.exe
