@@ -1,3 +1,5 @@
+from typing import Any
+
 import cv2
 import numpy as np
 import argparse
@@ -60,9 +62,14 @@ class ProcessVideo:
 
             if predictions is not None:
                 # !!!!! ----- Step 2: Calculation ----- !!!!!
-                coords_human = distance.get_biggest_two_humans(predictions[1])
-                coords_paddle = CoordsDTO(predictions[0][0])
-                distance_results = self.handle_calculations(frame, predictions, coords_paddle, coords_human)
+                coords_human: list[CoordsDTO] = distance.get_biggest_two_humans(predictions[1])
+                coords_paddle: CoordsDTO = CoordsDTO(predictions[0][0])
+                distance_results: DistanceDTO = self.handle_calculations(
+                    frame,
+                    predictions,
+                    coords_paddle,
+                    coords_human
+                )
 
                 # !!!!! ----- Step 3: Show drawing (debug) ----- !!!!!
                 coords = np.array([[coords_paddle], [coords_human[0], coords_human[1]]], dtype=object)
@@ -82,7 +89,13 @@ class ProcessVideo:
         score.serialize()
 
     @classmethod
-    def handle_calculations(cls, frame, predictions, coords_paddle, coords_human):
+    def handle_calculations(
+            cls,
+            frame,
+            predictions: dict[Any, list],
+            coords_paddle: CoordsDTO,
+            coords_human: list[CoordsDTO]
+    ) -> DistanceDTO:
         paddle_width = distance.calc_width_paddle(predictions[0])
 
         distance_between_humans = distance.get_distance_humans(

@@ -1,3 +1,5 @@
+from typing import Any
+
 import numpy
 import numpy as np
 
@@ -21,7 +23,7 @@ class Distance:
         coords_human_2 = coords_human[1]
 
         if coords_human_1.left < coords_human_2.left:
-            distance = self.calc_distance(paddle_width, coords_human_2.left,  coords_human_1.right)
+            distance = self.calc_distance(paddle_width, coords_human_2.left, coords_human_1.right)
             debug.draw_distance(
                 frame,
                 coords_human_2.left,
@@ -50,21 +52,24 @@ class Distance:
             distance = self.calc_distance(
                 paddle_width,
                 coords_paddle.left,
-                coords.right)
-            self.draw_distance(
-                frame,
-                coords_paddle.left,
-                coords.right,
-                coords_paddle.top,
-                distance,
-                pos)
+                coords.right
+            )
+            # self.draw_distance(
+            #     frame,
+            #     coords_paddle.left,
+            #     coords.right,
+            #     coords_paddle.top,
+            #     distance,
+            #     pos
+            # )
             return distance
         else:
             coords = self.get_human_right(coords_humans)
             distance = self.calc_distance(
                 paddle_width,
                 coords.left,
-                coords_paddle.right)
+                coords_paddle.right
+            )
             self.handle_distance(
                 frame,
                 coords.left,
@@ -72,7 +77,8 @@ class Distance:
                 coords_paddle.top,
                 coords_paddle.bottom,
                 distance,
-                pos)
+                pos
+            )
             return distance
 
     @classmethod
@@ -82,7 +88,8 @@ class Distance:
         else:
             debug.draw_possible_intersect(
                 frame,
-                (int(start_x), int(y + (y - (y - ((y2 - y) / 2))))))
+                (int(start_x), int(y + (y - (y - ((y2 - y) / 2)))))
+            )
 
     def get_player_pos(
             self,
@@ -173,7 +180,10 @@ class Distance:
             return h1_center
 
     @classmethod
-    def get_biggest_two_humans(cls, coords_humans):
+    def get_biggest_two_humans(
+            cls,
+            coords_humans: dict[Any, list]
+    ) -> list[CoordsDTO]:
         first_height = float('-inf')
         second_height = float('-inf')
         first_index = 0
