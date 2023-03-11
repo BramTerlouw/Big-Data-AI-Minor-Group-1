@@ -105,7 +105,7 @@ class Distance:
             p_center: float
     ) -> str:
         if has_paddle < p_center:
-            debug.draw_pos_player_without_padel(
+            debug.draw_pos_player_without_paddle(
                 frame,
                 10,
                 (frame.shape[0] - 3),
@@ -114,7 +114,7 @@ class Distance:
             )
             return 'right'
         else:
-            debug.draw_pos_player_without_padel(
+            debug.draw_pos_player_without_paddle(
                 frame,
                 10,
                 (frame.shape[0] - 3),

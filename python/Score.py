@@ -1,6 +1,7 @@
 import json
 import numpy as np
 
+
 class Score:
     __instance = None
     scores = []

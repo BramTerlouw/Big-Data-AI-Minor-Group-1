@@ -84,7 +84,7 @@ class Debug:
         )
 
     @classmethod
-    def draw_pos_player_without_padel(
+    def draw_pos_player_without_paddle(
             cls,
             frame,
             x1: int,
