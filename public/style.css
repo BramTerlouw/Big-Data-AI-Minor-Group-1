@@ -90,6 +90,21 @@
 
   display: flex;
   flex-direction: column;
+  gap: 10px;
 
   color: #ffffff;
+}
+
+.checkbox-container {
+  display: flex;
+  gap: 10px;
+}
+
+.range-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.range-container label {
+  font-size: 12px;
 }

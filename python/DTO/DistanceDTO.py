@@ -1,31 +1,31 @@
 class DistanceDTO:
-    def __init__(self):
-        self.distance_between_humans: int = 0
-        self.pos_player_without_paddle: int = 0
-        self.distance_between_human_player: int = 0
+    def __init__(self, distance_between_humans, pos_player_without_paddle, distance_between_human_player):
+        self._distance_between_humans: int = distance_between_humans
+        self._pos_player_without_paddle: int = pos_player_without_paddle
+        self._distance_between_human_player: int = distance_between_human_player
 
     @property
     def distance_between_humans(self) -> int:
-        return self.distance_between_humans
+        return self._distance_between_humans
 
     @distance_between_humans.setter
     def distance_between_humans(self, value: int):
-        self.distance_between_humans = value
+        self._distance_between_humans = value
 
     @property
     def pos_player_without_paddle(self) -> int:
-        return self.pos_player_without_paddle
+        return self._pos_player_without_paddle
 
     @pos_player_without_paddle.setter
     def pos_player_without_paddle(self, value: int):
-        self.pos_player_without_paddle = value
+        self._pos_player_without_paddle = value
 
     @property
     def distance_between_human_player(self) -> int:
-        return self.distance_between_human_player
+        return self._distance_between_human_player
 
     @distance_between_human_player.setter
     def distance_between_human_player(self, value: int):
-        self.distance_between_human_player = value
+        self._distance_between_human_player = value
 
     # Can add more in future...

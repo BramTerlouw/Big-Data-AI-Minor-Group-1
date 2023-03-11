@@ -29,8 +29,15 @@
                 <input type="file" hidden accept=".mp4" id="video-file" name="video-file" style="display:none;" multiple>
 
                 <div class="advanced">
-                    <label for="rangeInput">Fps processing: <span id="rangeValue">10</span></label>
-                    <input type="range" id="rangeInput" name="rangeInput" min="1" max="10" value="10">
+                    <div class="checkbox-container">
+                        <input type="checkbox" name="fps_processing" id="fps_processing">
+                        <label for="fps_processing">Fps processing</label>
+                    </div>
+
+                    <div id="rangeContainer" class="range-container" style="opacity: 0">
+                        <input type="range" id="rangeInput" name="rangeInput" min="1" max="30" value="10">
+                        <label for="rangeInput">Amount: <span id="rangeValue">10</span></label>
+                    </div>
                 </div>
 
                 <button class="btn" id="choose">Choose File</button>
@@ -50,6 +57,9 @@
     const videoFile = document.getElementById("video-file")
     const choose = document.getElementById("choose");
 
+    const rangeContainer = document.getElementById("rangeContainer");
+    const fpsProcessingCheckbox = document.getElementById("fps_processing");
+
     const rangeInput = document.getElementById('rangeInput');
     const rangeValue = document.getElementById('rangeValue');
 
@@ -59,6 +69,14 @@
 
     choose.addEventListener("click", function (e) {
         videoFile.click()
+    });
+
+    fpsProcessingCheckbox.addEventListener("change", function() {
+        if (fpsProcessingCheckbox.checked) {
+            rangeContainer.style.opacity = "1";
+        } else {
+            rangeContainer.style.opacity = "0";
+        }
     });
 
     videoFile.addEventListener('change', function (e) {
@@ -83,6 +101,9 @@
         if (file) {
             formData.append('file', document.getElementById('video-file').files[0]);
             formData.append('user_id', 42);
+            if (fpsProcessingCheckbox.checked) {
+                formData.append('fps', rangeInput.value);
+            }
 
             try {
                 const response = await fetch('http://localhost:8081/api/v1/video/upload', {

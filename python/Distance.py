@@ -54,14 +54,15 @@ class Distance:
                 coords_paddle.left,
                 coords.right
             )
-            # self.draw_distance(
-            #     frame,
-            #     coords_paddle.left,
-            #     coords.right,
-            #     coords_paddle.top,
-            #     distance,
-            #     pos
-            # )
+            self.handle_distance(
+                frame,
+                coords_paddle.left,
+                coords.right,
+                coords_paddle.top,
+                coords_paddle.bottom,
+                distance,
+                pos
+            )
             return distance
         else:
             coords = self.get_human_right(coords_humans)

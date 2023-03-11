@@ -37,6 +37,7 @@ func (h *handler) CreateVideoHandler(ctx *gin.Context) {
 
 	struserid := ctx.PostForm("user_id")
 	description := ctx.PostForm("description")
+	strfps := ctx.PostForm("fps")
 
 	userid, err := strconv.Atoi(struserid)
 	if err != nil {
@@ -58,7 +59,13 @@ func (h *handler) CreateVideoHandler(ctx *gin.Context) {
 
 	go func() {
 
-		cmd := exec.Command("python", "python/ProcessVideo.py", "-u", struserid, "-v", filename)
+		//cmd := exec.Command("python", "python/ProcessVideo.py", "-u", struserid, "-v", filename, "-f", strfps)
+		cmdArgs := []string{"python", "python/ProcessVideo.py", "-u", struserid, "-v", filename}
+		if strfps != "" {
+			cmdArgs = append(cmdArgs, "-f", strfps)
+		}
+		cmd := exec.Command(cmdArgs[0], cmdArgs[1:]...)
+
 		// Execute the command
 		output, err := cmd.Output()
 		if err != nil {

@@ -16,10 +16,16 @@ parser = argparse.ArgumentParser(
 )
 parser.add_argument("-v", "--video", type=str, help="Video that needs to be processed", required=True)
 parser.add_argument("-u", "--userid", type=int, help="User id", required=True)
+parser.add_argument("-f", "--fps", type=int, help="Processing frames per second", default=30)
 args = vars(parser.parse_args())
 
 userid = args['userid']
 video_file = args['video']
+fps_processing = args['fps']
+
+# userid = '42'
+# video_file = 'camera4.mp4'
+# fps_processing = 60
 
 v8 = ObjectDetectionV8.get_instance()
 score = Score.get_instance()
@@ -33,28 +39,34 @@ class ProcessVideo:
         print('init')
 
     def load_input(self):
-        video = cv2.VideoCapture("../input/" + video_file)
+        video = cv2.VideoCapture("input/" + video_file)
         fps = video.get(cv2.CAP_PROP_FPS)
 
         frame_width = int(video.get(cv2.CAP_PROP_FRAME_WIDTH))
         frame_height = int(video.get(cv2.CAP_PROP_FRAME_HEIGHT))
 
         out_video = self.create_output(fps, (frame_width, frame_height))
-        self.iterate_frames(video, out_video)
+        self.iterate_frames(video, out_video, fps)
 
     @classmethod
     def create_output(cls, fps: float, frame_size: tuple):
         fourcc = cv2.VideoWriter_fourcc(*'mp4v')
         return cv2.VideoWriter(
-            "../processedVideos/" + str(userid) + "/" + video_file, fourcc, fps, (frame_size[0], frame_size[1])
+            "processedVideos/" + str(userid) + "/" + video_file, fourcc, fps, (frame_size[0], frame_size[1])
         )
 
-    def iterate_frames(self, video, out_video):
+    def iterate_frames(self, video, out_video, fps):
+        frame_count = 0
+
         while True:
             ret, frame = video.read()
 
             if not ret:
                 break
+
+            frame_count += 1
+            if frame_count % round(fps / fps_processing) != 0:
+                continue
 
             # !!!!! ----- Step 1: Detection ----- !!!!!
             classes = v8.get_classes()
@@ -92,9 +104,9 @@ class ProcessVideo:
     def handle_calculations(
             cls,
             frame,
-            predictions: dict[Any, list],
+            predictions: dict[Any, Any],
             coords_paddle: CoordsDTO,
-            coords_human: list[CoordsDTO]
+            coords_human: [CoordsDTO]
     ) -> DistanceDTO:
         paddle_width = distance.calc_width_paddle(predictions[0])
 
@@ -114,11 +126,7 @@ class ProcessVideo:
             frame, paddle_width, coords_paddle, coords_human, pos_player_without_paddle
         )
 
-        dto = DistanceDTO()
-        dto.distance_between_humans = distance_between_humans
-        dto.pos_player_without_paddle = pos_player_without_paddle
-        dto.distance_between_human_player = distance_between_human_player
-        return dto
+        return DistanceDTO(distance_between_humans, pos_player_without_paddle, distance_between_human_player)
 
     def show_predictions(self, frame, predictions, classes):
         for i in range(len(predictions)):
