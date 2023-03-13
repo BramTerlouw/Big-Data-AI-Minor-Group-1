@@ -60,8 +60,7 @@ class Distance:
                 coords.right,
                 coords_paddle.top,
                 coords_paddle.bottom,
-                distance,
-                pos
+                distance
             )
             return distance
         else:
@@ -77,13 +76,12 @@ class Distance:
                 coords_paddle.right,
                 coords_paddle.top,
                 coords_paddle.bottom,
-                distance,
-                pos
+                distance
             )
             return distance
 
     @classmethod
-    def handle_distance(cls, frame, start_x: int, end_x: int, y: int, y2: int, distance: int, coords_paddle):
+    def handle_distance(cls, frame, start_x: int, end_x: int, y: int, y2: int, distance: int):
         if distance > 0:
             debug.draw_distance(frame, start_x, end_x, y, end_x, distance)
         else:
