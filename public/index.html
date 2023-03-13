@@ -48,16 +48,13 @@
 
 
 <script>
-    const host   = '127.0.0.1:8000'
-    const form   = document.getElementById('upload-form');
-    const apiKey = 'my-api-key';
-
+    const form      = document.getElementById('upload-form');
     const container = document.getElementById("drop_box")
-    const header = document.querySelector("header")
+    const header    = document.querySelector("header")
     const videoFile = document.getElementById("video-file")
-    const choose = document.getElementById("choose");
+    const choose    = document.getElementById("choose");
 
-    const rangeContainer = document.getElementById("rangeContainer");
+    const rangeContainer        = document.getElementById("rangeContainer");
     const fpsProcessingCheckbox = document.getElementById("fps_processing");
 
     const rangeInput = document.getElementById('rangeInput');
@@ -96,7 +93,7 @@
         e.preventDefault();
 
         const formData = new FormData();
-        file = document.getElementById('video-file').files[0]
+        const file = document.getElementById('video-file').files[0];
 
         if (file) {
             formData.append('file', document.getElementById('video-file').files[0]);
