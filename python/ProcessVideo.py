@@ -14,18 +14,37 @@ from DTO.DistanceDTO import DistanceDTO
 parser = argparse.ArgumentParser(
     description="ProcessVideo args", formatter_class=argparse.ArgumentDefaultsHelpFormatter
 )
-parser.add_argument("-v", "--video", type=str, help="Video that needs to be processed", required=True)
-parser.add_argument("-u", "--userid", type=int, help="User id", required=True)
-parser.add_argument("-f", "--fps", type=int, help="Processing frames per second", default=30)
+
+parser.add_argument(
+    "-v",
+    "--video",
+    type=str,
+    help="Video that needs to be processed",
+    required=False, default='camera4.mp4'
+)
+
+parser.add_argument(
+    "-u",
+    "--userid",
+    type=int,
+    help="User id",
+    required=False,
+    default=42
+)
+
+parser.add_argument(
+    "-f",
+    "--fps",
+    type=int,
+    help="Processing frames per second",
+    default=30
+)
+
 args = vars(parser.parse_args())
 
 userid = args['userid']
 video_file = args['video']
 fps_processing = args['fps']
-
-# userid = '42'
-# video_file = 'camera4.mp4'
-# fps_processing = 60
 
 v8 = ObjectDetectionV8.get_instance()
 score = Score.get_instance()
