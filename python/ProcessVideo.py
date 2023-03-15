@@ -87,37 +87,40 @@ class ProcessVideo:
             if frame_count % round(fps / fps_processing) != 0:
                 continue
 
-            # !!!!! ----- Step 1: Detection ----- !!!!!
-            classes = v8.get_classes()
-            predictions = v8.generate_predictions(frame)
-
-            if predictions is not None:
-                # !!!!! ----- Step 2: Calculation ----- !!!!!
-                coords_human: list[CoordsDTO] = distance.get_biggest_two_humans(predictions[1])
-                coords_paddle: CoordsDTO = CoordsDTO(predictions[0][0])
-                distance_results: DistanceDTO = self.handle_calculations(
-                    frame,
-                    predictions,
-                    coords_paddle,
-                    coords_human
-                )
-
-                # !!!!! ----- Step 3: Show drawing (debug) ----- !!!!!
-                coords = np.array([[coords_paddle], [coords_human[0], coords_human[1]]], dtype=object)
-                self.show_predictions(frame, coords, classes)
-
-                # !!!!! ----- Step 4: Get/Show score ----- !!!!!
-                score.process_score(
-                    distance_results.distance_between_humans,
-                    distance_results.pos_player_without_paddle,
-                    distance_results.distance_between_human_player
-                )
+            self.process(frame)
 
             out_video.write(frame)
 
         video.release()
         out_video.release()
         score.serialize()
+
+    def process(self, frame):
+        # !!!!! ----- Step 1: Detection ----- !!!!!
+        classes = v8.get_classes()
+        predictions = v8.generate_predictions(frame)
+
+        if predictions is not None:
+            # !!!!! ----- Step 2: Calculation ----- !!!!!
+            coords_human: list[CoordsDTO] = distance.get_biggest_two_humans(predictions[1])
+            coords_paddle: CoordsDTO = CoordsDTO(predictions[0][0])
+            distance_results: DistanceDTO = self.handle_calculations(
+                frame,
+                predictions,
+                coords_paddle,
+                coords_human
+            )
+
+            # !!!!! ----- Step 3: Show drawing (debug) ----- !!!!!
+            coords = np.array([[coords_paddle], [coords_human[0], coords_human[1]]], dtype=object)
+            self.show_predictions(frame, coords, classes)
+
+            # !!!!! ----- Step 4: Get/Show score ----- !!!!!
+            score.process_score(
+                distance_results.distance_between_humans,
+                distance_results.pos_player_without_paddle,
+                distance_results.distance_between_human_player
+            )
 
     @classmethod
     def handle_calculations(
