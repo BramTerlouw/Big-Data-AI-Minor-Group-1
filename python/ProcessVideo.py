@@ -16,10 +16,10 @@ parser = argparse.ArgumentParser(
 )
 
 parser.add_argument(
-    "-v",
-    "--video",
+    "-f",
+    "--file",
     type=str,
-    help="Video that needs to be processed",
+    help="file that needs to be processed",
     required=False, default='camera4.mp4'
 )
 
@@ -33,18 +33,27 @@ parser.add_argument(
 )
 
 parser.add_argument(
-    "-f",
+    "-fp",
     "--fps",
     type=int,
     help="Processing frames per second",
     default=30
 )
 
+parser.add_argument(
+    "-t",
+    "--type",
+    type=str,
+    help="",
+    required=False, default='true'
+)
+
 args = vars(parser.parse_args())
 
 userid = args['userid']
-video_file = args['video']
+file = args['file']
 fps_processing = args['fps']
+is_video = args['type']
 
 v8 = ObjectDetectionV8.get_instance()
 score = Score.get_instance()
@@ -58,20 +67,26 @@ class ProcessVideo:
         print('init')
 
     def load_input(self):
-        video = cv2.VideoCapture("input/" + video_file)
+        video = cv2.VideoCapture("input/" + file)
         fps = video.get(cv2.CAP_PROP_FPS)
 
         frame_width = int(video.get(cv2.CAP_PROP_FRAME_WIDTH))
         frame_height = int(video.get(cv2.CAP_PROP_FRAME_HEIGHT))
 
         out_video = self.create_output(fps, (frame_width, frame_height))
-        self.iterate_frames(video, out_video, fps)
+
+        if is_video == 'true':
+            self.iterate_frames(video, out_video, fps)
+        else:
+            self.process(video)
+
+        self.final(out_video, video)
 
     @classmethod
     def create_output(cls, fps: float, frame_size: tuple):
         fourcc = cv2.VideoWriter_fourcc(*'mp4v')
         return cv2.VideoWriter(
-            "processedVideos/" + str(userid) + "/" + video_file, fourcc, fps, (frame_size[0], frame_size[1])
+            "processedVideos/" + str(userid) + "/" + file, fourcc, fps, (frame_size[0], frame_size[1])
         )
 
     def iterate_frames(self, video, out_video, fps):
@@ -91,6 +106,10 @@ class ProcessVideo:
 
             out_video.write(frame)
 
+        self.final(out_video, video)
+
+    @classmethod
+    def final(cls, out_video, video):
         video.release()
         out_video.release()
         score.serialize()

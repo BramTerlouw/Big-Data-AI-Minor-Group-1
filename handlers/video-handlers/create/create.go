@@ -60,7 +60,7 @@ func (h *handler) CreateVideoHandler(ctx *gin.Context) {
 	go func() {
 
 		//cmd := exec.Command("python", "python/ProcessVideo.py", "-u", struserid, "-v", filename, "-f", strfps)
-		cmdArgs := []string{"python", "python/ProcessVideo.py", "-u", struserid, "-v", filename}
+		cmdArgs := []string{"python", "python/ProcessVideo.py", "-u", struserid, "-f", filename}
 		if strfps != "" {
 			cmdArgs = append(cmdArgs, "-f", strfps)
 		}
