@@ -1,10 +1,8 @@
-from typing import Any
-
 import numpy
 import numpy as np
 
-from Debug import Debug
 from DTO.CoordsDTO import CoordsDTO
+from Debug import Debug
 
 debug = Debug()
 
@@ -90,19 +88,6 @@ class Distance:
                 (int(start_x), int(y + (y - (y - ((y2 - y) / 2)))))
             )
 
-    def get_player_pos(
-            self,
-            frame,
-            coords_paddle: CoordsDTO,
-            coords_humans: list[CoordsDTO],
-    ):
-        h1_center = coords_humans[0].right - ((coords_humans[0].right - coords_humans[0].left) / 2)
-        h2_center = coords_humans[1].right - ((coords_humans[1].right - coords_humans[1].left) / 2)
-        p_center = coords_paddle.right - ((coords_paddle.right - coords_paddle.left) / 2)
-
-        has_paddle = self.get_human_with_paddle(h1_center, h2_center, p_center)
-        return self.set_player_without_paddle(frame, has_paddle, p_center)
-
     @classmethod
     def set_player_without_paddle(
             cls,
@@ -130,75 +115,33 @@ class Distance:
             )
             return 'left'
 
+    def get_player_pos(self, frame, coords_paddle: CoordsDTO, coords_humans: list[CoordsDTO]):
+        h1_center, h2_center = [c.right - ((c.right - c.left) / 2) for c in coords_humans]
+        p_center = coords_paddle.right - ((coords_paddle.right - coords_paddle.left) / 2)
+        has_paddle = self.get_human_with_paddle(h1_center, h2_center, p_center)
+        return self.set_player_without_paddle(frame, has_paddle, p_center)
+
     @classmethod
-    def calc_width_paddle(
-            cls,
-            coords_paddle: numpy.ndarray
-    ) -> int:
+    def calc_width_paddle(cls, coords_paddle: numpy.ndarray) -> int:
         return np.int32(np.round(coords_paddle[0][2] - coords_paddle[0][0]))
 
     @classmethod
-    def calc_distance(
-            cls,
-            paddle_width: int,
-            big_coord: float,
-            small_coord: float
-    ) -> int:
+    def calc_distance(cls, paddle_width: int, big_coord: float, small_coord: float) -> int:
         return np.int32(np.round(32 / paddle_width * (big_coord - small_coord)))
 
     @classmethod
-    def get_human_left(
-            cls,
-            coords_humans: list[CoordsDTO]
-    ) -> CoordsDTO:
-        if coords_humans[0].left < coords_humans[1].left:
-            return coords_humans[0]
-        else:
-            return coords_humans[1]
+    def get_human_left(cls, coords_humans: list[CoordsDTO]) -> CoordsDTO:
+        return min(coords_humans, key=lambda c: c.left)
 
     @classmethod
-    def get_human_right(
-            cls,
-            coords_humans: list[CoordsDTO]
-    ) -> CoordsDTO:
-        if coords_humans[0].left > coords_humans[1].left:
-            return coords_humans[0]
-        else:
-            return coords_humans[1]
+    def get_human_right(cls, coords_humans: list[CoordsDTO]) -> CoordsDTO:
+        return max(coords_humans, key=lambda coords: coords.left)
 
     @classmethod
-    def get_human_with_paddle(
-            cls,
-            h1_center: float,
-            h2_center: float,
-            p_center: float
-    ) -> float:
-        if max(h1_center, p_center) - min(h1_center, p_center) > max(h2_center, p_center) - min(h2_center, p_center):
-            return h2_center
-        else:
-            return h1_center
+    def get_human_with_paddle(cls, h1_center: float, h2_center: float, p_center: float) -> float:
+        return h2_center if abs(h2_center - p_center) > abs(h1_center - p_center) else h1_center
 
     @classmethod
-    def get_biggest_two_humans(
-            cls,
-            coords_humans: dict[Any, list]
-    ) -> list[CoordsDTO]:
-        first_height = float('-inf')
-        second_height = float('-inf')
-        first_index = 0
-        second_index = 0
-
-        for i in range(len(coords_humans)):
-            height = coords_humans[i][3] - coords_humans[i][1]
-
-            if height > first_height:
-                second_height = first_height
-                second_index = first_index
-                first_height = height
-                first_index = i
-
-            elif height > second_height:
-                second_index = i
-                second_height = height
-
-        return [CoordsDTO(coords_humans[first_index]), CoordsDTO(coords_humans[second_index])]
+    def get_biggest_two_humans(cls, coords_humans: list) -> list[CoordsDTO]:
+        sorted_humans = sorted(coords_humans, key=lambda coords: coords[3] - coords[1], reverse=True)
+        return [CoordsDTO(human) for human in sorted_humans[:2]]

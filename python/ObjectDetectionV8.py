@@ -34,11 +34,7 @@ class ObjectDetectionV8:
         frame_predictions = self.model.predict(source=frame, conf=0.25, save=False)
         return self.convert_to_coordinates(frame_predictions)
 
-    def convert_to_coordinates(
-            self,
-            detection_output
-    ) -> Optional[dict[Any, list[Any]]]:
-
+    def convert_to_coordinates(self, detection_output) -> Optional[dict[Any, list[Any]]]:
         data_results = detection_output[0].cpu()
         dict_coordinates = {}
 
@@ -53,18 +49,11 @@ class ObjectDetectionV8:
             else:
                 dict_coordinates[class_id] = [bounding_box]
 
-        if self.predictions_are_valid(dict_coordinates):
-            return dict_coordinates
-        else:
-            return None
+        return dict_coordinates if self.predictions_are_valid(dict_coordinates) else None
 
     @classmethod
     def predictions_are_valid(cls, dict_coordinates):
-        if 0 not in dict_coordinates:
-            return False
-        elif len(dict_coordinates[1]) < 2:
-            return False
-        return True
+        return 0 in dict_coordinates and len(dict_coordinates[1]) >= 2
 
     def get_classes(self):
         return self.classes
