@@ -2,14 +2,13 @@ import numpy
 import numpy as np
 
 from DTO.CoordsDTO import CoordsDTO
-from Debug import Debug
-
-debug = Debug()
+from BoundingBoxRenderer import BoundingBoxRenderer
 
 
 class Distance:
     def __init__(self):
         self.reference_width = 32
+        self.bounding_box_renderer = BoundingBoxRenderer()
 
     def get_distance_humans(
             self,
@@ -22,7 +21,7 @@ class Distance:
 
         if coords_human_1.left < coords_human_2.left:
             distance = self.calc_distance(paddle_width, coords_human_2.left, coords_human_1.right)
-            debug.draw_distance(
+            self.bounding_box_renderer.draw_distance(
                 frame,
                 coords_human_2.left,
                 coords_human_1.right,
@@ -33,7 +32,7 @@ class Distance:
             return distance
         else:
             distance = self.calc_distance(paddle_width, coords_human_1.left, coords_human_2.right)
-            debug.draw_distance(
+            self.bounding_box_renderer.draw_distance(
                 frame,
                 coords_human_1.left,
                 coords_human_2.right,
@@ -78,25 +77,23 @@ class Distance:
             )
             return distance
 
-    @classmethod
-    def handle_distance(cls, frame, start_x: int, end_x: int, y: int, y2: int, distance: int):
+    def handle_distance(self, frame, start_x: int, end_x: int, y: int, y2: int, distance: int):
         if distance > 0:
-            debug.draw_distance(frame, start_x, end_x, y, end_x, distance)
+            self.bounding_box_renderer.draw_distance(frame, start_x, end_x, y, end_x, distance)
         else:
-            debug.draw_possible_intersect(
+            self.bounding_box_renderer.draw_possible_intersect(
                 frame,
                 (int(start_x), int(y + (y - (y - ((y2 - y) / 2)))))
             )
 
-    @classmethod
     def set_player_without_paddle(
-            cls,
+            self,
             frame,
             has_paddle: float,
             p_center: float
     ) -> str:
         if has_paddle < p_center:
-            debug.draw_pos_player_without_paddle(
+            self.bounding_box_renderer.draw_pos_player_without_paddle(
                 frame,
                 10,
                 (frame.shape[0] - 3),
@@ -105,7 +102,7 @@ class Distance:
             )
             return 'right'
         else:
-            debug.draw_pos_player_without_paddle(
+            self.bounding_box_renderer.draw_pos_player_without_paddle(
                 frame,
                 10,
                 (frame.shape[0] - 3),

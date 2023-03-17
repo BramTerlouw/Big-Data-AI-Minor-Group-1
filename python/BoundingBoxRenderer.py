@@ -7,7 +7,7 @@ from numpy import ndarray
 from DTO.CoordsDTO import CoordsDTO
 
 
-class Debug:
+class BoundingBoxRenderer:
 
     @classmethod
     def draw_line(
