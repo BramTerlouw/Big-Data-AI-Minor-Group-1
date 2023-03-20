@@ -1,0 +1,5 @@
+setup.py
+app/big_data_ai_minor.egg-info/PKG-INFO
+app/big_data_ai_minor.egg-info/SOURCES.txt
+app/big_data_ai_minor.egg-info/dependency_links.txt
+app/big_data_ai_minor.egg-info/top_level.txt

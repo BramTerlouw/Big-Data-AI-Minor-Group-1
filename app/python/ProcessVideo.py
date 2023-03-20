@@ -38,13 +38,12 @@ class ProcessVideo:
             if frame_count % round(fps / self.fps_processing) != 0:
                 continue
 
-            self.get_score_from_prediction(frame)
-
+            classes, coords_human, coords_paddle, distance_results = self.get_prediction(frame)
+            self.get_score(classes, coords_human, coords_paddle, distance_results, frame)
             out_video.write(frame)
 
-    def get_score_from_prediction(self, frame):
+    def get_prediction(self, frame):
         # !!!!! ----- Step 1: Detection ----- !!!!!
-        classes = self.v8.get_classes()
         predictions = self.v8.generate_predictions(frame)
 
         if predictions is not None:
@@ -58,16 +57,18 @@ class ProcessVideo:
                 coords_human
             )
 
-            # !!!!! ----- Step 3: Show drawing (debug) ----- !!!!!
-            coords = np.array([[coords_paddle], [coords_human[0], coords_human[1]]], dtype=object)
-            self.show_predictions(frame, coords, classes)
+            return self.v8.get_classes(), coords_human, coords_paddle, distance_results
 
-            # !!!!! ----- Step 4: Get/Show score ----- !!!!!
-            self.score.process_score(
-                distance_results.distance_between_humans,
-                distance_results.pos_player_without_paddle,
-                distance_results.distance_between_human_player
-            )
+    def get_score(self, classes, coords_human, coords_paddle, distance_results, frame):
+        # !!!!! ----- Step 3: Show drawing (debug) ----- !!!!!
+        coords = np.array([[coords_paddle], [coords_human[0], coords_human[1]]], dtype=object)
+        self.show_predictions(frame, coords, classes)
+        # !!!!! ----- Step 4: Get/Show score ----- !!!!!
+        self.score.process_score(
+            distance_results.distance_between_humans,
+            distance_results.pos_player_without_paddle,
+            distance_results.distance_between_human_player
+        )
 
     def handle_calculations(
             self,
