@@ -17,7 +17,7 @@ class BaseInput:
 
     def load_input(self):
         if self.file_type == 'true':
-            video = cv2.VideoCapture("../input/" + self.filename)
+            video = cv2.VideoCapture("../input/videos/" + self.filename)
 
             fps = video.get(cv2.CAP_PROP_FPS)
 
@@ -28,7 +28,7 @@ class BaseInput:
             self.proces.iterate_frames(video, out_video, fps)
             self.final(out_video, video)
         else:
-            im = cv2.imread("../input/" + self.filename)
+            im = cv2.imread("../input/images/" + self.filename)
             self.proces.get_prediction(im)
 
     def create_output(self, fps: float, frame_size: tuple):

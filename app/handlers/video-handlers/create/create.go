@@ -40,7 +40,7 @@ func (h *handler) CreateVideoHandler(ctx *gin.Context) {
 	strfps := ctx.PostForm("fps")
 
 	// Save the file to disk
-	err = ctx.SaveUploadedFile(file, "input/"+filename)
+	err = ctx.SaveUploadedFile(file, "input/videos/"+filename)
 
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
