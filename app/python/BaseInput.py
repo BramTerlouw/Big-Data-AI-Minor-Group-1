@@ -1,7 +1,7 @@
 import cv2
 
-from app.python.ProcessVideo import ProcessVideo
-from app.python.Score import Score
+from ProcessVideo import ProcessVideo
+from Score import Score
 
 
 class BaseInput:

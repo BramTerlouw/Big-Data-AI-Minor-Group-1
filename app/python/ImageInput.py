@@ -2,7 +2,7 @@ import argparse
 
 import cv2
 
-from app.python.Input.BaseInput import BaseInput
+from BaseInput import BaseInput
 
 parser = argparse.ArgumentParser(
     description="ProcessVideo args", formatter_class=argparse.ArgumentDefaultsHelpFormatter
