@@ -16,21 +16,20 @@ class BaseInput:
         self.proces = ProcessVideo(self.userid, self.filename, self.fps_processing)
 
     def load_input(self):
-        video = cv2.VideoCapture("input/" + self.filename)
-        fps = video.get(cv2.CAP_PROP_FPS)
-
-        frame_width = int(video.get(cv2.CAP_PROP_FRAME_WIDTH))
-        frame_height = int(video.get(cv2.CAP_PROP_FRAME_HEIGHT))
-
-        out_video = self.create_output(fps, (frame_width, frame_height))
-
         if self.file_type == 'true':
-            self.proces.iterate_frames(video, out_video, fps)
-        else:
-            classes, coords_human, coords_paddle, distance_results = self.proces.get_prediction(video)
-            self.proces.get_score(classes, coords_human, coords_paddle, distance_results, video)
+            video = cv2.VideoCapture("../input/" + self.filename)
 
-        self.final(out_video, video)
+            fps = video.get(cv2.CAP_PROP_FPS)
+
+            frame_width = int(video.get(cv2.CAP_PROP_FRAME_WIDTH))
+            frame_height = int(video.get(cv2.CAP_PROP_FRAME_HEIGHT))
+
+            out_video = self.create_output(fps, (frame_width, frame_height))
+            self.proces.iterate_frames(video, out_video, fps)
+            self.final(out_video, video)
+        else:
+            im = cv2.imread("../input/" + self.filename)
+            self.proces.get_prediction(im)
 
     def create_output(self, fps: float, frame_size: tuple):
         fourcc = cv2.VideoWriter_fourcc(*'mp4v')

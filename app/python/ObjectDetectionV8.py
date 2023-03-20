@@ -11,7 +11,7 @@ class ObjectDetectionV8:
         if ObjectDetectionV8.__instance is not None:
             raise Exception("Singleton instance already exists. Use get_instance() method to get the instance.")
         else:
-            self.model_name = 'app/python/model/paddle_and_human_yolov8m_v2.pt'
+            self.model_name = 'model/paddle_and_human_yolov8m_v2.pt'
             self.model = self._load_model(self.model_name)
             self.classes = self.model.names
             self.device = 'cuda' if torch.cuda.is_available() else 'cpu'

@@ -1,6 +1,5 @@
 import argparse
-
-import cv2
+import json
 
 from BaseInput import BaseInput
 
@@ -13,7 +12,7 @@ parser.add_argument(
     "--file",
     type=str,
     help="file that needs to be processed",
-    required=False, default='image.jpeg'
+    required=False, default='image.jpg'
 )
 
 parser.add_argument(
@@ -32,13 +31,10 @@ class ImageInput(BaseInput):
     def __init__(self):
         super().__init__(args['userid'], args['file'], 'false', 10)
 
-    def load_input(self):
-        video = cv2.VideoCapture("input/" + self.filename)
-        classes, coords_human, coords_paddle, distance_results = self.proces.get_prediction(video)
-
-        # @TODO if something is wrong with these coords we returns true or false?
-        return distance_results.distance_between_humans < 100
+    def get_result(self):
+        return print(self.score.get_score()[0]['dist_humans'] > 50)
 
 
 image_input = ImageInput()
 image_input.load_input()
+image_input.get_result()

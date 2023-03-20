@@ -40,3 +40,6 @@ class Score:
     @classmethod
     def serialize(cls) -> print:
         return print(json.dumps(Score.scores, default=lambda x: int(x) if isinstance(x, np.int32) else x))
+
+    def get_score(self):
+        return self.scores
