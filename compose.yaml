@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  app:
+    container_name: paddle_app
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        GO_VERSION: "1.20"
+    environment:
+      MONGO_URL: "mongodb://mongo:27017/paddle_app_db"
+    volumes:
+      - ./app:/app
+    ports:
+      - "80:8081"
+      - "2222:22"
+    depends_on:
+      - mongo
+  mongo:
+    image: mongo:latest
+    container_name: mongo
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: secret
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+
+volumes:
+  mongo-data:
