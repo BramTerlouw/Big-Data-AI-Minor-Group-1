@@ -9,6 +9,9 @@ input/*
 output/*
 .env
 main
+.iml
+app/.idea
+app/paddle_app.file
 ~
 processedVideos/*
 paddle_api.exe

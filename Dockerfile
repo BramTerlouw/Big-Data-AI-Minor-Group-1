@@ -1,6 +1,17 @@
-FROM ubuntu:latest
+#FROM ubuntu:latest
+FROM nvidia/cuda:11.8.0-devel-ubuntu22.04
 
+# Golang variables
 ARG GO_VERSION
+ARG API_KEY
+ARG GO_ENV
+ARG GO_PORT
+
+# MongoDB variables
+ARG MONGO_PORT
+ARG MONGO_IP
+ARG MONGO_USER
+ARG MONGO_PASSWORD
 
 ENV TZ=Europe/Amsterdam
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
@@ -26,7 +37,9 @@ RUN apt-get update && \
 # Add Python 3.9 to the PATH
 ENV PATH="/usr/bin/python3.9:${PATH}"
 
-RUN pip3 install torch torchvision torchaudio
+#RUN pip3 install torch torchvision torchaudio
+
+RUN pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
 RUN pip install opencv-python ultralytics
 RUN pip install matplotlib numpy Pillow PyYAML requests scipy tqdm pandas seaborn
 
@@ -53,6 +66,16 @@ RUN mkdir /var/run/sshd && \
 RUN echo "#!/bin/bash" > /startup.sh && \
     echo "service ssh start" >> /startup.sh && \
     echo "cd /app" >> /startup.sh && \
+    echo "rm .env" >> /startup.sh && \
+    echo 'echo "# APP DEVELOPMENT ENV" >> .env' >> /startup.sh && \
+    echo "echo 'GO_PORT = $GO_PORT' >> .env" >> /startup.sh && \
+    echo "echo 'GO_ENV = $GO_ENV' >> .env" >> /startup.sh && \
+    echo 'echo "" >> .env' >> /startup.sh && \
+    echo 'echo "# API KEY" >> .env' >> /startup.sh && \
+    echo "echo 'API_KEY = $API_KEY' >> .env" >> /startup.sh && \
+    echo 'echo "" >> .env' >> /startup.sh && \
+    echo 'echo "# MONGODB" >> .env' >> /startup.sh && \
+    echo "echo 'MONGODB_URL = mongodb://${MONGO_USER}:${MONGO_PASSWORD}@${MONGO_IP}:${MONGO_PORT}' >> .env" >> /startup.sh && \
     echo "go build -o paddle_app" >> /startup.sh && \
     echo "exec ./paddle_app" >> /startup.sh && \
     chmod +x /startup.sh

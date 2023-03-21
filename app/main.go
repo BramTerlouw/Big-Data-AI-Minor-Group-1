@@ -14,7 +14,7 @@ func main() {
 	router := SetupRouter()
 
 	// Start the server
-	if err := router.Run(":8081"); err != nil {
+	if err := router.Run(":" + util.GodotEnv("GO_PORT")); err != nil {
 		fmt.Println("Error starting server:", err)
 	}
 	log.Fatal(router.Run(":" + util.GodotEnv("GO_PORT")))
@@ -47,7 +47,7 @@ func SetupRouter() *gin.Engine {
 
 	// Create the videos directory if it does not exist
 	if _, err := os.Stat("input/videos"); os.IsNotExist(err) {
-		os.Mkdir("input/video", 0755)
+		os.Mkdir("input/videos", 0755)
 	}
 
 	// Create the images directory if it does not exist

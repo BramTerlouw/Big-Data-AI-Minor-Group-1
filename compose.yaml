@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   app:
     container_name: paddle_app
@@ -8,6 +6,13 @@ services:
       dockerfile: Dockerfile
       args:
         GO_VERSION: "1.20"
+        API_KEY: "Ht;2[u?P[fJoyNe1tZHZ/y?W@x.iSr\".d,uCWQBYOE6v9:v2JbDy<Y!Cc**J]rR"
+        GO_ENV: "test"
+        GO_PORT: 8081
+        MONGO_PORT: "27017"
+        MONGO_IP: "mongo"
+        MONGO_USER: "root"
+        MONGO_PASSWORD: "secret"
     environment:
       MONGO_URL: "mongodb://mongo:27017/paddle_app_db"
     volumes:
@@ -17,6 +22,13 @@ services:
       - "2222:22"
     depends_on:
       - mongo
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [ gpu ]
   mongo:
     image: mongo:latest
     container_name: mongo
@@ -27,6 +39,5 @@ services:
       - "27017:27017"
     volumes:
       - mongo-data:/data/db
-
 volumes:
   mongo-data:

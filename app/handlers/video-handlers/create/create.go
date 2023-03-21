@@ -80,7 +80,12 @@ func (h *handler) CreateVideoHandler(ctx *gin.Context) {
 				log.Fatal(e)
 			}
 
-			e = os.Remove("input/" + filename)
+			e = os.Remove("input/videos/" + filename)
+			if e != nil {
+				log.Fatal(e)
+			}
+
+			e = os.Remove("processedVideos/" + userid + "/" + filename)
 			if e != nil {
 				log.Fatal(e)
 			}
@@ -96,7 +101,7 @@ func (h *handler) CreateVideoHandler(ctx *gin.Context) {
 			return
 		}
 
-		e := os.Remove("input/" + filename)
+		e := os.Remove("input/videos/" + filename)
 		if e != nil {
 			log.Fatal(e)
 		}
