@@ -1,14 +1,16 @@
+version: '3.8'
 services:
+# Paddle API
   app:
-    container_name: paddle_app
+    container_name: paddle_api
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: paddle_api/Dockerfile
       args:
         GO_VERSION: "1.20"
         API_KEY: "Ht;2[u?P[fJoyNe1tZHZ/y?W@x.iSr\".d,uCWQBYOE6v9:v2JbDy<Y!Cc**J]rR"
         GO_ENV: "test"
-        GO_PORT: 8081
+        GO_PORT: "8081"
         MONGO_PORT: "27017"
         MONGO_IP: "mongo"
         MONGO_USER: "root"
@@ -16,22 +18,39 @@ services:
     environment:
       MONGO_URL: "mongodb://mongo:27017/paddle_app_db"
     volumes:
-      - ./app:/app
+      - ./paddle_api/app:/app
     ports:
       - "80:8081"
       - "2222:22"
     depends_on:
       - mongo
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - driver: nvidia
-              count: 1
-              capabilities: [ gpu ]
+    # deploy:
+    #   resources:
+    #     reservations:
+    #       devices:
+    #         - driver: nvidia
+    #           count: 1
+    #           capabilities: [gpu]
+
+#WebRTC Server
+  janus-gateway:
+    container_name: janus_gateway
+    build:
+      context: .
+      dockerfile: janus_gateway/Dockerfile
+    ports:
+      - "7088:7088"
+      - "8088:8088"
+      - "8188:8188"
+      - "8089:8089"
+      - "10000-10200:10000-10200/udp"
+    environment:
+      - DOCKER_IP=localhost
+
+# Database
   mongo:
     image: mongo:latest
-    container_name: mongo
+    container_name: mongo_database
     environment:
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: secret
