@@ -24,13 +24,13 @@ services:
       - "2222:22"
     depends_on:
       - mongo
-    # deploy:
-    #   resources:
-    #     reservations:
-    #       devices:
-    #         - driver: nvidia
-    #           count: 1
-    #           capabilities: [gpu]
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
 
 #WebRTC Server
   janus-gateway:
