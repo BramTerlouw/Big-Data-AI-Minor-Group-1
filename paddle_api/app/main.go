@@ -62,6 +62,7 @@ func SetupRouter() *gin.Engine {
 
 	//Init All Route
 	route.InitVideoRoutes(router)
+	route.InitSessionRoutes(router)
 
 	return router
 }

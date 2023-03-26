@@ -23,7 +23,7 @@ func (s *VideoService) CreateVideo(input *model.InputCreateVideo) (error, primit
 		UploadDate:    &input.UploadDate,
 	}
 
-	return s.repository.Insert(&video)
+	return s.repository.InsertVideo(&video)
 }
 
 func (s *VideoService) UpdateVideo(input *model.InputUpdateVideo) error {
@@ -36,7 +36,7 @@ func (s *VideoService) UpdateVideo(input *model.InputUpdateVideo) error {
 		Id:                input.Id,
 	}
 
-	return s.repository.Update(&video)
+	return s.repository.UpdateVideo(&video)
 }
 
 func (s *VideoService) GetVideosByUserID(userId string) ([]*model.EntityVideo, error) {

@@ -14,7 +14,7 @@ type VideoRepository struct {
 	collection *mongo.Collection
 }
 
-func NewCreateRepository() *VideoRepository {
+func NewVideoRepository() *VideoRepository {
 	client := database.GetMongoClient()
 	collection := client.Database("paddle_app").Collection("videos")
 
@@ -23,7 +23,7 @@ func NewCreateRepository() *VideoRepository {
 	}
 }
 
-func (r *VideoRepository) Insert(video *model.EntityVideo) (error, primitive.ObjectID) {
+func (r *VideoRepository) InsertVideo(video *model.EntityVideo) (error, primitive.ObjectID) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
@@ -66,7 +66,7 @@ func (r *VideoRepository) GetVideosByUserID(userId string) ([]*model.EntityVideo
 	return videos, nil
 }
 
-func (r *VideoRepository) Update(video *model.EntityVideo) error {
+func (r *VideoRepository) UpdateVideo(video *model.EntityVideo) error {
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
