@@ -1,9 +1,14 @@
 package create
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
+	"log"
 	"net/http"
+	"os/exec"
 	"paddle-api/services"
+	util "paddle-api/utils"
+	"strconv"
 )
 
 type handler struct {
@@ -31,6 +36,28 @@ func (h *handler) CreateSessionHandler(ctx *gin.Context) {
 		ctx.JSON(http.StatusNotFound, gin.H{"error": "Incorrect or already used session key!"})
 		return
 	}
+
+	roomInt, err := strconv.Atoi(*session.Room)
+	if err != nil {
+		log.Println(err)
+	}
+
+	if util.CreateRoom(roomInt) == false {
+		ctx.JSON(http.StatusNotFound, gin.H{"error": "Something went wrong, try again."})
+	}
+
+	go func() {
+		cmd := exec.Command("python3.9", "python/Stream.py", "--room", string(rune(roomInt)))
+		print(cmd.Err)
+		// Execute the command
+		output, err := cmd.Output()
+		if err != nil {
+			fmt.Println("Error executing ImageInput script:", err)
+			ctx.JSON(http.StatusBadRequest, gin.H{"error": "Something went wrong, try again."})
+			return
+		}
+		fmt.Println(string(output))
+	}()
 
 	ctx.JSON(http.StatusOK, gin.H{"message": "session has started"})
 }
