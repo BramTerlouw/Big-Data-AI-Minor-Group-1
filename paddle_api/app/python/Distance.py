@@ -78,7 +78,7 @@ class Distance:
             return distance
 
     def handle_distance(self, frame, start_x: int, end_x: int, y: int, y2: int, distance: int):
-        if distance < 0:
+        if distance > 0:
             self.bounding_box_renderer.draw_distance(frame, start_x, end_x, y, end_x, distance)
         else:
             self.bounding_box_renderer.draw_possible_intersect(
@@ -136,7 +136,7 @@ class Distance:
 
     @classmethod
     def get_human_with_paddle(cls, h1_center: float, h2_center: float, p_center: float) -> float:
-        return h2_center if abs(h2_center - p_center) > abs(h1_center - p_center) else h1_center
+        return h2_center if abs(h2_center - p_center) < abs(h1_center - p_center) else h1_center
 
     @classmethod
     def get_biggest_two_humans(cls, coords_humans: list) -> list[CoordsDTO]:
