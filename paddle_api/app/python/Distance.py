@@ -78,7 +78,7 @@ class Distance:
             return distance
 
     def handle_distance(self, frame, start_x: int, end_x: int, y: int, y2: int, distance: int):
-        if distance > 0:
+        if distance < 0:
             self.bounding_box_renderer.draw_distance(frame, start_x, end_x, y, end_x, distance)
         else:
             self.bounding_box_renderer.draw_possible_intersect(
