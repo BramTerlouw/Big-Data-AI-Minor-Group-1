@@ -47,15 +47,16 @@ func (h *handler) CreateSessionHandler(ctx *gin.Context) {
 	}
 
 	go func() {
-		cmd := exec.Command("python3.9", "python/Stream.py", "--room", string(rune(roomInt)))
+		cmd := exec.Command("python3.9", "python/Stream.py", "-r", *session.Room)
 		print(cmd.Err)
 		// Execute the command
 		output, err := cmd.Output()
 		if err != nil {
-			fmt.Println("Error executing ImageInput script:", err)
+			log.Println("Error executing Stream script:", err)
 			ctx.JSON(http.StatusBadRequest, gin.H{"error": "Something went wrong, try again."})
 			return
 		}
+		fmt.Println(*session.Room)
 		fmt.Println(string(output))
 	}()
 
