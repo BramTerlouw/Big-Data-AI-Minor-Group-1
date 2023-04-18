@@ -1,17 +1,3 @@
-# import cv2
-# import numpy as np
-import argparse
-
-parser = argparse.ArgumentParser()
-parser.add_argument("-r", "--room", type=str, help="Room number", required=True)
-args = vars(parser.parse_args())
-
-room = args['room']
-
-print("Script worked, room: " + room)
-
-
-
 import argparse
 import asyncio
 import logging
@@ -202,8 +188,8 @@ if __name__ == "__main__":
     parser.add_argument(
         "--room",
         type=int,
-        default=1234,
-        help="The video room ID to join (default: 1234).",
+        required=True,
+        help="The room ID to join.",
     )
     parser.add_argument("--verbose", "-v", action="count")
     args = parser.parse_args()
