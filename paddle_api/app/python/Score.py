@@ -23,11 +23,13 @@ class Score:
             cls,
             data_distance_humans,
             data_player_position,
+            data_player_height,
             data_distance_player_paddle,
     ):
         score_summary = {
             'dist_humans': data_distance_humans,
             'player_pos': data_player_position,
+            'player_height': data_player_height,
             'dist_player_paddle': data_distance_player_paddle,
             'possible_intersect': True if data_distance_player_paddle < 0 else False
         }

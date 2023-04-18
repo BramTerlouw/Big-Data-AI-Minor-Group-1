@@ -115,7 +115,15 @@ class BoundingBoxRenderer:
         cv2.ellipse(frame, center, (10, 10), 0, 0, 360, (255, 255, 255), -1)
         cls.draw_text(frame, 'Possible Intersect', center[0] + 20, center[1], 0.6, (255, 255, 255), 2)
 
-    def draw_distance(self, frame, x1, x2, y, txt_coord, distance):
+    def draw_distance(
+            self,
+            frame: numpy.ndarray,
+            x1,
+            x2,
+            y,
+            txt_coord,
+            distance
+    ) -> None:
         self.draw_line(
             frame,
             int(x1),
@@ -134,6 +142,52 @@ class BoundingBoxRenderer:
             (255, 255, 255),
             2
         )
+
+    def draw_player_height(
+            self,
+            frame: numpy.ndarray,
+            player: CoordsDTO,
+            pos: str,
+            text
+    ) -> None:
+        if pos == 'left':
+            self.draw_line(
+                frame,
+                player.left - 5,
+                player.top,
+                player.left - 5,
+                player.bottom,
+                (255, 255, 255),
+                2
+            )
+            self.draw_text(
+                frame,
+                f"{text} CM",
+                int(player.left) - 15,
+                int(player.top) - 5,
+                0.6,
+                (255, 255, 255),
+                2
+            )
+        else:
+            self.draw_line(
+                frame,
+                int(player.right + 5),
+                int(player.top),
+                int(player.right + 5),
+                int(player.bottom),
+                (255, 255, 255),
+                2
+            )
+            self.draw_text(
+                frame,
+                f"{text} CM",
+                int(player.right) + 15,
+                int(player.top) - 5,
+                0.6,
+                (255, 255, 255),
+                2
+            )
 
     def show_class(
             self,

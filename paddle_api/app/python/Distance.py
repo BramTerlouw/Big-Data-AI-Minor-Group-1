@@ -142,3 +142,24 @@ class Distance:
     def get_biggest_two_humans(cls, coords_humans: list) -> list[CoordsDTO]:
         sorted_humans = sorted(coords_humans, key=lambda coords: coords[3] - coords[1], reverse=True)
         return [CoordsDTO(human) for human in sorted_humans[:2]]
+
+    def get_height_of_player(self, frame, coords_humans: list[CoordsDTO], paddle_width: int, pos: str) -> int:
+        if pos == 'left':
+            player = self.get_human_left(coords_humans)
+        else:
+            player = self.get_human_right(coords_humans)
+
+        player_height = self.calc_distance(
+                paddle_width,
+                player.bottom,
+                player.top
+        )
+
+        self.bounding_box_renderer.draw_player_height(
+            frame,
+            player,
+            pos,
+            player_height
+        )
+
+        return player_height

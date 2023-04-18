@@ -60,10 +60,12 @@ class ProcessVideo:
             # !!!!! ----- Step 3: Show drawing (debug) ----- !!!!!
             coords = np.array([[coords_paddle], [coords_human[0], coords_human[1]]], dtype=object)
             self.show_predictions(frame, coords, self.v8.get_classes())
+
             # !!!!! ----- Step 4: Get/Show score ----- !!!!!
             self.score.process_score(
                 distance_results.distance_between_humans,
                 distance_results.pos_player_without_paddle,
+                distance_results.player_height,
                 distance_results.distance_between_human_player
             )
 
@@ -71,10 +73,12 @@ class ProcessVideo:
         # !!!!! ----- Step 3: Show drawing (debug) ----- !!!!!
         coords = np.array([[coords_paddle], [coords_human[0], coords_human[1]]], dtype=object)
         self.show_predictions(frame, coords, classes)
+
         # !!!!! ----- Step 4: Get/Show score ----- !!!!!
         self.score.process_score(
             distance_results.distance_between_humans,
             distance_results.pos_player_without_paddle,
+            distance_results.player_height,
             distance_results.distance_between_human_player
         )
 
@@ -99,11 +103,23 @@ class ProcessVideo:
             coords_human
         )
 
+        player_height = self.distance.get_height_of_player(
+            frame,
+            coords_human,
+            paddle_width,
+            pos_player_without_paddle
+        )
+
         distance_between_human_player = self.distance.get_distance(
             frame, paddle_width, coords_paddle, coords_human, pos_player_without_paddle
         )
 
-        return DistanceDTO(distance_between_humans, pos_player_without_paddle, distance_between_human_player)
+        return DistanceDTO(
+            distance_between_humans,
+            pos_player_without_paddle,
+            player_height,
+            distance_between_human_player
+        )
 
     def show_predictions(self, frame, predictions, classes):
         for i in range(len(predictions)):
