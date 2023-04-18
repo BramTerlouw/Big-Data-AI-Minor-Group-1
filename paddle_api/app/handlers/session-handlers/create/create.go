@@ -42,11 +42,8 @@ func (h *handler) CreateSessionHandler(ctx *gin.Context) {
 		log.Println(err)
 	}
 
-	if util.CreateVideoRoom(roomInt) == false {
-		ctx.JSON(http.StatusNotFound, gin.H{"error": "Something went wrong, try again."})
-	}
-
-	if util.CreateTextRoom(roomInt) == false {
+	// Starting session
+	if util.StartSession(roomInt) == false {
 		ctx.JSON(http.StatusNotFound, gin.H{"error": "Something went wrong, try again."})
 	}
 
@@ -62,6 +59,11 @@ func (h *handler) CreateSessionHandler(ctx *gin.Context) {
 		}
 		fmt.Println(*session.Room)
 		fmt.Println(string(output))
+
+		// Ending session
+		if util.EndSession(roomInt) == false {
+			ctx.JSON(http.StatusNotFound, gin.H{"error": "Something went wrong, try again."})
+		}
 	}()
 
 	ctx.JSON(http.StatusOK, gin.H{"message": "session has started"})

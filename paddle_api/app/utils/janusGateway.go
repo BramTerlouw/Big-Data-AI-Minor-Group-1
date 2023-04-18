@@ -11,7 +11,23 @@ import (
 	"strconv"
 )
 
-func CreateTextRoom(room int) bool {
+func StartSession(room int) bool {
+	if createVideoRoom(room) && createTextRoom(room) {
+		return true
+	} else {
+		return false
+	}
+}
+
+func EndSession(room int) bool {
+	if destroyVideoRoom(room) && destroyTextRoom(room) {
+		return true
+	} else {
+		return false
+	}
+}
+
+func createTextRoom(room int) bool {
 	transactionId := generateTransaction().String()
 	sessionEndpoint, errSessionEndpoint := createSessionEndpoint(transactionId)
 	if errSessionEndpoint != nil {
@@ -23,13 +39,13 @@ func CreateTextRoom(room int) bool {
 		return false
 	}
 
-	baseUrl := "http://janus-gateway:8088/janus/" + sessionEndpoint + "/" + pluginEndpoint
+	baseUrl := "http://localhost:8088/janus/" + sessionEndpoint + "/" + pluginEndpoint
 
 	data := struct {
 		Janus       string `json:"janus"`
 		Transaction string `json:"transaction"`
 		Body        struct {
-			TextRoom  string `json:"textroom"`
+			Request   string `json:"request"`
 			Room      int    `json:"room"`
 			Permanent bool   `json:"permanent"`
 			IsPrivate bool   `json:"is_private"`
@@ -38,12 +54,12 @@ func CreateTextRoom(room int) bool {
 		Janus:       "message",
 		Transaction: transactionId,
 		Body: struct {
-			TextRoom  string `json:"textroom"`
+			Request   string `json:"request"`
 			Room      int    `json:"room"`
 			Permanent bool   `json:"permanent"`
 			IsPrivate bool   `json:"is_private"`
 		}{
-			TextRoom:  "create",
+			Request:   "create",
 			Room:      room,
 			Permanent: false,
 			IsPrivate: false,
@@ -87,11 +103,80 @@ func CreateTextRoom(room int) bool {
 	return true
 }
 
-func DestroyTextRoom() bool {
+func destroyTextRoom(room int) bool {
+	transactionId := generateTransaction().String()
+	sessionEndpoint, errSessionEndpoint := createSessionEndpoint(transactionId)
+	if errSessionEndpoint != nil {
+		return false
+	}
+
+	pluginEndpoint, errPluginEndpoint := createPluginEndpoint(transactionId, sessionEndpoint, "janus.plugin.textroom")
+	if errPluginEndpoint != nil {
+		return false
+	}
+
+	baseUrl := "http://localhost:8088/janus/" + sessionEndpoint + "/" + pluginEndpoint
+
+	data := struct {
+		Janus       string `json:"janus"`
+		Transaction string `json:"transaction"`
+		Body        struct {
+			Request   string `json:"request"`
+			Room      int    `json:"room"`
+			Permanent bool   `json:"permanent"`
+		} `json:"body"`
+	}{
+		Janus:       "message",
+		Transaction: transactionId,
+		Body: struct {
+			Request   string `json:"request"`
+			Room      int    `json:"room"`
+			Permanent bool   `json:"permanent"`
+		}{
+			Request:   "destroy",
+			Room:      room,
+			Permanent: true,
+		},
+	}
+
+	// Encode the data as JSON
+	jsonData, err := json.Marshal(data)
+	if err != nil {
+		panic(err)
+	}
+
+	// Create a new HTTP request with the desired URL and HTTP method
+	req, err := http.NewRequest("POST", baseUrl, bytes.NewBuffer(jsonData))
+	if err != nil {
+		panic(err)
+	}
+
+	// Set the content type header
+	req.Header.Set("Content-Type", "application/json")
+
+	// Create a new HTTP client and send the request
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		panic(err)
+	}
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+		if err != nil {
+			log.Println(err)
+		}
+	}(resp.Body)
+
+	response := decodeResponseTextRoom(resp)
+
+	if response.PluginData.Data.TextRoom != "destroyed" {
+		return false
+	}
+
 	return true
 }
 
-func CreateVideoRoom(room int) bool {
+func createVideoRoom(room int) bool {
 	transactionId := generateTransaction().String()
 
 	sessionEndpoint, errSessionEndpoint := createSessionEndpoint(transactionId)
@@ -104,7 +189,7 @@ func CreateVideoRoom(room int) bool {
 		return false
 	}
 
-	baseUrl := "http://janus-gateway:8088/janus/" + sessionEndpoint + "/" + pluginEndpoint
+	baseUrl := "http://localhost:8088/janus/" + sessionEndpoint + "/" + pluginEndpoint
 
 	data := struct {
 		Janus       string `json:"janus"`
@@ -128,7 +213,7 @@ func CreateVideoRoom(room int) bool {
 		}{
 			Request:    "create",
 			Room:       room,
-			Permanent:  false,
+			Permanent:  true,
 			IsPrivate:  false,
 			Publishers: 2,
 		},
@@ -171,13 +256,82 @@ func CreateVideoRoom(room int) bool {
 	return true
 }
 
-func DestroyVideoRoom() bool {
+func destroyVideoRoom(room int) bool {
+	transactionId := generateTransaction().String()
+	sessionEndpoint, errSessionEndpoint := createSessionEndpoint(transactionId)
+	if errSessionEndpoint != nil {
+		return false
+	}
+
+	pluginEndpoint, errPluginEndpoint := createPluginEndpoint(transactionId, sessionEndpoint, "janus.plugin.videoroom")
+	if errPluginEndpoint != nil {
+		return false
+	}
+
+	baseUrl := "http://localhost:8088/janus/" + sessionEndpoint + "/" + pluginEndpoint
+
+	data := struct {
+		Janus       string `json:"janus"`
+		Transaction string `json:"transaction"`
+		Body        struct {
+			Request   string `json:"request"`
+			Room      int    `json:"room"`
+			Permanent bool   `json:"permanent"`
+		} `json:"body"`
+	}{
+		Janus:       "message",
+		Transaction: transactionId,
+		Body: struct {
+			Request   string `json:"request"`
+			Room      int    `json:"room"`
+			Permanent bool   `json:"permanent"`
+		}{
+			Request:   "destroy",
+			Room:      room,
+			Permanent: true,
+		},
+	}
+
+	// Encode the data as JSON
+	jsonData, err := json.Marshal(data)
+	if err != nil {
+		panic(err)
+	}
+
+	// Create a new HTTP request with the desired URL and HTTP method
+	req, err := http.NewRequest("POST", baseUrl, bytes.NewBuffer(jsonData))
+	if err != nil {
+		panic(err)
+	}
+
+	// Set the content type header
+	req.Header.Set("Content-Type", "application/json")
+
+	// Create a new HTTP client and send the request
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		panic(err)
+	}
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+		if err != nil {
+			log.Println(err)
+		}
+	}(resp.Body)
+
+	response := decodeResponseVideoRoom(resp)
+
+	if response.PluginData.Data.VideoRoom != "destroyed" {
+		return false
+	}
+
 	return true
 }
 
 func createSessionEndpoint(transactionId string) (string, error) {
 	// Set the request URL and data
-	baseUrl := "http://janus-gateway:8088/janus"
+	baseUrl := "http://localhost:8088/janus"
 	data := struct {
 		Janus       string `json:"janus"`
 		Transaction string `json:"transaction"`
@@ -225,7 +379,7 @@ func createSessionEndpoint(transactionId string) (string, error) {
 }
 
 func createPluginEndpoint(transactionId, sessionId, plugin string) (string, error) {
-	baseUrl := "http://janus-gateway:8088/janus/" + sessionId
+	baseUrl := "http://localhost:8088/janus/" + sessionId
 
 	data := struct {
 		Janus       string `json:"janus"`
