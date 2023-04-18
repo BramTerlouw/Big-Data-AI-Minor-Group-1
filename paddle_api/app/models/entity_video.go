@@ -37,6 +37,7 @@ type InputUpdateVideo struct {
 type ScoreData struct {
 	DistHumans        int    `bson:"distHumans,omitempty" json:"dist_humans"`
 	PlayerPos         string `bson:"playerPos,omitempty" json:"player_pos"`
+	PlayerHeight      int    `bson:"playerHeight,omitempty" json:"player_height"`
 	DistPlayerPaddle  int    `bson:"distPlayerPaddle,omitempty" json:"dist_player_paddle"`
 	PossibleIntersect bool   `bson:"possibleIntersect,omitempty" json:"possible_intersect"`
 }
