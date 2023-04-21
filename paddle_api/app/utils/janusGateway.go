@@ -12,7 +12,7 @@ import (
 )
 
 func StartSession(room int) bool {
-	if createVideoRoom(room) && createTextRoom(room) {
+	if createVideoRoom(room) {
 		return true
 	} else {
 		return false
@@ -20,160 +20,11 @@ func StartSession(room int) bool {
 }
 
 func EndSession(room int) bool {
-	if destroyVideoRoom(room) && destroyTextRoom(room) {
+	if destroyVideoRoom(room) {
 		return true
 	} else {
 		return false
 	}
-}
-
-func createTextRoom(room int) bool {
-	transactionId := generateTransaction().String()
-	sessionEndpoint, errSessionEndpoint := createSessionEndpoint(transactionId)
-	if errSessionEndpoint != nil {
-		return false
-	}
-
-	pluginEndpoint, errPluginEndpoint := createPluginEndpoint(transactionId, sessionEndpoint, "janus.plugin.textroom")
-	if errPluginEndpoint != nil {
-		return false
-	}
-
-	baseUrl := "http://localhost:8088/janus/" + sessionEndpoint + "/" + pluginEndpoint
-
-	data := struct {
-		Janus       string `json:"janus"`
-		Transaction string `json:"transaction"`
-		Body        struct {
-			Request   string `json:"request"`
-			Room      int    `json:"room"`
-			Permanent bool   `json:"permanent"`
-			IsPrivate bool   `json:"is_private"`
-		} `json:"body"`
-	}{
-		Janus:       "message",
-		Transaction: transactionId,
-		Body: struct {
-			Request   string `json:"request"`
-			Room      int    `json:"room"`
-			Permanent bool   `json:"permanent"`
-			IsPrivate bool   `json:"is_private"`
-		}{
-			Request:   "create",
-			Room:      room,
-			Permanent: false,
-			IsPrivate: false,
-		},
-	}
-
-	// Encode the data as JSON
-	jsonData, err := json.Marshal(data)
-	if err != nil {
-		panic(err)
-	}
-
-	// Create a new HTTP request with the desired URL and HTTP method
-	req, err := http.NewRequest("POST", baseUrl, bytes.NewBuffer(jsonData))
-	if err != nil {
-		panic(err)
-	}
-
-	// Set the content type header
-	req.Header.Set("Content-Type", "application/json")
-
-	// Create a new HTTP client and send the request
-	client := &http.Client{}
-	resp, err := client.Do(req)
-	if err != nil {
-		panic(err)
-	}
-	defer func(Body io.ReadCloser) {
-		err := Body.Close()
-		if err != nil {
-			log.Println(err)
-		}
-	}(resp.Body)
-
-	response := decodeResponseTextRoom(resp)
-
-	if response.Janus != "success" {
-		return false
-	}
-
-	return true
-}
-
-func destroyTextRoom(room int) bool {
-	transactionId := generateTransaction().String()
-	sessionEndpoint, errSessionEndpoint := createSessionEndpoint(transactionId)
-	if errSessionEndpoint != nil {
-		return false
-	}
-
-	pluginEndpoint, errPluginEndpoint := createPluginEndpoint(transactionId, sessionEndpoint, "janus.plugin.textroom")
-	if errPluginEndpoint != nil {
-		return false
-	}
-
-	baseUrl := "http://localhost:8088/janus/" + sessionEndpoint + "/" + pluginEndpoint
-
-	data := struct {
-		Janus       string `json:"janus"`
-		Transaction string `json:"transaction"`
-		Body        struct {
-			Request   string `json:"request"`
-			Room      int    `json:"room"`
-			Permanent bool   `json:"permanent"`
-		} `json:"body"`
-	}{
-		Janus:       "message",
-		Transaction: transactionId,
-		Body: struct {
-			Request   string `json:"request"`
-			Room      int    `json:"room"`
-			Permanent bool   `json:"permanent"`
-		}{
-			Request:   "destroy",
-			Room:      room,
-			Permanent: true,
-		},
-	}
-
-	// Encode the data as JSON
-	jsonData, err := json.Marshal(data)
-	if err != nil {
-		panic(err)
-	}
-
-	// Create a new HTTP request with the desired URL and HTTP method
-	req, err := http.NewRequest("POST", baseUrl, bytes.NewBuffer(jsonData))
-	if err != nil {
-		panic(err)
-	}
-
-	// Set the content type header
-	req.Header.Set("Content-Type", "application/json")
-
-	// Create a new HTTP client and send the request
-	client := &http.Client{}
-	resp, err := client.Do(req)
-	if err != nil {
-		panic(err)
-	}
-	defer func(Body io.ReadCloser) {
-		err := Body.Close()
-		if err != nil {
-			log.Println(err)
-		}
-	}(resp.Body)
-
-	response := decodeResponseTextRoom(resp)
-
-	if response.PluginData.Data.TextRoom != "destroyed" {
-		return false
-	}
-
-	return true
 }
 
 func createVideoRoom(room int) bool {
@@ -462,17 +313,6 @@ func decodeResponseVideoRoom(resp *http.Response) videoRoomResponse {
 	return response
 }
 
-func decodeResponseTextRoom(resp *http.Response) textRoomResponse {
-	// Decode the JSON response
-	var response textRoomResponse
-	err := json.NewDecoder(resp.Body).Decode(&response)
-	if err != nil {
-		log.Println("Error decoding JSON response")
-	}
-
-	return response
-}
-
 func generateTransaction() uuid.UUID {
 	return uuid.New()
 }
@@ -503,21 +343,6 @@ type videoRoomResponse struct {
 		Plugin string `json:"plugin"`
 		Data   struct {
 			VideoRoom string `json:"videoroom"`
-			Room      int    `json:"room"`
-			Permanent bool   `json:"permanent"`
-		} `json:"data"`
-	} `json:"plugindata"`
-}
-
-type textRoomResponse struct {
-	Janus       string `json:"janus"`
-	SessionId   int64  `json:"session_id"`
-	Transaction string `json:"transaction"`
-	Sender      int64  `json:"sender"`
-	PluginData  struct {
-		Plugin string `json:"plugin"`
-		Data   struct {
-			TextRoom  string `json:"textroom"`
 			Room      int    `json:"room"`
 			Permanent bool   `json:"permanent"`
 		} `json:"data"`
