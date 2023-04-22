@@ -6,10 +6,32 @@ import string
 import time
 import cv2
 import aiohttp
-from aiortc import RTCPeerConnection, RTCSessionDescription, VideoStreamTrack
-from aiortc.contrib.media import MediaPlayer, MediaRecorder
+import aioconsole
+import websockets
+from aiortc import RTCPeerConnection, RTCSessionDescription
 
 pcs = set()
+
+
+class StopSignalReceived(Exception):
+    pass
+
+async def chat_client(websocket):
+    print("Connection opened")
+
+    last_sent_message = None
+
+    async def send_message(message):
+        nonlocal last_sent_message
+        last_sent_message = message
+        await websocket.send(message)
+
+    async def receive_message():
+        while True:
+            message = await websocket.recv()
+            yield message
+
+    return send_message, receive_message
 
 
 def transaction_id():
@@ -95,7 +117,8 @@ class JanusSession:
                     else:
                         print(data)
 
-async def subscribe(session, room, feed):
+
+async def subscribe(session, room, feed, send_message):
     pc = RTCPeerConnection()
     pcs.add(pc)
 
@@ -111,19 +134,19 @@ async def subscribe(session, room, feed):
                     # Convert the frame to a numpy array
                     img = frame.to_ndarray(format="bgr24")
 
-                    # Process the frame with OpenCV here
-                    # Example: Convert the frame to grayscale
-                    # gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+                    if sessionActive:
+                        # Send a message with the received frame
+                        await send_message("Processing frame")
 
-                    # Display the resulting frame
-                    cv2.imshow("Frame", img)
-                    if cv2.waitKey(1) & 0xFF == ord("q"):
-                        break
+                        cv2.imshow("Frame", img)
+                        if cv2.waitKey(1) & 0xFF == ord("q"):
+                            break
+                    else:
+                        await asyncio.sleep(0.1)  # Add this line to wait when session is not active
 
                 except Exception as e:
                     print("Error processing frame:", e)
                     break
-
 
     # subscribe
     plugin = await session.attach("janus.plugin.videoroom")
@@ -152,8 +175,10 @@ async def subscribe(session, room, feed):
     )
 
 
-async def run(room, session):
+async def run(room, session, ws_url):
     await session.create()
+    global sessionActive
+    sessionActive = False
 
     # join video room
     plugin = await session.attach("janus.plugin.videoroom")
@@ -171,15 +196,35 @@ async def run(room, session):
     for publisher in publishers:
         print("id: %(id)s, display: %(display)s" % publisher)
 
-    # receive video
-    if publishers:
-        await subscribe(
-            session=session, room=room, feed=publishers[0]["id"]
-        )
+    # connect to websocket
+    async with websockets.connect(ws_url) as websocket:
+        send_message, receive_message_generator = await chat_client(websocket)
 
-    # exchange media for 10 minutes
-    print("Exchanging media")
-    await asyncio.sleep(600)
+        # receive video
+        if publishers:
+            await subscribe(
+                session=session, room=room, feed=publishers[0]["id"], send_message=send_message
+            )
+
+        # exchange media
+        print("Exchanging media")
+        try:
+            async for message in receive_message_generator():
+                if message == "stop":
+                    await send_message("stopped")
+                    raise StopSignalReceived()
+                elif message == "start":
+                    await send_message("started")
+                    print("Start command received")
+                    sessionActive = True
+                elif message == "pause":
+                    await send_message("paused")
+                    print("Pause command received")
+                    sessionActive = False
+                else:
+                    print(f"Received: {message}")
+        except StopSignalReceived:
+            print("Stop command received, exiting...")
 
 
 if __name__ == "__main__":
@@ -191,6 +236,12 @@ if __name__ == "__main__":
         required=True,
         help="The room ID to join.",
     )
+    parser.add_argument(
+        "--key",
+        type=str,
+        required=True,
+        help="key to join the message room",
+    )
     parser.add_argument("--verbose", "-v", action="count")
     args = parser.parse_args()
 
@@ -201,12 +252,17 @@ if __name__ == "__main__":
     session = JanusSession(args.url)
 
     loop = asyncio.get_event_loop()
+
+    ws_url = "ws://localhost:80/api/v1/session/ws/" + args.key
+
     try:
         loop.run_until_complete(
-            run(room=args.room, session=session)
+            run(room=args.room, session=session, ws_url=ws_url)
         )
     except KeyboardInterrupt:
         pass
+    except StopSignalReceived:
+        print("Exiting due to stop command")
     finally:
         loop.run_until_complete(session.destroy())
 
