@@ -18,6 +18,7 @@ func (s *SessionService) CreateSession(input *model.InputCreateSession) (*model.
 		SessionKey:     &input.SessionKey,
 		SessionKeyUsed: &input.SessionKeyUsed,
 		Room:           &input.Room,
+		Status:         &input.Status,
 		UserId:         &input.UserId,
 		CreatedAt:      &input.CreatedAt,
 	}
@@ -25,17 +26,17 @@ func (s *SessionService) CreateSession(input *model.InputCreateSession) (*model.
 	return s.repository.InsertSession(&session)
 }
 
-func (s *VideoService) UpdateSession(input *model.InputUpdateVideo) error {
+func (s *SessionService) UpdateSession(input *model.InputUpdateSession) error {
 
-	video := model.EntityVideo{
-		OutputDate:        input.OutputDate,
-		ProcessedFilename: &input.ProcessedFilename,
-		Status:            &input.Status,
-		Score:             &input.Score,
-		Id:                input.Id,
+	session := model.EntitySession{
+		OutputDate:     input.OutputDate,
+		SessionKeyUsed: &input.SessionKeyUsed,
+		Status:         &input.Status,
+		Score:          &input.Score,
+		Id:             input.Id,
 	}
 
-	return s.repository.UpdateVideo(&video)
+	return s.repository.UpdateSession(&session)
 }
 
 func (s *VideoService) GetSessionsByUserID(userId string) ([]*model.EntityVideo, error) {

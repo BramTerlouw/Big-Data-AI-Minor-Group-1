@@ -185,85 +185,85 @@ async def run(room, session, ws_url):
             send_message, receive_message_generator = await chat_client(websocket)
 
             # Wait for "ping" message and reply with "pong"
-            async for message in receive_message_generator():
-                try:
-                    message_data = json.loads(message)
-                except json.JSONDecodeError:
-                    errorData = {"sender": "bot", "type": "error", "body": {"response": "wrong json format"}}
-                    await send_message(json.dumps(errorData))
-                    print("Error: Unable to decode message")
-                    continue
+            try:
+                async for message in receive_message_generator():
+                    try:
+                        message_data = json.loads(message)
+                    except json.JSONDecodeError:
+                        errorData = {"sender": "bot", "type": "error", "body": {"response": "wrong json format"}}
+                        await send_message(json.dumps(errorData))
+                        print("Error: Unable to decode message")
+                        continue
 
-                if message_data.get("body", {}).get("request") == "ping" and message_data.get("sender") == "player":
-                    # join video room
-                    await session.create()
-                    plugin = await session.attach("janus.plugin.videoroom")
-                    response = await plugin.send(
-                        {
-                            "body": {
-                                "display": "Referee Bot",
-                                "ptype": "publisher",
-                                "request": "join",
-                                "room": room,
+                    if message_data.get("body", {}).get("request") == "stop" and message_data.get("sender") == "player":
+                        stopData = {"sender": "bot", "type": "message", "body": {"response": "stopped"}}
+                        await send_message(json.dumps(stopData))
+                        raise StopSignalReceived()
+
+                    elif message_data.get("body", {}).get("request") == "ping" and message_data.get("sender") == "player":
+                        # join video room
+                        await session.create()
+                        plugin = await session.attach("janus.plugin.videoroom")
+                        response = await plugin.send(
+                            {
+                                "body": {
+                                    "display": "Referee Bot",
+                                    "ptype": "publisher",
+                                    "request": "join",
+                                    "room": room,
+                                }
                             }
-                        }
-                    )
-                    publishers = response["plugindata"]["data"]["publishers"]
-
-                    if publishers:
-
-                        pongData = {"sender": "bot", "type": "message", "body": {"response": "pong"}}
-                        await send_message(json.dumps(pongData))
-                        print("Received 'ping', replied with 'pong'")
-
-                        print("Publisher found")
-                        for publisher in publishers:
-                            print("id: %(id)s, display: %(display)s" % publisher)
-
-                        # receive video
-                        await subscribe(
-                            session=session, room=room, feed=publishers[0]["id"], send_message=send_message
                         )
+                        publishers = response["plugindata"]["data"]["publishers"]
 
-                        # exchange media
-                        print("Exchanging media")
-                        try:
+                        if publishers:
+
+                            pongData = {"sender": "bot", "type": "message", "body": {"response": "pong"}}
+                            await send_message(json.dumps(pongData))
+                            print("Received 'ping', replied with 'pong'")
+
+                            print("Publisher found")
+                            for publisher in publishers:
+                                print("id: %(id)s, display: %(display)s" % publisher)
+
+                            # receive video
+                            await subscribe(
+                                session=session, room=room, feed=publishers[0]["id"], send_message=send_message
+                            )
+
+                            # exchange media
+                            print("Exchanging media")
                             async for message in receive_message_generator():
                                 try:
                                     message_data = json.loads(message)
+                                    if message_data.get("sender") != "player":
+                                        continue
+
+                                    if message_data.get("body", {}).get("request") == "stop":
+                                        stopData = {"sender": "bot", "type": "message", "body": {"response": "stopped"}}
+                                        await send_message(json.dumps(stopData))
+                                        raise StopSignalReceived()
+
+                                    elif message_data.get("body", {}).get("request") == "start":
+                                        startData = {"sender": "bot", "type": "message", "body": {"response": "started"}}
+                                        await send_message(json.dumps(startData))
+                                        print("Start command received")
+                                        sessionActive = True
+
+                                    elif message_data.get("body", {}).get("request") == "pause":
+                                        pauseData = {"sender": "bot", "type": "message", "body": {"response": "paused"}}
+                                        await send_message(json.dumps(pauseData))
+                                        print("Pause command received")
+                                        sessionActive = False
+
                                 except json.JSONDecodeError:
-                                    errorData = {"sender": "bot", "type": "error",
-                                                 "body": {"response": "wrong json format"}}
+                                    errorData = {"sender": "bot", "type": "error", "body": {"response": "wrong json format"}}
                                     await send_message(json.dumps(errorData))
                                     print("Error: Unable to decode message")
                                     continue
-
-                                if message_data.get("sender") != "player":
-                                    continue
-
-                                if message_data.get("body", {}).get("request") == "stop":
-                                    stopData = {"sender": "bot", "type": "message", "body": {"response": "stopped"}}
-                                    await send_message(json.dumps(stopData))
-                                    raise StopSignalReceived()
-
-                                elif message_data.get("body", {}).get("request") == "start":
-                                    startData = {"sender": "bot", "type": "message", "body": {"response": "started"}}
-                                    await send_message(json.dumps(startData))
-                                    print("Start command received")
-                                    sessionActive = True
-
-                                elif message_data.get("body", {}).get("request") == "pause":
-                                    pauseData = {"sender": "bot", "type": "message", "body": {"response": "paused"}}
-                                    await send_message(json.dumps(pauseData))
-                                    print("Pause command received")
-                                    sessionActive = False
-
-                        except StopSignalReceived:
-                            print("Stop command received, exiting...")
-                            break
-                    else:
-                        print("No publisher found, waiting for next 'ping' message")
-
+            except StopSignalReceived:
+                print("Stop command received, exiting...")
+                break
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Janus")
@@ -315,3 +315,4 @@ if __name__ == "__main__":
         # close peer connections
         coros = [pc.close() for pc in pcs]
         loop.run_until_complete(asyncio.gather(*coros))
+        exit(0)

@@ -100,28 +100,28 @@ func (r *SessionRepository) GetSessionsBySessionKey(sessionKey string) (*model.E
 	return &session, nil
 }
 
-func (r *VideoRepository) UpdateSession(video *model.EntityVideo) error {
+func (r *SessionRepository) UpdateSession(session *model.EntitySession) error {
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	filter := bson.M{"_id": video.Id}
+	filter := bson.M{"_id": session.Id}
 
 	updateFields := bson.M{}
 
-	if video.ProcessedFilename != nil && *video.ProcessedFilename != "" {
-		updateFields["processed_filename"] = video.ProcessedFilename
+	if session.Status != nil && *session.Status != "" {
+		updateFields["status"] = session.Status
 	}
 
-	if video.Status != nil && *video.Status != "" {
-		updateFields["status"] = video.Status
+	if session.SessionKeyUsed != nil {
+		updateFields["session_key_used"] = session.SessionKeyUsed
 	}
 
-	if video.OutputDate != nil {
-		updateFields["outputDate"] = video.OutputDate
+	if session.OutputDate != nil {
+		updateFields["outputDate"] = session.OutputDate
 	}
-	if video.Score != nil && len(*video.Score) != 0 {
-		updateFields["score"] = video.Score
+	if session.Score != nil && len(*session.Score) != 0 {
+		updateFields["score"] = session.Score
 	}
 
 	update := bson.M{"$set": updateFields}

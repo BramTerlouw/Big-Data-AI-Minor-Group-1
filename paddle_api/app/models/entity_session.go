@@ -21,7 +21,16 @@ type EntitySession struct {
 type InputCreateSession struct {
 	SessionKey     string
 	SessionKeyUsed bool
+	Status         string
 	Room           string
 	UserId         string
 	CreatedAt      time.Time
+}
+
+type InputUpdateSession struct {
+	Id             primitive.ObjectID
+	Status         string
+	SessionKeyUsed bool
+	OutputDate     *time.Time
+	Score          []ScoreData
 }

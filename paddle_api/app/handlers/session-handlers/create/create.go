@@ -6,9 +6,11 @@ import (
 	"log"
 	"net/http"
 	"os/exec"
+	model "paddle-api/models"
 	"paddle-api/services"
 	util "paddle-api/utils"
 	"strconv"
+	"time"
 )
 
 type handler struct {
@@ -55,6 +57,14 @@ func (h *handler) CreateSessionHandler(ctx *gin.Context) {
 		if err != nil {
 			log.Println("Error executing Stream script:", err)
 			ctx.JSON(http.StatusBadRequest, gin.H{"error": "Something went wrong, try again."})
+			currentTime := time.Now()
+
+			e := h.sessionService.UpdateSession(&model.InputUpdateSession{Id: session.Id, Status: "Failed", OutputDate: &currentTime})
+
+			if e != nil {
+				log.Fatal(e)
+			}
+
 			return
 		}
 		fmt.Println(*session.Room)
@@ -66,7 +76,12 @@ func (h *handler) CreateSessionHandler(ctx *gin.Context) {
 		}
 
 		// logic here for score upload
+		currentTime := time.Now()
+		e := h.sessionService.UpdateSession(&model.InputUpdateSession{Id: session.Id, Status: "Processed", SessionKeyUsed: true, OutputDate: &currentTime})
 
+		if e != nil {
+			log.Fatal(e)
+		}
 	}()
 
 	ctx.JSON(http.StatusOK, gin.H{"message": "session has started"})

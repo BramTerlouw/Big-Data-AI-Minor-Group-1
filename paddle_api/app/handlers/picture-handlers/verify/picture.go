@@ -67,7 +67,7 @@ func (h *handler) CreatePictureHandler(ctx *gin.Context) {
 		log.Fatal(err)
 	}
 
-	createdSession, createdSessionError := h.sessionService.CreateSession(&model.InputCreateSession{SessionKey: generateSessionKey().String(), SessionKeyUsed: false, Room: strconv.FormatInt(generateRoom(), 10), UserId: userid, CreatedAt: time.Now()})
+	createdSession, createdSessionError := h.sessionService.CreateSession(&model.InputCreateSession{SessionKey: generateSessionKey().String(), SessionKeyUsed: false, Room: strconv.FormatInt(generateRoom(), 10), UserId: userid, CreatedAt: time.Now(), Status: "Created"})
 	if createdSessionError != nil {
 		log.Fatal(createdSessionError)
 	}
