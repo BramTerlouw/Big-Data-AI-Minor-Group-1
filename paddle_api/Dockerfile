@@ -40,7 +40,7 @@ ENV PATH="/usr/bin/python3.9:${PATH}"
 #RUN pip3 install torch torchvision torchaudio
 
 RUN pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
-RUN pip install opencv-python ultralytics
+RUN pip install opencv-python ultralytics aiortc aiohttp websockets
 RUN pip install matplotlib numpy Pillow PyYAML requests scipy tqdm pandas seaborn
 
 # Set environment variables

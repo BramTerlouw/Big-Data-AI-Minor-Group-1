@@ -40,7 +40,7 @@ func createVideoRoom(room int) bool {
 		return false
 	}
 
-	baseUrl := "http://localhost:8088/janus/" + sessionEndpoint + "/" + pluginEndpoint
+	baseUrl := "http://janus-gateway:8088/janus/" + sessionEndpoint + "/" + pluginEndpoint
 
 	data := struct {
 		Janus       string `json:"janus"`
@@ -119,7 +119,7 @@ func destroyVideoRoom(room int) bool {
 		return false
 	}
 
-	baseUrl := "http://localhost:8088/janus/" + sessionEndpoint + "/" + pluginEndpoint
+	baseUrl := "http://janus-gateway:8088/janus/" + sessionEndpoint + "/" + pluginEndpoint
 
 	data := struct {
 		Janus       string `json:"janus"`
@@ -182,7 +182,7 @@ func destroyVideoRoom(room int) bool {
 
 func createSessionEndpoint(transactionId string) (string, error) {
 	// Set the request URL and data
-	baseUrl := "http://localhost:8088/janus"
+	baseUrl := "http://janus-gateway:8088/janus"
 	data := struct {
 		Janus       string `json:"janus"`
 		Transaction string `json:"transaction"`
@@ -230,7 +230,7 @@ func createSessionEndpoint(transactionId string) (string, error) {
 }
 
 func createPluginEndpoint(transactionId, sessionId, plugin string) (string, error) {
-	baseUrl := "http://localhost:8088/janus/" + sessionId
+	baseUrl := "http://janus-gateway:8088/janus/" + sessionId
 
 	data := struct {
 		Janus       string `json:"janus"`

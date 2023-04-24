@@ -78,7 +78,7 @@ func (h *handler) CreatePictureHandler(ctx *gin.Context) {
 	}
 
 	if outputBool {
-		ctx.JSON(http.StatusOK, gin.H{"message": "Persons are standing in correct position, proceed with filming!", "sessionCode": createdSession.SessionKey})
+		ctx.JSON(http.StatusOK, gin.H{"message": "Persons are standing in correct position, proceed with filming!", "sessionCode": createdSession.SessionKey, "room": createdSession.Room})
 	} else {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Persons are standing to close"})
 	}

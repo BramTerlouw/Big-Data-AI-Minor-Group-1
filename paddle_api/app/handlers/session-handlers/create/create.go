@@ -48,7 +48,7 @@ func (h *handler) CreateSessionHandler(ctx *gin.Context) {
 	}
 
 	go func() {
-		cmd := exec.Command("python3.9", "python/Stream.py", "-r", *session.Room)
+		cmd := exec.Command("python3.9", "python/stream/Stream.py", "--room", *session.Room, "--key", sessionKey, "http://janus-gateway:8088/janus")
 		print(cmd.Err)
 		// Execute the command
 		output, err := cmd.Output()
@@ -64,6 +64,9 @@ func (h *handler) CreateSessionHandler(ctx *gin.Context) {
 		if util.EndSession(roomInt) == false {
 			ctx.JSON(http.StatusNotFound, gin.H{"error": "Something went wrong, try again."})
 		}
+
+		// logic here for score upload
+
 	}()
 
 	ctx.JSON(http.StatusOK, gin.H{"message": "session has started"})

@@ -1,12 +1,12 @@
 import argparse
 import asyncio
+import json
 import logging
 import random
 import string
 import time
-import cv2
+
 import aiohttp
-import aioconsole
 import websockets
 from aiortc import RTCPeerConnection, RTCSessionDescription
 
@@ -16,14 +16,11 @@ pcs = set()
 class StopSignalReceived(Exception):
     pass
 
+
 async def chat_client(websocket):
     print("Connection opened")
 
-    last_sent_message = None
-
     async def send_message(message):
-        nonlocal last_sent_message
-        last_sent_message = message
         await websocket.send(message)
 
     async def receive_message():
@@ -136,13 +133,16 @@ async def subscribe(session, room, feed, send_message):
 
                     if sessionActive:
                         # Send a message with the received frame
-                        await send_message("Processing frame")
+                        procData = {"sender": "bot", "type": "message", "body": {"response": "processing frame"}}
+                        await send_message(json.dumps(procData))
 
-                        cv2.imshow("Frame", img)
-                        if cv2.waitKey(1) & 0xFF == ord("q"):
-                            break
+                        # place for paddle detection and score logic
+
+
+
                     else:
-                        await asyncio.sleep(0.1)  # Add this line to wait when session is not active
+                        # wait when session is not active
+                        await asyncio.sleep(0.1)
 
                 except Exception as e:
                     print("Error processing frame:", e)
@@ -176,55 +176,93 @@ async def subscribe(session, room, feed, send_message):
 
 
 async def run(room, session, ws_url):
-    await session.create()
     global sessionActive
     sessionActive = False
 
-    # join video room
-    plugin = await session.attach("janus.plugin.videoroom")
-    response = await plugin.send(
-        {
-            "body": {
-                "display": "Referee Bot",
-                "ptype": "publisher",
-                "request": "join",
-                "room": room,
-            }
-        }
-    )
-    publishers = response["plugindata"]["data"]["publishers"]
-    for publisher in publishers:
-        print("id: %(id)s, display: %(display)s" % publisher)
+    while True:
+        # connect to websocket
+        async with websockets.connect(ws_url) as websocket:
+            send_message, receive_message_generator = await chat_client(websocket)
 
-    # connect to websocket
-    async with websockets.connect(ws_url) as websocket:
-        send_message, receive_message_generator = await chat_client(websocket)
-
-        # receive video
-        if publishers:
-            await subscribe(
-                session=session, room=room, feed=publishers[0]["id"], send_message=send_message
-            )
-
-        # exchange media
-        print("Exchanging media")
-        try:
+            # Wait for "ping" message and reply with "pong"
             async for message in receive_message_generator():
-                if message == "stop":
-                    await send_message("stopped")
-                    raise StopSignalReceived()
-                elif message == "start":
-                    await send_message("started")
-                    print("Start command received")
-                    sessionActive = True
-                elif message == "pause":
-                    await send_message("paused")
-                    print("Pause command received")
-                    sessionActive = False
-                else:
-                    print(f"Received: {message}")
-        except StopSignalReceived:
-            print("Stop command received, exiting...")
+                try:
+                    message_data = json.loads(message)
+                except json.JSONDecodeError:
+                    errorData = {"sender": "bot", "type": "error", "body": {"response": "wrong json format"}}
+                    await send_message(json.dumps(errorData))
+                    print("Error: Unable to decode message")
+                    continue
+
+                if message_data.get("body", {}).get("request") == "ping" and message_data.get("sender") == "player":
+                    # join video room
+                    await session.create()
+                    plugin = await session.attach("janus.plugin.videoroom")
+                    response = await plugin.send(
+                        {
+                            "body": {
+                                "display": "Referee Bot",
+                                "ptype": "publisher",
+                                "request": "join",
+                                "room": room,
+                            }
+                        }
+                    )
+                    publishers = response["plugindata"]["data"]["publishers"]
+
+                    if publishers:
+
+                        pongData = {"sender": "bot", "type": "message", "body": {"response": "pong"}}
+                        await send_message(json.dumps(pongData))
+                        print("Received 'ping', replied with 'pong'")
+
+                        print("Publisher found")
+                        for publisher in publishers:
+                            print("id: %(id)s, display: %(display)s" % publisher)
+
+                        # receive video
+                        await subscribe(
+                            session=session, room=room, feed=publishers[0]["id"], send_message=send_message
+                        )
+
+                        # exchange media
+                        print("Exchanging media")
+                        try:
+                            async for message in receive_message_generator():
+                                try:
+                                    message_data = json.loads(message)
+                                except json.JSONDecodeError:
+                                    errorData = {"sender": "bot", "type": "error",
+                                                 "body": {"response": "wrong json format"}}
+                                    await send_message(json.dumps(errorData))
+                                    print("Error: Unable to decode message")
+                                    continue
+
+                                if message_data.get("sender") != "player":
+                                    continue
+
+                                if message_data.get("body", {}).get("request") == "stop":
+                                    stopData = {"sender": "bot", "type": "message", "body": {"response": "stopped"}}
+                                    await send_message(json.dumps(stopData))
+                                    raise StopSignalReceived()
+
+                                elif message_data.get("body", {}).get("request") == "start":
+                                    startData = {"sender": "bot", "type": "message", "body": {"response": "started"}}
+                                    await send_message(json.dumps(startData))
+                                    print("Start command received")
+                                    sessionActive = True
+
+                                elif message_data.get("body", {}).get("request") == "pause":
+                                    pauseData = {"sender": "bot", "type": "message", "body": {"response": "paused"}}
+                                    await send_message(json.dumps(pauseData))
+                                    print("Pause command received")
+                                    sessionActive = False
+
+                        except StopSignalReceived:
+                            print("Stop command received, exiting...")
+                            break
+                    else:
+                        print("No publisher found, waiting for next 'ping' message")
 
 
 if __name__ == "__main__":
@@ -253,22 +291,27 @@ if __name__ == "__main__":
 
     loop = asyncio.get_event_loop()
 
-    ws_url = "ws://localhost:80/api/v1/session/ws/" + args.key
+    ws_url = "ws://app:8081/api/v1/session/ws/" + args.key
 
     try:
+        # Set the timeout to 30 minutes (30*60 seconds), so the bot stops after 30 minutes
+        timeout = 30 * 60
         loop.run_until_complete(
-            run(room=args.room, session=session, ws_url=ws_url)
+            asyncio.wait_for(
+                run(room=args.room, session=session, ws_url=ws_url),
+                timeout=timeout,
+            )
         )
     except KeyboardInterrupt:
         pass
     except StopSignalReceived:
         print("Exiting due to stop command")
-    finally:
-        loop.run_until_complete(session.destroy())
+    except asyncio.TimeoutError:
+        print("Exiting due to 30-minute timeout")
 
+    finally:
+        # destroy session
+        loop.run_until_complete(session.destroy())
         # close peer connections
         coros = [pc.close() for pc in pcs]
         loop.run_until_complete(asyncio.gather(*coros))
-
-        # Release the OpenCV resources
-        cv2.destroyAllWindows()
