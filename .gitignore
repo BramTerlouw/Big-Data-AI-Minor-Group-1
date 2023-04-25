@@ -15,3 +15,33 @@ paddle_api/app/paddle_app.file
 ~
 paddle_api/app/processedVideos/*
 paddle_api/app/paddle_api.exe
+
+# Ionic
+/.ionic
+/www
+/platforms
+/plugins
+
+# Node
+/node_modules
+npm-debug.log
+yarn-error.log
+
+# Visual Studio Code
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+.history/*
+
+
+# Miscellaneous
+/.angular
+/.angular/cache
+.sass-cache/
+/connect.lock
+/coverage
+/libpeerconnection.log
+testem.log
+/typings
