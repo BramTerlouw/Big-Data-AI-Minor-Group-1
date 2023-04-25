@@ -21,6 +21,7 @@ paddle_api/app/paddle_api.exe
 /www
 /platforms
 /plugins
+/android
 
 # Node
 /node_modules
