@@ -22,9 +22,15 @@ paddle_api/app/paddle_api.exe
 /platforms
 /plugins
 /android
+.ionic
+www
+platforms
+plugins
+android
 
 # Node
 /node_modules
+node_modules
 npm-debug.log
 yarn-error.log
 
@@ -40,6 +46,8 @@ yarn-error.log
 # Miscellaneous
 /.angular
 /.angular/cache
+.angular
+.angular/cache
 .sass-cache/
 /connect.lock
 /coverage

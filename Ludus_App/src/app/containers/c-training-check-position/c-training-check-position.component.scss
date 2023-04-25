@@ -1,0 +1,99 @@
+.container {
+    width: 80%;
+    margin: 20px auto;
+
+    .header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 10px 0 10px 10px;
+        margin: 0 0 10px 0;
+
+        font-size: 14px;
+        font-weight: 100;
+        font-style: italic;
+
+        border-bottom: 1px solid #03a9f4;
+
+        .btn-ip {
+            margin: 5px;
+            font-size: 12px;
+        }
+    }
+
+    .position-info {
+        margin: 0 20px;
+        
+        color: darkgray;
+        font-style: italic;
+        font-size: 12px;
+    }
+
+    .proccessing-info {
+        margin: 20px 0 0 0;
+        padding: 10px 5px;
+        font-weight: 600;
+        background-color: lightgray;
+        border-radius: 2px;
+
+        &--faulty-pos {
+            border: 1px solid red;
+        }
+
+        &--processing-pos {
+            border: 1px solid orange;
+        }
+
+        &--approved-pos {
+            border: 1px solid green;
+        }
+
+        .picture-status {
+            font-weight: 400;
+            font-style: italic;
+
+            &--faulty-pos {
+                color: red;
+                font-weight: 600;
+            }
+
+            &--processing-pos {
+                color: orange;
+                font-weight: 600;
+            }
+    
+            &--approved-pos {
+                color: green;
+                font-weight: 600;
+            }
+        }
+    }
+
+    .camera-press {
+        margin: 20px 0 0 0;
+
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+
+        .camera-press-info {
+            font-size: 12px;
+            font-style: italic;
+        }
+    }
+
+    .button-section {
+        width: 100%;
+        margin: 40px auto 10px auto;
+        display: flex;
+        justify-content: space-between;
+
+        button {
+            width: 100px;
+            background: rgb(3,169,244);
+            border-radius: 5px;
+            padding: 10px;
+        }
+    }
+}

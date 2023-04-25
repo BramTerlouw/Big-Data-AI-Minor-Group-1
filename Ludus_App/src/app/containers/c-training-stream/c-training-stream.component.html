@@ -1,0 +1,29 @@
+<section class="container">
+  <header>
+    <h1 class="header">Step 3: Stream training</h1>
+  </header>
+
+  <div class="position-info">
+    <ol>
+      <li>When ahtlete is ready, start stream.</li>
+      <li>Keep camera centered on the trainig.</li>
+      <li>See live feedback on the phone.</li>
+      <li>Stop streaming when training is done.</li>
+    </ol>
+  </div>
+
+  <!-- <div class="stream"></div> -->
+  <video #videoElement autoplay></video>
+  
+  <div class="camera-press">
+    <ion-fab-button color="dark" (click)="setStreamStarted()">
+      <ion-icon name="ellipse" [color]="getRecColor()"></ion-icon>
+    </ion-fab-button>
+  </div>
+
+  <div class="processed-data">
+    <ul id="terminal">
+    </ul>
+  </div>
+
+</section>

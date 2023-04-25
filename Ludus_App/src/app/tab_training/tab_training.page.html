@@ -1,0 +1,26 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>
+      Ludus Alliance
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content
+  [fullscreen]="true" 
+  class="ion-padding">
+  
+  <app-c-training-start 
+    *ngIf="step=='start'"
+    (stepEmitter)="changeStep($event)">
+  </app-c-training-start>
+
+  <app-c-training-check-position
+    *ngIf="step=='check'"
+    (stepEmitter)="changeStep($event)">
+  </app-c-training-check-position>
+  
+  <app-c-training-stream
+    *ngIf="step=='stream'">
+  </app-c-training-stream>
+</ion-content>
