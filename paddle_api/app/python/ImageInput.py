@@ -1,6 +1,5 @@
 import argparse
-import json
-
+import os
 from BaseInput import BaseInput
 
 parser = argparse.ArgumentParser(

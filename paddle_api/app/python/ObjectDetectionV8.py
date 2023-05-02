@@ -1,5 +1,4 @@
 from typing import Optional, Any
-
 import torch
 import numpy as np
 from ultralytics import YOLO
@@ -12,7 +11,7 @@ class ObjectDetectionV8:
         if ObjectDetectionV8.__instance is not None:
             raise Exception("Singleton instance already exists. Use get_instance() method to get the instance.")
         else:
-            self.model_name = 'C:/Users/merli/big-data-ai-minor/paddle_api/app/python/model/yolov5.pt'
+            self.model_name = 'python/model/yolov5.pt'
             self.model = self._load_model(self.model_name)
             self.classes = self.model.names
             self.device = 'cuda' if torch.cuda.is_available() else 'cpu'

@@ -34,8 +34,6 @@ class ProcessVideo:
             if not ret:
                 break
 
-            frame = cv2.resize(frame, (640, 640))
-
             frame_count += 1
             if frame_count % round(fps / self.fps_processing) != 0:
                 continue
@@ -45,6 +43,8 @@ class ProcessVideo:
             out_video.write(frame)
 
     def get_prediction(self, frame):
+
+        frame = cv2.resize(frame, (640, 640))
         # !!!!! ----- Step 1: Detection ----- !!!!!
         predictions = self.v8.generate_predictions(frame)
 
@@ -64,6 +64,7 @@ class ProcessVideo:
             self.show_predictions(frame, coords, self.v8.get_classes())
 
             # !!!!! ----- Step 4: Get/Show score ----- !!!!!
+
             self.score.process_score(
                 distance_results.distance_between_humans,
                 distance_results.pos_player_without_paddle,

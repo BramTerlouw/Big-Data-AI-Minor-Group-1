@@ -103,14 +103,14 @@ func (h *handler) CreateVideoHandler(ctx *gin.Context) {
 
 		e := os.Remove("input/videos/" + filename)
 		if e != nil {
-			log.Fatal(e)
+			log.Println(e)
 		}
 
 		// everything went good
 		currentTime := time.Now()
 		e = h.videoService.UpdateVideo(&model.InputUpdateVideo{ProcessedFilename: filename, Id: videoId, Score: scoreData, Status: "Processed", OutputDate: &currentTime})
 		if e != nil {
-			log.Fatal(e)
+			log.Println(e)
 		}
 	}()
 }

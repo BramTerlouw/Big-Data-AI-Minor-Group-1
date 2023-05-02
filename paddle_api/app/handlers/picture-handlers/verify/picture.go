@@ -64,7 +64,7 @@ func (h *handler) CreatePictureHandler(ctx *gin.Context) {
 	// Parse the boolean value
 	outputBool, err := strconv.ParseBool(str)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal(output)
 	}
 
 	createdSession, createdSessionError := h.sessionService.CreateSession(&model.InputCreateSession{SessionKey: generateSessionKey().String(), SessionKeyUsed: false, Room: strconv.FormatInt(generateRoom(), 10), UserId: userid, CreatedAt: time.Now(), Status: "Created"})

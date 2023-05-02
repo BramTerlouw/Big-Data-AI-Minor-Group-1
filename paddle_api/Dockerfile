@@ -37,8 +37,6 @@ RUN apt-get update && \
 # Add Python 3.9 to the PATH
 ENV PATH="/usr/bin/python3.9:${PATH}"
 
-#RUN pip3 install torch torchvision torchaudio
-
 RUN pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
 RUN pip install opencv-python ultralytics aiortc aiohttp websockets
 RUN pip install matplotlib numpy Pillow PyYAML requests scipy tqdm pandas seaborn
@@ -67,6 +65,8 @@ RUN echo "#!/bin/bash" > /startup.sh && \
     echo "service ssh start" >> /startup.sh && \
     echo "cd /app" >> /startup.sh && \
     echo "rm .env" >> /startup.sh && \
+    echo "mkdir -p /root/.cache/torch/hub" >> /startup.sh && \
+    echo "touch /root/.cache/torch/hub/requirements.txt" >> /startup.sh && \
     echo 'echo "# APP DEVELOPMENT ENV" >> .env' >> /startup.sh && \
     echo "echo 'GO_PORT = $GO_PORT' >> .env" >> /startup.sh && \
     echo "echo 'GO_ENV = $GO_ENV' >> .env" >> /startup.sh && \
