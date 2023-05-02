@@ -1,5 +1,5 @@
 from typing import Any
-
+import cv2
 import numpy as np
 
 from DTO.CoordsDTO import CoordsDTO
@@ -33,6 +33,8 @@ class ProcessVideo:
 
             if not ret:
                 break
+
+            frame = cv2.resize(frame, (640, 640))
 
             frame_count += 1
             if frame_count % round(fps / self.fps_processing) != 0:

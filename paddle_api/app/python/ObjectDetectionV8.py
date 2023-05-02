@@ -1,6 +1,7 @@
 from typing import Optional, Any
 
 import torch
+import numpy as np
 from ultralytics import YOLO
 
 
@@ -11,7 +12,7 @@ class ObjectDetectionV8:
         if ObjectDetectionV8.__instance is not None:
             raise Exception("Singleton instance already exists. Use get_instance() method to get the instance.")
         else:
-            self.model_name = 'python/model/paddle_and_human_yolov8m_v2.pt'
+            self.model_name = 'C:/Users/merli/big-data-ai-minor/paddle_api/app/python/model/yolov5.pt'
             self.model = self._load_model(self.model_name)
             self.classes = self.model.names
             self.device = 'cuda' if torch.cuda.is_available() else 'cpu'
@@ -26,23 +27,25 @@ class ObjectDetectionV8:
     @classmethod
     def _load_model(cls, model_name: str) -> YOLO:
         if model_name:
-            return YOLO(model_name)
+            return torch.hub.load(
+                'ultralytics/yolov5', 'custom',
+                path=model_name
+            )
         else:
             raise ValueError("Model not found: " + model_name)
 
     def generate_predictions(self, frame):
-        frame_predictions = self.model.predict(source=frame, conf=0.25, save=False)
+        frame_predictions = self.model(frame)
         return self.convert_to_coordinates(frame_predictions)
 
     def convert_to_coordinates(self, detection_output) -> Optional[dict[Any, list[Any]]]:
-        data_results = detection_output[0].cpu()
+        data_results = detection_output.xyxy[0].tolist()
         dict_coordinates = {}
 
         for result in data_results:
-            box = result.boxes[0]
 
-            class_id = box.cls.numpy()[0]
-            bounding_box = box.xyxy.numpy()[0]
+            bounding_box = np.array(result[:4])  # Slicing first 4 elements
+            class_id = np.float32(result[5])  # Casting 5th element to integer
 
             if class_id in dict_coordinates:
                 dict_coordinates[class_id].append(bounding_box)
