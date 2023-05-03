@@ -64,17 +64,21 @@ func (h *handler) CreatePictureHandler(ctx *gin.Context) {
 	// Parse the boolean value
 	outputBool, err := strconv.ParseBool(str)
 	if err != nil {
-		log.Fatal(output)
+		fmt.Println("Error executing ImageInput script:", err)
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Something went wrong, try again."})
+		return
 	}
 
 	createdSession, createdSessionError := h.sessionService.CreateSession(&model.InputCreateSession{SessionKey: generateSessionKey().String(), SessionKeyUsed: false, Room: strconv.FormatInt(generateRoom(), 10), UserId: userid, CreatedAt: time.Now(), Status: "Created"})
 	if createdSessionError != nil {
-		log.Fatal(createdSessionError)
+		fmt.Println("Error executing ImageInput script:", err)
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Something went wrong, try again."})
+		return
 	}
 
 	e := os.Remove("input/images/" + filename)
 	if e != nil {
-		log.Fatal(e)
+		log.Println(e)
 	}
 
 	if outputBool {
