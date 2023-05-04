@@ -6,7 +6,7 @@ import { Component } from '@angular/core';
   styleUrls: ['tab_training.page.scss']
 })
 export class TabTrainingPage {
-  public step: 'start' | 'check' | 'stream' = 'check';
+  public step: 'start' | 'check' | 'stream' = 'stream';
 
   constructor() {}
 

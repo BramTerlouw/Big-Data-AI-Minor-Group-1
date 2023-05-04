@@ -32,7 +32,11 @@
               }
             ],
             "styles": ["src/theme/variables.scss", "src/global.scss"],
-            "scripts": []
+            "scripts": [
+              "src/assets/janus.js",
+              "src/assets/settings.js",
+              "src/assets/videoroomtest.js"
+            ]
           },
           "configurations": {
             "production": {
