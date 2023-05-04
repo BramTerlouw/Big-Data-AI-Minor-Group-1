@@ -136,8 +136,16 @@ async def subscribe(session, room, feed, send_message):
                         procData = {"sender": "bot", "type": "message", "body": {"response": "processing frame"}}
                         await send_message(json.dumps(procData))
 
-                        # place for paddle detection and score logic
 
+
+
+
+
+
+
+
+                        # Plaats hier de logica die de frame naar frame logic stuurt en feedback terug krijgt
+                        # zoals iets als results = streamlogic(frame)
 
 
                     else:
