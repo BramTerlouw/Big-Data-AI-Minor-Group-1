@@ -31,6 +31,9 @@ class ImageInput(BaseInput):
         super().__init__(args['userid'], args['file'], 'false', 10)
 
     def get_result(self):
+        if not self.score.get_score():
+            return print(False)
+
         return print(self.score.get_score()[0]['dist_humans'] > 50)
 
 
