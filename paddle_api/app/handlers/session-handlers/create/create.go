@@ -46,7 +46,7 @@ func (h *handler) CreateSessionHandler(ctx *gin.Context) {
 	}
 	//
 	//go func() {
-	//	cmd := exec.Command("python3.9", "python/stream/Stream.py", "--room", *session.Room, "--key", sessionKey, "http://janus-gateway:8088/janus")
+	//	cmd := exec.Command("python3.9", "python/Stream.py", "--room", *session.Room, "--key", sessionKey, "http://janus-gateway:8088/janus")
 	//	print(cmd.Err)
 	//	// Execute the command
 	//	output, err := cmd.Output()

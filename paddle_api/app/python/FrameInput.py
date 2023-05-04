@@ -6,7 +6,7 @@ class FrameInput(BaseInput):
         super().__init__(-1, frame, 'false', 10)
 
     def get_result(self):
-        return print(self.score.get_score())
+        return self.score.get_score()
 
 # frame_input = FrameInput(frame)
 # frame_input.load_input()
