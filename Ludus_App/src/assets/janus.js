@@ -107,6 +107,7 @@ Janus.useDefaultDependencies = function (deps) {
 			};
 			if(options.verb === "POST") {
 				fetchOptions.headers['Content-Type'] = 'application/json';
+				// fetchOptions.headers['Content-Type'] = 'text/plain';
 			}
 			if(typeof options.withCredentials !== 'undefined') {
 				fetchOptions.credentials = options.withCredentials === true ? 'include' : (options.withCredentials ? options.withCredentials : 'omit');
@@ -144,6 +145,7 @@ Janus.useDefaultDependencies = function (deps) {
 								Janus.error('Unhandled httpAPICall success callback error', error);
 							}
 						}, function(error) {
+							console.log(response)
 							return p.reject({message: 'Failed to parse response body', error: error, response: response});
 						});
 					}

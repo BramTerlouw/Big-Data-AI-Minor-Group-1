@@ -1,7 +1,5 @@
 import { Component } from '@angular/core';
 
-declare function registerUsername(): any;
-
 @Component({
   selector: 'app-c-training-stream',
   templateUrl: './c-training-stream.component.html',
@@ -10,19 +8,6 @@ declare function registerUsername(): any;
 export class CTrainingStreamComponent {
 
   public stream_started: Boolean = false;
-
-  // checkEnter(event: KeyboardEvent): boolean {
-  //   let theCode = event.key ? event.key : event.key ? event.key : event.key;
-  //   console.log(theCode)
-  //   if(theCode == 'Enter') {
-  //     registerUsername();
-  //     return false;
-  //   } else {
-  //     return true;
-  //   }
-  // }
-
-  // -------------------- //
 
   setStreamStarted = () => {
     this.stream_started = !this.stream_started;
