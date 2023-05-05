@@ -7,6 +7,7 @@ import string
 import time
 import aiohttp
 import websockets
+from StreamLogic import stream_logic
 from aiortc import RTCPeerConnection, RTCSessionDescription
 
 
@@ -136,8 +137,7 @@ async def subscribe(session, room, feed, send_message):
                         procData = {"sender": "bot", "type": "message", "body": {"response": "processing frame"}}
                         await send_message(json.dumps(procData))
 
-
-
+                        result = stream_logic(frame)
 
 
 
