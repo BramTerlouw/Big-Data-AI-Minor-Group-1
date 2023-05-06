@@ -3,24 +3,24 @@ import torch
 import numpy as np
 
 
-class ObjectDetectionV8:
+class ObjectDetectionV5:
     __instance = None
 
     def __init__(self):
-        if ObjectDetectionV8.__instance is not None:
+        if ObjectDetectionV5.__instance is not None:
             raise Exception("Singleton instance already exists. Use get_instance() method to get the instance.")
         else:
             self.model_name = 'python/model/yolov5.pt'
             self.model = self._load_model(self.model_name)
             self.classes = self.model.names
             self.device = 'cuda' if torch.cuda.is_available() else 'cpu'
-            ObjectDetectionV8.__instance = self
+            ObjectDetectionV5.__instance = self
 
     @classmethod
     def get_instance(cls) -> 'ObjectDetectionV8':
-        if ObjectDetectionV8.__instance is None:
-            ObjectDetectionV8()
-        return ObjectDetectionV8.__instance
+        if ObjectDetectionV5.__instance is None:
+            ObjectDetectionV5()
+        return ObjectDetectionV5.__instance
 
     @classmethod
     def _load_model(cls, model_name: str):
@@ -61,4 +61,4 @@ class ObjectDetectionV8:
 
 
 # Create a new object and execute.
-object_detection = ObjectDetectionV8.get_instance()
+object_detection = ObjectDetectionV5.get_instance()
