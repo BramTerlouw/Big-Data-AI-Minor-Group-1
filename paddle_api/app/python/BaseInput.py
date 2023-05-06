@@ -1,6 +1,6 @@
 import cv2
 
-from ProcessVideo import ProcessVideo
+from FrameInference import ProcessVideo
 from Score import Score
 
 

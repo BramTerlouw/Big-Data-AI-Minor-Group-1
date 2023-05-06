@@ -6,7 +6,7 @@ from DTO.CoordsDTO import CoordsDTO
 from DTO.DistanceDTO import DistanceDTO
 from BoundingBoxRenderer import BoundingBoxRenderer
 from Distance import Distance
-from ObjectDetectionV8 import ObjectDetectionV8
+from ObjectDetectionV5 import ObjectDetectionV8
 from Score import Score
 
 

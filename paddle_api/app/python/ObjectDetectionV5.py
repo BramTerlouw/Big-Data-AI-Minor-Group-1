@@ -1,7 +1,6 @@
 from typing import Optional, Any
 import torch
 import numpy as np
-from ultralytics import YOLO
 
 
 class ObjectDetectionV8:
@@ -24,7 +23,7 @@ class ObjectDetectionV8:
         return ObjectDetectionV8.__instance
 
     @classmethod
-    def _load_model(cls, model_name: str) -> YOLO:
+    def _load_model(cls, model_name: str):
         if model_name:
             return torch.hub.load(
                 'ultralytics/yolov5', 'custom',
