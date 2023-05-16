@@ -122,6 +122,7 @@ async def subscribe(session, room, feed, send_message):
 
     @pc.on("track")
     async def on_track(track):
+        global sessionActive
         print("Track %s received" % track.kind)
 
         if track.kind == "video":
@@ -133,19 +134,19 @@ async def subscribe(session, room, feed, send_message):
                     img = frame.to_ndarray(format="bgr24")
 
                     if sessionActive:
-                        # Send a message with the received frame
-                        procData = {"sender": "bot", "type": "message", "body": {"response": "processing frame"}}
-                        await send_message(json.dumps(procData))
+                        result = stream_logic(img)
 
-                        result = stream_logic(frame)
+                        if len(result) < 0:
+                            sessionActive = False
+                            procData = {"sender": "bot", "type": "error",
+                                        "body": {"response": "No Persons or paddle detected!"}}
+                            await send_message(json.dumps(procData))
 
-
-
-
-
-
-                        # Plaats hier de logica die de frame naar frame logic stuurt en feedback terug krijgt
-                        # zoals iets als results = streamlogic(frame)
+                        if result[0]['dist_humans'] < 50:
+                            sessionActive = False
+                            procData = {"sender": "bot", "type": "error",
+                                        "body": {"response": "Person distance to close with paddle!"}}
+                            await send_message(json.dumps(procData))
 
 
                     else:
@@ -274,39 +275,44 @@ async def run(room, session, ws_url):
                 break
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Janus")
-    parser.add_argument("url", help="Janus root URL, e.g. http://localhost:8088/janus")
-    parser.add_argument(
-        "--room",
-        type=int,
-        required=True,
-        help="The room ID to join.",
-    )
-    parser.add_argument(
-        "--key",
-        type=str,
-        required=True,
-        help="key to join the message room",
-    )
-    parser.add_argument("--verbose", "-v", action="count")
-    args = parser.parse_args()
+    # parser = argparse.ArgumentParser(description="Janus")
+    # parser.add_argument("url", help="Janus root URL, e.g. http://localhost:8088/janus")
+    # parser.add_argument(
+    #     "--room",
+    #     type=int,
+    #     required=True,
+    #     help="The room ID to join.",
+    # )
+    # parser.add_argument(
+    #     "--key",
+    #     type=str,
+    #     required=True,
+    #     help="key to join the message room",
+    # )
+    # parser.add_argument("--verbose", "-v", action="count")
+    # args = parser.parse_args()
 
-    if args.verbose:
-        logging.basicConfig(level=logging.DEBUG)
+    # if args.verbose:
+    #     logging.basicConfig(level=logging.DEBUG)
 
     # create signaling and peer connection
-    session = JanusSession(args.url)
+    # session = JanusSession(args.url)
+
+    # model = torch.hub.load('ultralytics/yolov5', 'custom', path='best.pt')
+
+    session = JanusSession("http://localhost:8088/janus")
 
     loop = asyncio.get_event_loop()
 
-    ws_url = "ws://app:8081/api/v1/session/ws/" + args.key
+    # ws_url = "ws://app:8081/api/v1/session/ws/" + args.key
+    ws_url = "ws://localhost:80/api/v1/session/ws/63b416cf-f9e8-417d-b241-6c1a9b6a51d8"
 
     try:
         # Set the timeout to 30 minutes (30*60 seconds), so the bot stops after 30 minutes
         timeout = 30 * 60
         loop.run_until_complete(
             asyncio.wait_for(
-                run(room=args.room, session=session, ws_url=ws_url),
+                run(room=50691680, session=session, ws_url=ws_url),
                 timeout=timeout,
             )
         )

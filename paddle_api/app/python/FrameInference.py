@@ -6,7 +6,7 @@ from DTO.CoordsDTO import CoordsDTO
 from DTO.DistanceDTO import DistanceDTO
 from BoundingBoxRenderer import BoundingBoxRenderer
 from Distance import Distance
-from ObjectDetectionV5 import ObjectDetectionV8
+from ObjectDetectionV5 import ObjectDetectionV5
 from Score import Score
 
 
@@ -20,7 +20,7 @@ class ProcessVideo:
         self.file = file
         self.fps_processing = fps_processing
 
-        self.v8 = ObjectDetectionV8.get_instance()
+        self.v8 = ObjectDetectionV5.get_instance()
         self.score = Score.get_instance()
         self.distance = Distance()
         self.bounding_box_renderer = BoundingBoxRenderer()
