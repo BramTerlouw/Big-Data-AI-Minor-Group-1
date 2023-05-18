@@ -28,7 +28,7 @@ class BaseInput:
             self.proces.iterate_frames(video, out_video, fps)
             self.final(out_video, video)
         else:
-            im = cv2.imread("input/images/" + self.filename)
+            im = cv2.imread("processedImages/" + str(self.userid) + "/" + self.filename)
             self.proces.get_prediction(im)
 
     def create_output(self, fps: float, frame_size: tuple):

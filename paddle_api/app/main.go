@@ -50,11 +50,6 @@ func SetupRouter() *gin.Engine {
 		os.Mkdir("input/videos", 0755)
 	}
 
-	// Create the images directory if it does not exist
-	if _, err := os.Stat("input/images"); os.IsNotExist(err) {
-		os.Mkdir("input/images", 0755)
-	}
-
 	// Create the processedVideos output directory if it does not exist
 	if _, err := os.Stat("processedVideos"); os.IsNotExist(err) {
 		os.Mkdir("processedVideos", 0755)
