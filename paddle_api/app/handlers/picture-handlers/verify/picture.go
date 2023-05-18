@@ -41,7 +41,7 @@ func (h *handler) CreatePictureHandler(ctx *gin.Context) {
 	userid := ctx.PostForm("user_id")
 
 	// Save the file to disk
-	err = ctx.SaveUploadedFile(file, "input/images/"+filename)
+	err = ctx.SaveUploadedFile(file, "processedImages/"+userid+"/"+filename)
 
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "please, provide correct image format!"})
@@ -54,6 +54,10 @@ func (h *handler) CreatePictureHandler(ctx *gin.Context) {
 	output, err := cmd.Output()
 	if err != nil {
 		fmt.Println("Error executing ImageInput script:", err)
+		_, createdSessionError := h.sessionService.CreateSession(&model.InputCreateSession{UserId: userid, CreatedAt: time.Now(), Status: "Failed"})
+		if createdSessionError != nil {
+			return
+		}
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Something went wrong, try again."})
 		return
 	}
@@ -65,6 +69,12 @@ func (h *handler) CreatePictureHandler(ctx *gin.Context) {
 	outputBool, err := strconv.ParseBool(str)
 	if err != nil {
 		fmt.Println("Error executing ImageInput script:", err)
+
+		_, createdSessionError := h.sessionService.CreateSession(&model.InputCreateSession{UserId: userid, CreatedAt: time.Now(), Status: "Failed"})
+		if createdSessionError != nil {
+			return
+		}
+
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Something went wrong, try again."})
 		return
 	}
@@ -76,7 +86,7 @@ func (h *handler) CreatePictureHandler(ctx *gin.Context) {
 		return
 	}
 
-	e := os.Remove("input/images/" + filename)
+	e := os.Remove("processedImages/" + userid + "/" + filename)
 	if e != nil {
 		log.Println(e)
 	}
