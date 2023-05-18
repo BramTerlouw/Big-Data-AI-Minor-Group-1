@@ -2,16 +2,43 @@
 export default {
   data() {
     return {
-      pictureTaken: true,
+      pictureTaken: false,
       pictureProcessing: false,
       pictureApproved: true,
+      imgDataURL: ''
     };
+  },
+  mounted() {
+    this.setupCamera();
   },
   methods: {
     submitForm(event) {
       event.preventDefault();
       this.$router.push("/stream");
     },
+    setupCamera() {
+      navigator.mediaDevices.getUserMedia({ video: true })
+        .then((stream) => {
+          this.$refs.video.srcObject = stream;
+        })
+        .catch((error) => {
+          console.log('Error accessing the camera:', error);
+        });
+    },
+    capture() {
+      const video = this.$refs.video;
+      const canvas = this.$refs.canvas;
+
+      const context = canvas.getContext('2d');
+      context.drawImage(video, 0, 0, canvas.width, canvas.height);
+      this.imgDataURL = canvas.toDataURL('image/png');
+      
+      this.pictureTaken = true;
+    },
+    retry() {
+      this.imgDataURL = '';
+      this.pictureTaken = false;
+    }
   },
 };
 </script>
@@ -57,13 +84,13 @@ export default {
       </div>
 
       <div class="camera-press">
-        <button>Camera</button>
+        <button v-if="!pictureTaken" @click="capture">Take picture</button>
 
-        <span class="camera-press-info">Press to take picture</span>
+        <span v-if="!pictureTaken" class="camera-press-info">Press to take picture</span>
       </div>
 
       <div class="button-section" v-if="pictureTaken && !pictureProcessing">
-        <button>Retry</button>
+        <button @click="retry">Retry</button>
         <button
           @click="submitForm"
           :class="{
@@ -78,7 +105,8 @@ export default {
     ->
 
     <div class="image-wrapper">
-      <div class="image"></div>
+      <video :style="{ display: pictureTaken ? 'none' : 'block' }" ref="video" width="400" height="300" autoplay></video>
+      <canvas :style="{ display: pictureTaken ? 'block' : 'none' }" ref="canvas" width="400" height="300"></canvas>
     </div>
   </section>
 </template>
@@ -170,18 +198,8 @@ export default {
 }
 
 .image-wrapper {
-  width: 250px;
-  height: 250px;
-
   display: grid;
   place-items: center;
-  background-color: #e0e0e0;
-}
-
-.image {
-  width: 90%;
-  height: 90%;
-  background-color: lightgrey;
 }
 
 .container-faulty-pos {
