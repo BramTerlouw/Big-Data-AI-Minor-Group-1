@@ -1,7 +1,0 @@
-{
-  "name": "Ludus_App",
-  "integrations": {
-    "capacitor": {}
-  },
-  "type": "angular"
-}
