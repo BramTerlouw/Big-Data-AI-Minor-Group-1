@@ -52,10 +52,6 @@ func (h *handler) CreatePictureHandler(ctx *gin.Context) {
 	output, err := cmd.Output()
 	if err != nil {
 		fmt.Println("Error executing ImageInput script:", err)
-		_, createdSessionError := h.sessionService.CreateSession(&model.InputCreateSession{PictureFilename: filename, UserId: userid, CreatedAt: time.Now(), Status: "Failed"})
-		if createdSessionError != nil {
-			return
-		}
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Something went wrong, try again."})
 		return
 	}
@@ -67,12 +63,6 @@ func (h *handler) CreatePictureHandler(ctx *gin.Context) {
 	outputBool, err := strconv.ParseBool(str)
 	if err != nil {
 		fmt.Println("Error parsing terminal output to boolean", err)
-
-		_, createdSessionError := h.sessionService.CreateSession(&model.InputCreateSession{PictureFilename: filename, UserId: userid, CreatedAt: time.Now(), Status: "Failed"})
-		if createdSessionError != nil {
-			fmt.Println("Error executing createSession at service", err)
-			return
-		}
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Something went wrong, try again."})
 		return
 	}
@@ -86,11 +76,6 @@ func (h *handler) CreatePictureHandler(ctx *gin.Context) {
 		}
 		ctx.JSON(http.StatusOK, gin.H{"message": "Persons are standing in correct position, proceed with filming!", "sessionCode": createdSession.SessionKey, "room": createdSession.Room})
 	} else {
-
-		_, createdSessionError := h.sessionService.CreateSession(&model.InputCreateSession{PictureFilename: filename, UserId: userid, CreatedAt: time.Now(), Status: "Failed"})
-		if createdSessionError != nil {
-			return
-		}
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Position is not correct"})
 	}
 }

@@ -44,7 +44,7 @@ func (r *SessionRepository) InsertSession(session *model.EntitySession) (*model.
 	return insertedSession, nil
 }
 
-func (r *SessionRepository) GetSessionsByUserID(userId string) ([]*model.EntityVideo, error) {
+func (r *SessionRepository) GetSessionsByUserID(userId string) ([]*model.EntitySession, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
@@ -55,22 +55,22 @@ func (r *SessionRepository) GetSessionsByUserID(userId string) ([]*model.EntityV
 	}
 	defer cur.Close(ctx)
 
-	videos := make([]*model.EntityVideo, 0)
+	sessions := make([]*model.EntitySession, 0)
 
 	for cur.Next(ctx) {
-		var video model.EntityVideo
-		err := cur.Decode(&video)
+		var session model.EntitySession
+		err := cur.Decode(&session)
 		if err != nil {
 			return nil, err
 		}
-		videos = append(videos, &video)
+		sessions = append(sessions, &session)
 	}
 
 	if err := cur.Err(); err != nil {
 		return nil, err
 	}
 
-	return videos, nil
+	return sessions, nil
 }
 
 func (r *SessionRepository) GetSessionsBySessionKey(sessionKey string) (*model.EntitySession, error) {

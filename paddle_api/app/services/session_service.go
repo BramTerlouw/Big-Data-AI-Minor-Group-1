@@ -40,8 +40,8 @@ func (s *SessionService) UpdateSession(input *model.InputUpdateSession) error {
 	return s.repository.UpdateSession(&session)
 }
 
-func (s *VideoService) GetSessionsByUserID(userId string) ([]*model.EntityVideo, error) {
-	return s.repository.GetVideosByUserID(userId)
+func (s *SessionService) GetSessionsByUserID(userId string) ([]*model.EntitySession, error) {
+	return s.repository.GetSessionsByUserID(userId)
 }
 
 func (s *SessionService) GetSessionsBySessionKey(sessionKey string) (*model.EntitySession, error) {

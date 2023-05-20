@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"
+	model "paddle-api/models"
 	"paddle-api/services"
 	util "paddle-api/utils"
 	"strconv"
@@ -43,6 +44,13 @@ func (h *handler) CreateSessionHandler(ctx *gin.Context) {
 	// Starting session
 	if util.StartSession(roomInt) == false {
 		ctx.JSON(http.StatusNotFound, gin.H{"error": "Something went wrong, try again."})
+	}
+
+	// Set key as used
+	e := h.sessionService.UpdateSession(&model.InputUpdateSession{Id: session.Id, SessionKeyUsed: true})
+
+	if e != nil {
+		log.Fatal(e)
 	}
 	//
 	//go func() {

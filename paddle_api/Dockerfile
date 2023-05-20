@@ -67,6 +67,7 @@ RUN echo "#!/bin/bash" > /startup.sh && \
     echo "rm .env" >> /startup.sh && \
     echo "mkdir -p /root/.cache/torch/hub" >> /startup.sh && \
     echo "touch /root/.cache/torch/hub/requirements.txt" >> /startup.sh && \
+    echo "touch /usr/local/lib/python3.9/dist-packages/requirements.txt" >> /startup.sh && \
     echo 'echo "# APP DEVELOPMENT ENV" >> .env' >> /startup.sh && \
     echo "echo 'GO_PORT = $GO_PORT' >> .env" >> /startup.sh && \
     echo "echo 'GO_ENV = $GO_ENV' >> .env" >> /startup.sh && \
