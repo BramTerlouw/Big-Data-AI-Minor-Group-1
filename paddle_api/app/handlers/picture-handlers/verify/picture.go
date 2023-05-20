@@ -1,11 +1,14 @@
 package handlerPicture
 
 import (
+	"encoding/base64"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
+	"io"
 	"math/rand"
 	"net/http"
+	"os"
 	"os/exec"
 	model "paddle-api/models"
 	"paddle-api/services"
@@ -30,6 +33,44 @@ func (h *handler) CreatePictureHandler(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "please, provide image!"})
 		return
 	}
+	fileOpen, _ := file.Open()
+	defer fileOpen.Close()
+
+	// Buffer the first 512 bytes
+	buffer := make([]byte, 512)
+	_, err = fileOpen.Read(buffer)
+	if err != nil {
+		ctx.JSON(500, gin.H{"error": "Failed to read file"})
+		return
+	}
+
+	// Determine the content type of the image file
+	contentType := http.DetectContentType(buffer)
+
+	if contentType != "image/jpeg" && contentType != "image/png" {
+		ctx.JSON(400, gin.H{"error": "Only jpeg or png images are allowed"})
+		return
+	}
+
+	// Rewind the file to the beginning
+	_, err = fileOpen.Seek(0, 0)
+	if err != nil {
+		ctx.JSON(500, gin.H{"error": "Failed to rewind file"})
+		return
+	}
+
+	// after validating the image format and rewinding the file
+	blob, err := io.ReadAll(fileOpen)
+	if err != nil {
+		ctx.JSON(500, gin.H{"error": "Failed to read file"})
+		return
+	}
+
+	// Convert the blob to a base64-encoded string
+	blobString := base64.StdEncoding.EncodeToString(blob)
+
+	// Create a Data URI
+	uploadPictureBlob := "data:" + contentType + ";base64," + blobString
 
 	// generating unique filename
 	originalFilename := file.Filename
@@ -67,8 +108,14 @@ func (h *handler) CreatePictureHandler(ctx *gin.Context) {
 		return
 	}
 
+	// removing picture and directory after processing
+	e := os.RemoveAll("processedImages/" + userid)
+	if e != nil {
+		fmt.Println("Error removing directory", e)
+	}
+
 	if outputBool {
-		createdSession, createdSessionError := h.sessionService.CreateSession(&model.InputCreateSession{SessionKey: generateSessionKey().String(), PictureFilename: filename, SessionKeyUsed: false, Room: strconv.FormatInt(generateRoom(), 10), UserId: userid, CreatedAt: time.Now(), Status: "Created"})
+		createdSession, createdSessionError := h.sessionService.CreateSession(&model.InputCreateSession{SessionKey: generateSessionKey().String(), Picture: uploadPictureBlob, SessionKeyUsed: false, Room: strconv.FormatInt(generateRoom(), 10), UserId: userid, CreatedAt: time.Now(), Status: "Created"})
 		if createdSessionError != nil {
 			fmt.Println("Error executing createSession at service", err)
 			ctx.JSON(http.StatusBadRequest, gin.H{"error": "Something went wrong, try again."})

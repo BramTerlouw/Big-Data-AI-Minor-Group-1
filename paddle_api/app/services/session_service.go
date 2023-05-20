@@ -15,13 +15,13 @@ func NewSessionService(repository *repos.SessionRepository) *SessionService {
 
 func (s *SessionService) CreateSession(input *model.InputCreateSession) (*model.EntitySession, error) {
 	session := model.EntitySession{
-		SessionKey:      &input.SessionKey,
-		SessionKeyUsed:  &input.SessionKeyUsed,
-		PictureFilename: &input.PictureFilename,
-		Room:            &input.Room,
-		Status:          &input.Status,
-		UserId:          &input.UserId,
-		CreatedAt:       &input.CreatedAt,
+		SessionKey:     &input.SessionKey,
+		SessionKeyUsed: &input.SessionKeyUsed,
+		Picture:        &input.Picture,
+		Room:           &input.Room,
+		Status:         &input.Status,
+		UserId:         &input.UserId,
+		CreatedAt:      &input.CreatedAt,
 	}
 
 	return s.repository.InsertSession(&session)
