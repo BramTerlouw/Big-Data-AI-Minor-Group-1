@@ -20,7 +20,7 @@ services:
     volumes:
       - ./paddle_api/app:/app
     ports:
-      - "80:8081"
+      - "8081:8081"
       - "2222:22"
     depends_on:
       - mongo
