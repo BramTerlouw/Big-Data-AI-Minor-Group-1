@@ -1,21 +1,22 @@
 <script>
+import axios from 'axios';
+
 export default {
   data() {
     return {
       pictureTaken: false,
       pictureProcessing: false,
-      pictureApproved: true,
-      imgDataURL: ''
+      pictureApproved: false,
+      imgDataURL: '',
+      message: '',
+      room: '',
+      session: ''
     };
   },
   mounted() {
     this.setupCamera();
   },
   methods: {
-    submitForm(event) {
-      event.preventDefault();
-      this.$router.push("/stream");
-    },
     setupCamera() {
       navigator.mediaDevices.getUserMedia({ video: true })
         .then((stream) => {
@@ -28,16 +29,72 @@ export default {
     capture() {
       const video = this.$refs.video;
       const canvas = this.$refs.canvas;
-
       const context = canvas.getContext('2d');
+      
       context.drawImage(video, 0, 0, canvas.width, canvas.height);
       this.imgDataURL = canvas.toDataURL('image/png');
       
       this.pictureTaken = true;
+      this.uploadImage()
+    },
+    uploadImage() {
+      const formData = new FormData();
+      const imageFile = this.dataURLtoFile(this.imgDataURL, 'image.png');
+      formData.append('file', imageFile);
+      formData.append('user_id', 3)
+
+      this.pictureProcessing = true;
+
+      axios.post('http://localhost:8081/api/v1/session/verify', formData)
+        .then(response => {
+          console.log('approved!')
+          this.pictureProcessing = false;
+          this.pictureApproved = true;
+          
+          let data = response.data;
+          this.message = data['message'];
+          this.room = data['room'];
+          this.session = data['sessionCode'];
+        })
+        .catch(error => {
+          this.pictureProcessing = false;
+          console.error('Error uploading image:', error);
+        });
+    },
+    dataURLtoFile(dataURL, filename) {
+      const arr = dataURL.split(',');
+      const mime = arr[0].match(/:(.*?);/)[1];
+      const bstr = atob(arr[1]);
+      let n = bstr.length;
+      const u8arr = new Uint8Array(n);
+      while (n--) {
+        u8arr[n] = bstr.charCodeAt(n);
+      }
+      return new File([u8arr], filename, { type: mime });
+    },
+    startSession() {
+      axios.post('http://localhost:8081/api/v1/session/start/' + this.session)
+        .then(response => {
+          console.log(response)
+          this.$router.push("/stream?room=" + this.room);
+        })
+        .catch(error => {
+          console.error('Error starting session:', error);
+        });
     },
     retry() {
       this.imgDataURL = '';
       this.pictureTaken = false;
+    },
+    getPictureStatus() {
+      if (!this.pictureTaken)
+        return 'No picture'
+      else if (this.pictureProcessing)
+        return 'Processing ...'
+      else if (this.pictureTaken && this.pictureApproved)
+        return 'Position approved!'
+      else
+        return 'Wrong Position'
     }
   },
 };
@@ -78,7 +135,7 @@ export default {
               'status-processing-pos': pictureTaken && pictureProcessing,
               'status-approved-pos': pictureTaken && pictureApproved,
             }"
-            >No picture</span
+            >{{ getPictureStatus() }}</span
           >
         </p>
       </div>
@@ -92,7 +149,7 @@ export default {
       <div class="button-section" v-if="pictureTaken && !pictureProcessing">
         <button @click="retry">Retry</button>
         <button
-          @click="submitForm"
+          @click="startSession"
           :class="{
             'disabled-btn': pictureTaken && !pictureProcessing && !pictureApproved,
           }"
@@ -114,7 +171,7 @@ export default {
 <style scoped>
 #container {
   width: 100vw;
-  height: 100%;
+  height: calc(100vh - 5vh);
 
   display: flex;
   flex-direction: row;
@@ -134,6 +191,7 @@ export default {
 }
 
 .heading-title {
+  margin: 0;
   font-style: italic;
   font-size: 14px;
   color: darkgrey;
@@ -160,6 +218,7 @@ export default {
 
 .proccessing-info p {
   font-weight: bold;
+  margin: 0;
 }
 
 .picture-status {

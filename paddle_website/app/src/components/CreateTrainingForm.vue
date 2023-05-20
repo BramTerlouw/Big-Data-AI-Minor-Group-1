@@ -5,11 +5,24 @@ export default {
       name_coach: "",
       name_athlete: "",
       location: "",
+      error_coach: false,
+      error_athlete: false,
+      error_location: false,
     };
   },
   methods: {
     submitForm(event) {
       event.preventDefault();
+      if (this.name_coach == "") {
+        this.error_coach = true;
+        if (this.name_athlete == "") {
+          this.error_athlete = true;
+          if (this.location == "") {
+            this.error_location = true;
+          }
+        }
+        return;
+      }
       this.$router.push("/verify-position");
     },
   },
@@ -27,16 +40,19 @@ export default {
         <div class="form-item">
           <label>Name coach:</label>
           <input type="text" v-model="name_coach" />
+          <p v-if="error_coach" class="error-msg">Must enter a user ID!</p>
         </div>
 
         <div class="form-item">
           <label>Name Athlete:</label>
           <input type="text" v-model="name_athlete" />
+          <p v-if="error_athlete" class="error-msg">Must enter a user ID!</p>
         </div>
 
         <div class="form-item">
           <label>Location:</label>
           <input type="text" v-model="location" />
+          <p v-if="error_location" class="error-msg">Must enter a user ID!</p>
         </div>
 
         <button type="submit">Start</button>
@@ -48,7 +64,7 @@ export default {
 <style scoped>
 #container {
   width: 100vw;
-  height: 100vh;
+  height: calc(100vh - 5vh);
 
   display: flex;
   flex-direction: column;
@@ -100,5 +116,12 @@ export default {
   background-color: #3db0f0;
   border: none;
   color: #fff;
+}
+
+.error-msg {
+  margin: 0;
+  color: red;
+  font-style: italic;
+  font-size: 14px;
 }
 </style>

@@ -6,7 +6,13 @@ import SessionFeed from "../components/SessionFeed.vue";
 <template>
   <div class="page">
     <NavBar />
-    <SessionFeed />
+    <main class="main">
+      <header>
+        <h1>Recent sessions</h1>
+        <p>A brief summary of previous sessions.</p>
+      </header>
+      <SessionFeed />
+    </main>
   </div>
 </template>
 
@@ -14,5 +20,13 @@ import SessionFeed from "../components/SessionFeed.vue";
 .page {
   display: flex;
   flex-direction: row;
+}
+
+header {
+  margin: 0 0 0 20px;
+}
+
+h1 {
+  margin-bottom: 0;
 }
 </style>

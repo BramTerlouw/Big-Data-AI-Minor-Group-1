@@ -2,13 +2,20 @@
 export default {
   data() {
     return {
-      inputValue: ''
+      inputValue: '',
+      error: false
     };
   },
   methods: {
     submitForm(event) {
       event.preventDefault();
-      console.log('Form submitted with value:', this.inputValue);
+      if (this.inputValue == '') {
+        this.error = true;
+        return;
+      }
+
+      this.$store.commit('login')
+      this.$store.commit('setUserId', this.inputValue)
       this.$router.push('/dashboard')
     }
   }
@@ -25,6 +32,7 @@ export default {
       <div class="form-item">
         <label>User ID</label>
         <input type="text" v-model="inputValue" />
+        <p v-if="error" class="error-msg">Must enter a user ID!</p>
       </div>
       
       <button type="submit">Submit</button>
@@ -81,5 +89,11 @@ export default {
   background-color: #3DB0F0;
   border: none;
   color: #fff;
+}
+
+.error-msg {
+  color: red;
+  font-style: italic;
+  font-size: 14px;
 }
 </style>

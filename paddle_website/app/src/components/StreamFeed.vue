@@ -1,14 +1,8 @@
 <script setup>
-// We import the settings.js file to know which address we should contact
-// to talk to Janus, and optionally which STUN/TURN servers should be
-// used as well. Specifically, that file defines the "server" and
-// "iceServers" properties we'll pass when creating the Janus session.
-
-/* global iceServers:readonly, Janus:readonly, server:readonly */
-
 var janus = null;
 var sfutest = null;
 var opaqueId = "videoroomtest-" + Janus.randomString(12);
+// var streaming = false;
 
 var myroom = 99565000; // Demo room
 if (getQueryStringValue("room") !== "")
@@ -16,7 +10,6 @@ if (getQueryStringValue("room") !== "")
 var myusername = null;
 var myid = null;
 var mystream = null;
-// We use this other ID just to map our subscriptions to us
 var mypvtid = null;
 
 var localTracks = {},
@@ -44,19 +37,22 @@ var use_msid =
   getQueryStringValue("msid") === "true";
 
 $(document).ready(function () {
-  // Initialize the library (all console debuggers enabled)
   Janus.init({
     debug: "all",
     callback: function () {
-      // Use a button to start the demo
-      $("#start").one("click", function () {
-        // This code is placed to method called start
-      });
+      var currentURL = window.location.href;
+      var url = new URL(currentURL);
+      this.myroom = url.searchParams.get("room");
+      this.myusername = 'Bram';
+      console.log('Room: ', this.myroom);
+      console.log('User: ', this.myusername);
     },
   });
 });
 
 function start() {
+  $('#start').hide();
+  $('#stop').show();
   $(this).attr("disabled", true).unbind("click");
   // Make sure the browser supports WebRTC
   if (!Janus.isWebrtcSupported()) {
@@ -77,7 +73,7 @@ function start() {
         plugin: "janus.plugin.videoroom",
         opaqueId: opaqueId,
         success: function (pluginHandle) {
-          $("#details").remove();
+          // $("#details").remove();
           sfutest = pluginHandle;
           Janus.log(
             "Plugin attached! (" +
@@ -88,10 +84,11 @@ function start() {
           );
           Janus.log("  -- This is a publisher/manager");
           // Prepare the username registration
-          $("#videojoin").removeClass("hide").show();
-          $("#registernow").removeClass("hide").show();
-          $("#register").click(registerUsername);
-          $("#username").focus();
+          // $("#videojoin").removeClass("hide").show();
+          // $("#registernow").removeClass("hide").show();
+          // $("#register").click(registerUsername);
+          // $("#username").focus();
+          registerUsername()
           $("#start")
             .removeAttr("disabled")
             .html("Stop")
@@ -111,15 +108,15 @@ function start() {
           if (on) {
             // Darken screen and show hint
             $.blockUI({
-              message: '<div><img src="up_arrow.png"/></div>',
-              css: {
-                border: "none",
-                padding: "15px",
-                backgroundColor: "transparent",
-                color: "#aaa",
-                top: "10px",
-                left: navigator.mozGetUserMedia ? "-100px" : "300px",
-              },
+              // message: '<div><img src="up_arrow.png"/></div>',
+              // css: {
+              //   border: "none",
+              //   padding: "15px",
+              //   backgroundColor: "transparent",
+              //   color: "#aaa",
+              //   top: "10px",
+              //   left: navigator.mozGetUserMedia ? "-100px" : "300px",
+              // },
             });
           } else {
             // Restore screen
@@ -148,26 +145,29 @@ function start() {
           );
           $("#videolocal").parent().parent().unblock();
           if (!on) return;
-          $("#publish").remove();
-          // This controls allows us to override the global room bitrate cap
-          $("#bitrate").parent().parent().removeClass("hide").show();
-          $("#bitrate a").click(function () {
-            let id = $(this).attr("id");
-            let bitrate = parseInt(id) * 1000;
-            if (bitrate === 0) {
-              Janus.log("Not limiting bandwidth via REMB");
-            } else {
-              Janus.log("Capping bandwidth to " + bitrate + " via REMB");
-            }
-            $("#bitrateset")
-              .html($(this).html() + '<span class="caret"></span>')
-              .parent()
-              .removeClass("open");
-            sfutest.send({
-              message: { request: "configure", bitrate: bitrate },
+          sfutest.send({
+              message: { request: "configure", bitrate: 0 },
             });
-            return false;
-          });
+          // $("#publish").remove();
+          // This controls allows us to override the global room bitrate cap
+          // $("#bitrate").parent().parent().removeClass("hide").show();
+          // $("#bitrate a").click(function () {
+            // let id = $(this).attr("id");
+            // let bitrate = parseInt(id) * 1000;
+            // if (bitrate === 0) {
+            //   Janus.log("Not limiting bandwidth via REMB");
+            // } else {
+            //   Janus.log("Capping bandwidth to " + bitrate + " via REMB");
+            // }
+            // $("#bitrateset")
+            //   .html($(this).html() + '<span class="caret"></span>')
+            //   .parent()
+            //   .removeClass("open");
+          //   sfutest.send({
+          //     message: { request: "configure", bitrate: bitrate },
+          //   });
+          //   return false;
+          // });
         },
         slowLink: function (uplink, lost, mid) {
           Janus.warn(
@@ -408,18 +408,6 @@ function start() {
             return;
           }
           $("#videos").removeClass("hide").show();
-          if ($("#mute").length === 0) {
-            // Add a 'mute' button
-            $("#videolocal").append(
-              '<button class="btn btn-warning btn-xs" id="mute" style="position: absolute; bottom: 0px; left: 0px; margin: 15px;">Mute</button>'
-            );
-            $("#mute").click(toggleMute);
-            // Add an 'unpublish' button
-            $("#videolocal").append(
-              '<button class="btn btn-warning btn-xs" id="unpublish" style="position: absolute; bottom: 0px; right: 0px; margin: 15px;">Unpublish</button>'
-            );
-            $("#unpublish").click(unpublishOwnFeed);
-          }
           if (track.kind === "audio") {
             // We ignore local audio tracks, they'd generate echo anyway
             if (localVideos === 0) {
@@ -476,15 +464,15 @@ function start() {
           );
           mystream = null;
           delete feedStreams[myid];
-          $("#videolocal").html(
-            '<button id="publish" class="btn btn-primary">Publish</button>'
-          );
-          $("#publish").click(function () {
-            publishOwnFeed(true);
-          });
+          // $("#videolocal").html(
+          //   '<button id="publish" class="btn btn-primary">Publish</button>'
+          // );
+          // $("#publish").click(function () {
+          //   publishOwnFeed(true);
+          // });
           $("#videolocal").parent().parent().unblock();
-          $("#bitrate").parent().parent().addClass("hide");
-          $("#bitrate a").unbind("click");
+          // $("#bitrate").parent().parent().addClass("hide");
+          // $("#bitrate a").unbind("click");
           localTracks = {};
           localVideos = 0;
         },
@@ -502,63 +490,28 @@ function start() {
   });
 }
 
-// eslint-disable-next-line no-unused-vars
-function checkEnter(field, event) {
-  let theCode = event.keyCode
-    ? event.keyCode
-    : event.which
-    ? event.which
-    : event.charCode;
-  if (theCode == 13) {
-    registerUsername();
-    return false;
-  } else {
-    return true;
-  }
+function stop() {
+  $('stop').hide();
+  $('start').show();
+
+  janus.destroy();
+  console.log('Destroyed the session!')
 }
 
 function registerUsername() {
-  if ($("#username").length === 0) {
-    // Create fields to register
-    $("#register").click(registerUsername);
-    $("#username").focus();
-  } else {
-    // Try a registration
-    $("#username").attr("disabled", true);
-    $("#register").attr("disabled", true).unbind("click");
-    let username = $("#username").val();
-    if (username === "") {
-      $("#you")
-        .removeClass()
-        .addClass("label label-warning")
-        .html("Insert your display name (e.g., pippo)");
-      $("#username").removeAttr("disabled");
-      $("#register").removeAttr("disabled").click(registerUsername);
-      return;
-    }
-    if (/[^a-zA-Z0-9]/.test(username)) {
-      $("#you")
-        .removeClass()
-        .addClass("label label-warning")
-        .html("Input is not alphanumeric");
-      $("#username").removeAttr("disabled").val("");
-      $("#register").removeAttr("disabled").click(registerUsername);
-      return;
-    }
-    let register = {
+  let username = "Bram"
+  let register = {
       request: "join",
       room: myroom,
       ptype: "publisher",
       display: username,
     };
-    myusername = escapeXmlTags(username);
     sfutest.send({ message: register });
-  }
 }
 
 function publishOwnFeed(useAudio) {
   // Publish our stream
-  $("#publish").attr("disabled", true).unbind("click");
+  // $("#publish").attr("disabled", true).unbind("click");
 
   // We want sendonly audio and video (uncomment the data track
   // too if you want to publish via datachannels as well)
@@ -610,28 +563,19 @@ function publishOwnFeed(useAudio) {
         publishOwnFeed(false);
       } else {
         bootbox.alert("WebRTC error... " + error.message);
-        $("#publish")
-          .removeAttr("disabled")
-          .click(function () {
-            publishOwnFeed(true);
-          });
+        // $("#publish")
+        //   .removeAttr("disabled")
+        //   .click(function () {
+        //     publishOwnFeed(true);
+        //   });
       }
     },
   });
 }
 
-function toggleMute() {
-  let muted = sfutest.isAudioMuted();
-  Janus.log((muted ? "Unmuting" : "Muting") + " local stream...");
-  if (muted) sfutest.unmuteAudio();
-  else sfutest.muteAudio();
-  muted = sfutest.isAudioMuted();
-  $("#mute").html(muted ? "Unmute" : "Mute");
-}
-
 function unpublishOwnFeed() {
   // Unpublish our stream
-  $("#unpublish").attr("disabled", true).unbind("click");
+  // $("#unpublish").attr("disabled", true).unbind("click");
   let unpublish = { request: "unpublish" };
   sfutest.send({ message: unpublish });
 }
@@ -1305,22 +1249,6 @@ function updateSimulcastSvcButtons(feed, substream, temporal) {
 
 <template>
   <section id="container">
-    <div class="input-group margin-bottom-md hide" id="registernow">
-      <span class="input-group-addon">@</span>
-      <input
-        autocomplete="off"
-        class="form-control"
-        type="text"
-        placeholder="Choose a display name"
-        id="username"
-        onkeypress="return checkEnter(this, event);"
-      />
-      <span class="input-group-btn">
-        <button class="btn btn-success" autocomplete="off" id="register">
-          Join the room
-        </button>
-      </span>
-    </div>
     <div class="streaming-wrapper">
       <div class="side-wrapper">
         <div class="info-panel">
@@ -1330,15 +1258,16 @@ function updateSimulcastSvcButtons(feed, substream, temporal) {
 
           <div class="position-info">
             <ol>
-              <li>Athlete takes position conform guidelines.</li>
-              <li>Take picture of positioning.</li>
-              <li>Wait for image to be processed.</li>
-              <li>Retry at faulty image or continue.</li>
+              <li>When athlete is ready, start stream.</li>
+              <li>Keep camera centered on the training.</li>
+              <li>See live feedback on streaming device.</li>
+              <li>Stop streaming when training is done.</li>
             </ol>
           </div>
         </div>
 
-        <button class="btn-record" @click="start()">Start Recording</button>
+        <button id="start" class="btn-record" @click="start()">Start Recording</button>
+        <button id="stop" class="btn-stop" @click="stop()">Stop Recording</button>
         <div class="timer">Thursday 21-06-23 01:22</div>
         <div class="panel-body" id="videolocal"></div>
       </div>
@@ -1350,7 +1279,7 @@ function updateSimulcastSvcButtons(feed, substream, temporal) {
 <style scoped>
 #container {
   width: 100vw;
-  height: 100%;
+  height: calc(100vh - 5vh);
 
   display: flex;
   flex-direction: row;
@@ -1415,6 +1344,14 @@ function updateSimulcastSvcButtons(feed, substream, temporal) {
   background-color: #3db0f0;
   border: none;
   color: #fff;
+}
+
+.btn-stop {
+  width: 100%;
+  background-color: red;
+  border: none;
+  color: #fff;
+  display: none;
 }
 
 .timer {

@@ -11,7 +11,7 @@ import LoginForm from "../components/LoginForm.vue";
 <style scoped>
   #container {
     width: 100vw;
-    height: 100%;
+    height: calc(100vh - 5vh);
 
     display: flex;
     align-items: center;

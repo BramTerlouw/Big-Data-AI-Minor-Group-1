@@ -14,6 +14,7 @@ paddle_api/app/.idea
 paddle_api/app/paddle_app.file
 ~
 paddle_api/app/processedVideos/*
+paddle_api/app/processedImages/*
 paddle_api/app/paddle_api.exe
 
 # Ionic
