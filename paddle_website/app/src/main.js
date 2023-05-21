@@ -1,36 +1,11 @@
 import "./assets/main.css";
-
+import store from './store';
 import { createApp } from "vue";
-import { createStore } from "vuex";
-import createPersistedState from "vuex-persistedstate";
-
 import App from "./App.vue";
 import router from "./router";
+import axios from 'axios';
+import Vuex from 'vuex';
+axios.defaults.baseURL = 'http://localhost:8081'
 
-const store = createStore({
-  state() {
-    return {
-      loggedIn: false,
-      user_id: "11",
-    };
-  },
-  mutations: {
-    login(state) {
-      state.loggedIn = true;
-    },
-    logout(state) {
-      state.loggedIn = false;
-    },
-    setUserId(state, user_id) {
-      state.user_id = user_id
-    }
-  },
-  plugins: [createPersistedState()],
-});
 
-const app = createApp(App);
-
-app.use(router);
-app.use(store);
-
-app.mount("#app");
+createApp(App).use(router).use(store).use(Vuex).mount('#app')
