@@ -9,6 +9,11 @@ export default {
   mounted() {
     this.fetchData()
   },
+    computed: {
+        userid () {
+            return this.$store.getters.getUserId()
+        }
+    },
   data() {
     return {
       data: [],
@@ -17,7 +22,7 @@ export default {
   methods: {
     fetchData() {
       axios
-        .get("http://localhost:8081/api/v1/session/results/3")
+        .get("http://localhost:8081/api/v1/session/results/"+ this.userid)
         .then((response) => {
           this.data = response.data;
           // console.log(this.data[0]['picture'])

@@ -115,7 +115,7 @@ func (h *handler) CreatePictureHandler(ctx *gin.Context) {
 	}
 
 	if outputBool {
-		createdSession, createdSessionError := h.sessionService.CreateSession(&model.InputCreateSession{SessionKey: generateSessionKey().String(), Picture: uploadPictureBlob, SessionKeyUsed: false, Room: strconv.FormatInt(generateRoom(), 10), UserId: userid, CreatedAt: time.Now(), Status: "Created"})
+		createdSession, createdSessionError := h.sessionService.CreateSession(&model.InputCreateSession{SessionKey: generateSessionKey().String(), Picture: uploadPictureBlob, SessionKeyUsed: false, Room: strconv.FormatInt(generateRoom(), 10), UserId: userid, CreatedAt: time.Now(), Status: "Created", AmountSocketJoins: 0})
 		if createdSessionError != nil {
 			fmt.Println("Error executing createSession at service", err)
 			ctx.JSON(http.StatusBadRequest, gin.H{"error": "Something went wrong, try again."})

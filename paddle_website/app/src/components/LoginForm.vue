@@ -9,13 +9,15 @@ export default {
   methods: {
     submitForm(event) {
       event.preventDefault();
-      if (this.inputValue == '') {
+      if (this.inputValue === '') {
         this.error = true;
         return;
       }
 
-      this.$store.commit('login')
-      this.$store.commit('setUserId', this.inputValue)
+        let userid = this.inputValue
+        let status = true
+        this.$store.dispatch('SET_USER_ID', { userid})
+        this.$store.dispatch('SET_LOGGED_IN', { status})
       this.$router.push('/dashboard')
     }
   }

@@ -5,6 +5,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
 	"net/http"
+	model "paddle-api/models"
 	"paddle-api/services"
 	"sync"
 )
@@ -82,9 +83,16 @@ func (h *handler) CreateSocketHandler(ctx *gin.Context) {
 		return
 	}
 
-	if session.SessionKey == nil || *session.SessionKeyUsed == true {
+	if session.SessionKey == nil || *session.AmountSocketJoins > 2 {
 		ctx.JSON(http.StatusNotFound, gin.H{"error": "Incorrect or already used session key!"})
 		return
+	} else {
+		// Set key as used
+		e := h.sessionService.UpdateSession(&model.InputUpdateSession{Id: session.Id, AmountSocketJoins: *session.AmountSocketJoins + 1})
+
+		if e != nil {
+			fmt.Println("Failed to update amount socket joins:", e)
+		}
 	}
 
 	conn, err := h.upgrader.Upgrade(ctx.Writer, ctx.Request, nil)
