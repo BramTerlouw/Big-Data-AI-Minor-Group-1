@@ -1,4 +1,6 @@
 <script>
+import store from "@/store";
+
 export default {
   data() {
     return {
@@ -16,8 +18,8 @@ export default {
 
         let userid = this.inputValue
         let status = true
-        this.$store.dispatch('SET_USER_ID', { userid})
-        this.$store.dispatch('SET_LOGGED_IN', { status})
+        store.commit('SET_USER_ID', userid)
+        store.commit('SET_LOGGED_IN', status)
       this.$router.push('/dashboard')
     }
   }

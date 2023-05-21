@@ -123,6 +123,7 @@ async def subscribe(session, room, feed, send_message):
     @pc.on("track")
     async def on_track(track):
         global sessionActive
+        global score
         print("Track %s received" % track.kind)
 
         if track.kind == "video":
@@ -136,26 +137,32 @@ async def subscribe(session, room, feed, send_message):
                     if sessionActive:
                         result = stream_logic(img)
 
-                        if len(result) < 0:
+                        if not result:
                             sessionActive = False
+                            score = []
                             procData = {"sender": "bot", "type": "error",
                                         "body": {"response": "No Persons or paddle detected!"}}
                             await send_message(json.dumps(procData))
-
-                        if result[0]['dist_humans'] < 50:
+                        elif result[0]['dist_humans'] < 30:
                             sessionActive = False
+                            score = []
                             procData = {"sender": "bot", "type": "error",
-                                        "body": {"response": "Person distance to close with paddle!"}}
+                                        "body": {"response": "Person distance too close with paddle!"}}
                             await send_message(json.dumps(procData))
+                        else:
+                            score.append(result)
+                            print("score saved")
 
-
+                        procData = {"sender": "bot", "type": "error",
+                                    "body": {"response": "Person distance too close with paddle!"}}
+                        await send_message(json.dumps(procData))
                     else:
                         # wait when session is not active
                         await asyncio.sleep(0.1)
 
                 except Exception as e:
                     print("Error processing frame:", e)
-                    break
+                    # break
 
     # subscribe
     plugin = await session.attach("janus.plugin.videoroom")
@@ -275,44 +282,42 @@ async def run(room, session, ws_url):
                 break
 
 if __name__ == "__main__":
-    # parser = argparse.ArgumentParser(description="Janus")
-    # parser.add_argument("url", help="Janus root URL, e.g. http://localhost:8088/janus")
-    # parser.add_argument(
-    #     "--room",
-    #     type=int,
-    #     required=True,
-    #     help="The room ID to join.",
-    # )
-    # parser.add_argument(
-    #     "--key",
-    #     type=str,
-    #     required=True,
-    #     help="key to join the message room",
-    # )
-    # parser.add_argument("--verbose", "-v", action="count")
-    # args = parser.parse_args()
+    parser = argparse.ArgumentParser(description="Janus")
+    parser.add_argument("url", help="Janus root URL, e.g. http://localhost:8088/janus")
+    parser.add_argument(
+        "--room",
+        type=int,
+        required=True,
+        help="The room ID to join.",
+    )
+    parser.add_argument(
+        "--key",
+        type=str,
+        required=True,
+        help="key to join the message room",
+    )
+    parser.add_argument("--verbose", "-v", action="count")
+    args = parser.parse_args()
 
-    # if args.verbose:
-    #     logging.basicConfig(level=logging.DEBUG)
+    if args.verbose:
+        logging.basicConfig(level=logging.DEBUG)
 
     # create signaling and peer connection
-    # session = JanusSession(args.url)
-
-    # model = torch.hub.load('ultralytics/yolov5', 'custom', path='best.pt')
-
-    session = JanusSession("http://localhost:8088/janus")
+    session = JanusSession(args.url)
 
     loop = asyncio.get_event_loop()
 
-    # ws_url = "ws://app:8081/api/v1/session/ws/" + args.key
-    ws_url = "ws://localhost:80/api/v1/session/ws/63b416cf-f9e8-417d-b241-6c1a9b6a51d8"
+    global score
+    score = []
+
+    ws_url = "ws://paddle-api:8081/api/v1/session/ws/" + args.key
 
     try:
         # Set the timeout to 30 minutes (30*60 seconds), so the bot stops after 30 minutes
         timeout = 30 * 60
         loop.run_until_complete(
             asyncio.wait_for(
-                run(room=50691680, session=session, ws_url=ws_url),
+                run(room=args.room, session=session, ws_url=ws_url),
                 timeout=timeout,
             )
         )
@@ -325,6 +330,8 @@ if __name__ == "__main__":
 
     finally:
         # destroy session
+        print(score)
+
         loop.run_until_complete(session.destroy())
         # close peer connections
         coros = [pc.close() for pc in pcs]

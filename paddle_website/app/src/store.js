@@ -1,5 +1,4 @@
 import Vuex from 'vuex';
-import createPersistedState from 'vuex-persistedstate';
 
 const getDefaultState = () => {
     return {
@@ -8,8 +7,6 @@ const getDefaultState = () => {
     };
 };
 export default new Vuex.Store({
-    strict: true,
-    plugins: [createPersistedState()],
     state: getDefaultState(),
     getters: {
         isLoggedIn: state => {
@@ -31,12 +28,6 @@ export default new Vuex.Store({
         }
     },
     actions: {
-        setLoggedIn: ({ commit, dispatch }, { status }) => {
-            commit('SET_LOGGED_IN', status);
-        },setUserId: ({ commit, dispatch }, { user_id }) => {
-            commit('SET_USER_ID', user_id);
-            // set auth header
-        },
         logout: ({ commit }) => {
             commit('RESET', '');
         }
