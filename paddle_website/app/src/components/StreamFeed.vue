@@ -4,10 +4,10 @@ var sfutest = null;
 var opaqueId = "videoroomtest-" + Janus.randomString(12);
 // var streaming = false;
 
-var myroom = 99565000; // Demo room
 if (getQueryStringValue("room") !== "")
   myroom = parseInt(getQueryStringValue("room"));
 var myusername = null;
+var sessionCode = null;
 var myid = null;
 var mystream = null;
 var mypvtid = null;
@@ -36,6 +36,10 @@ var use_msid =
   getQueryStringValue("msid") === "yes" ||
   getQueryStringValue("msid") === "true";
 
+var myroom = null;
+var sessionCode = null;
+var socket = null;
+
 $(document).ready(function () {
   Janus.init({
     debug: "all",
@@ -43,16 +47,57 @@ $(document).ready(function () {
       var currentURL = window.location.href;
       var url = new URL(currentURL);
       this.myroom = url.searchParams.get("room");
-      this.myusername = 'Bram';
-      console.log('Room: ', this.myroom);
-      console.log('User: ', this.myusername);
+      this.sessionCode = url.searchParams.get("sessionCode");
+      this.myusername = "Bram";
+      // start()
     },
   });
 });
 
+function socketJoin() {
+  // websocket.js
+  socket = new WebSocket(
+    "http://localhost:8081/api/v1/session/ws/" + this.sessionCode
+  );
+
+  // Event handler for when the connection is established
+  socket.onopen = function (event) {
+    console.log("WebSocket connection established.");
+  };
+
+  socket.onmessage = function (event) {
+    const message = event.data;
+    console.log("Received message:", message);
+  };
+
+  socket.onerror = function (error) {
+    console.error("WebSocket error:", error);
+  };
+
+  socket.onclose = function (event) {
+    console.log("WebSocket connection closed:", event);
+  };
+
+  const initMsg = {
+    sender: 'player',
+    body: {request: "ping"}
+  };
+
+  const startMsg = {
+    sender: 'player',
+    body: {request: "start"}
+  };
+
+  initStr = JSON.stringify(initMsg);
+  startStr - JSON.stringify(startMsg);
+
+  socket.send(initStr);
+  socket.send(startStr);
+}
+
 function start() {
-  $('#start').hide();
-  $('#stop').show();
+  $("#start").hide();
+  $("#stop").show();
   $(this).attr("disabled", true).unbind("click");
   // Make sure the browser supports WebRTC
   if (!Janus.isWebrtcSupported()) {
@@ -88,7 +133,7 @@ function start() {
           // $("#registernow").removeClass("hide").show();
           // $("#register").click(registerUsername);
           // $("#username").focus();
-          registerUsername()
+          registerUsername();
           $("#start")
             .removeAttr("disabled")
             .html("Stop")
@@ -146,23 +191,23 @@ function start() {
           $("#videolocal").parent().parent().unblock();
           if (!on) return;
           sfutest.send({
-              message: { request: "configure", bitrate: 0 },
-            });
+            message: { request: "configure", bitrate: 0 },
+          });
           // $("#publish").remove();
           // This controls allows us to override the global room bitrate cap
           // $("#bitrate").parent().parent().removeClass("hide").show();
           // $("#bitrate a").click(function () {
-            // let id = $(this).attr("id");
-            // let bitrate = parseInt(id) * 1000;
-            // if (bitrate === 0) {
-            //   Janus.log("Not limiting bandwidth via REMB");
-            // } else {
-            //   Janus.log("Capping bandwidth to " + bitrate + " via REMB");
-            // }
-            // $("#bitrateset")
-            //   .html($(this).html() + '<span class="caret"></span>')
-            //   .parent()
-            //   .removeClass("open");
+          // let id = $(this).attr("id");
+          // let bitrate = parseInt(id) * 1000;
+          // if (bitrate === 0) {
+          //   Janus.log("Not limiting bandwidth via REMB");
+          // } else {
+          //   Janus.log("Capping bandwidth to " + bitrate + " via REMB");
+          // }
+          // $("#bitrateset")
+          //   .html($(this).html() + '<span class="caret"></span>')
+          //   .parent()
+          //   .removeClass("open");
           //   sfutest.send({
           //     message: { request: "configure", bitrate: bitrate },
           //   });
@@ -491,22 +536,22 @@ function start() {
 }
 
 function stop() {
-  $('stop').hide();
-  $('start').show();
+  $("stop").hide();
+  $("start").show();
 
   janus.destroy();
-  console.log('Destroyed the session!')
+  console.log("Destroyed the session!");
 }
 
 function registerUsername() {
-  let username = "Bram"
+  let username = "Bram";
   let register = {
-      request: "join",
-      room: myroom,
-      ptype: "publisher",
-      display: username,
-    };
-    sfutest.send({ message: register });
+    request: "join",
+    room: myroom,
+    ptype: "publisher",
+    display: username,
+  };
+  sfutest.send({ message: register });
 }
 
 function publishOwnFeed(useAudio) {
@@ -1266,8 +1311,12 @@ function updateSimulcastSvcButtons(feed, substream, temporal) {
           </div>
         </div>
 
-        <button id="start" class="btn-record" @click="start()">Start Recording</button>
-        <button id="stop" class="btn-stop" @click="stop()">Stop Recording</button>
+        <button id="start" class="btn-record" @click="socketJoin()">
+          Start Recording
+        </button>
+        <button id="stop" class="btn-stop" @click="stop()">
+          Stop Recording
+        </button>
         <div class="timer">Thursday 21-06-23 01:22</div>
         <div class="panel-body" id="videolocal"></div>
       </div>

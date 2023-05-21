@@ -76,7 +76,7 @@ export default {
       axios.post('http://localhost:8081/api/v1/session/start/' + this.session)
         .then(response => {
           console.log(response)
-          this.$router.push("/stream?room=" + this.room);
+          this.$router.push("/stream?room=" + this.room + '&sessionCode=' + this.session);
         })
         .catch(error => {
           console.error('Error starting session:', error);
