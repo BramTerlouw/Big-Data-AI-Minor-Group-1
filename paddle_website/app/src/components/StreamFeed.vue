@@ -46,9 +46,9 @@ $(document).ready(function () {
     callback: function () {
       var currentURL = window.location.href;
       var url = new URL(currentURL);
-      this.myroom = url.searchParams.get("room");
-      this.sessionCode = url.searchParams.get("sessionCode");
-      this.myusername = "Bram";
+      myroom = parseInt(url.searchParams.get("room"));
+      sessionCode = url.searchParams.get("sessionCode");
+      myusername = "Bram";
       // start()
     },
   });
@@ -57,12 +57,27 @@ $(document).ready(function () {
 function socketJoin() {
   // websocket.js
   socket = new WebSocket(
-    "http://localhost:8081/api/v1/session/ws/" + this.sessionCode
+    "ws://localhost:8081/api/v1/session/ws/" + sessionCode
   );
 
   // Event handler for when the connection is established
   socket.onopen = function (event) {
     console.log("WebSocket connection established.");
+    const initMsg = {
+    sender: 'player',
+    body: {request: "ping"}
+  };
+
+  const startMsg = {
+    sender: 'player',
+    body: {request: "start"}
+  };
+
+  let initStr = JSON.stringify(initMsg);
+  let startStr = JSON.stringify(startMsg);
+
+  socket.send(initStr);
+  socket.send(startStr);
   };
 
   socket.onmessage = function (event) {
@@ -78,21 +93,10 @@ function socketJoin() {
     console.log("WebSocket connection closed:", event);
   };
 
-  const initMsg = {
-    sender: 'player',
-    body: {request: "ping"}
-  };
-
-  const startMsg = {
-    sender: 'player',
-    body: {request: "start"}
-  };
-
-  initStr = JSON.stringify(initMsg);
-  startStr - JSON.stringify(startMsg);
-
-  socket.send(initStr);
-  socket.send(startStr);
+  // socket.addEventListener('open', function(event) {
+  // // WebSocket connection is now open and ready
+  // socket.send('Hello, WebSocket!');
+// });
 }
 
 function start() {
@@ -1299,6 +1303,7 @@ function updateSimulcastSvcButtons(feed, substream, temporal) {
         <div class="info-panel">
           <div class="heading">
             <p class="heading-title">Step 3: Stream training</p>
+            <button @click="socketJoin()">socket</button>
           </div>
 
           <div class="position-info">
@@ -1311,7 +1316,7 @@ function updateSimulcastSvcButtons(feed, substream, temporal) {
           </div>
         </div>
 
-        <button id="start" class="btn-record" @click="socketJoin()">
+        <button id="start" class="btn-record" @click="start()">
           Start Recording
         </button>
         <button id="stop" class="btn-stop" @click="stop()">
