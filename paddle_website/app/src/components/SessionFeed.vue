@@ -3,35 +3,34 @@ import axios from 'axios';
 import SessionCard from "./SessionCard.vue";
 
 export default {
-  components: {
-    SessionCard,
-  },
-  mounted() {
-    this.fetchData()
-  },
+    components: {
+        SessionCard,
+    },
+    mounted() {
+        this.fetchData()
+    },
     computed: {
         userid () {
-            return this.$store.getters.getUserId()
+            return this.$store.getters.getUserId
         }
     },
-  data() {
-    return {
-      data: [],
-    };
-  },
-  methods: {
-    fetchData() {
-      axios
-        .get("http://localhost:8081/api/v1/session/results/"+ this.userid)
-        .then((response) => {
-          this.data = response.data;
-          // console.log(this.data[0]['picture'])
-        })
-        .catch((error) => {
-          console.error(error);
-        });
+    data() {
+        return {
+            data: [],
+        };
     },
-  },
+    methods: {
+        fetchData() {
+            axios
+                .get("http://localhost:8081/api/v1/session/results/" + this.userid)
+                .then((response) => {
+                    this.data = response.data;
+                })
+                .catch((error) => {
+                    console.error(error);
+                });
+        },
+    },
 };
 </script>
 

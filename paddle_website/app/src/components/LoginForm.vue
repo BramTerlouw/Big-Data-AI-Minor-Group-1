@@ -1,28 +1,26 @@
 <script>
-import store from "@/store";
-
 export default {
-  data() {
-    return {
-      inputValue: '',
-      error: false
-    };
-  },
-  methods: {
-    submitForm(event) {
-      event.preventDefault();
-      if (this.inputValue === '') {
-        this.error = true;
-        return;
-      }
+    data() {
+        return {
+            inputValue: '',
+            error: false
+        };
+    },
+    methods: {
+        submitForm(event) {
+            event.preventDefault();
+            if (this.inputValue === '') {
+                this.error = true;
+                return;
+            }
 
-        let userid = this.inputValue
-        let status = true
-        store.commit('SET_USER_ID', userid)
-        store.commit('SET_LOGGED_IN', status)
-      this.$router.push('/dashboard')
+            let userid = this.inputValue
+            let status = true
+            this.$store.commit('SET_USER_ID', userid)
+            this.$store.commit('SET_LOGGED_IN', status)
+            this.$router.push('/dashboard')
+        }
     }
-  }
 };
 </script>
 
