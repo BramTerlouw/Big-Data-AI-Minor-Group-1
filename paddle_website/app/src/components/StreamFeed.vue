@@ -49,12 +49,14 @@ $(document).ready(function () {
       myroom = parseInt(url.searchParams.get("room"));
       sessionCode = url.searchParams.get("sessionCode");
       myusername = "Bram";
-      // start()
+      setup()
     },
   });
 });
 
-function socketJoin() {
+function start_stream() {
+  $("#start").hide();
+  $("#stop").show();
   // websocket.js
   socket = new WebSocket(
     "ws://localhost:8081/api/v1/session/ws/" + sessionCode
@@ -99,9 +101,8 @@ function socketJoin() {
 // });
 }
 
-function start() {
-  $("#start").hide();
-  $("#stop").show();
+
+function setup() {
   $(this).attr("disabled", true).unbind("click");
   // Make sure the browser supports WebRTC
   if (!Janus.isWebrtcSupported()) {
@@ -138,13 +139,13 @@ function start() {
           // $("#register").click(registerUsername);
           // $("#username").focus();
           registerUsername();
-          $("#start")
-            .removeAttr("disabled")
-            .html("Stop")
-            .click(function () {
-              $(this).attr("disabled", true);
-              janus.destroy();
-            });
+          // $("#start")
+          //   .removeAttr("disabled")
+          //   .html("Stop")
+          //   .click(function () {
+          //     $(this).attr("disabled", true);
+          //     janus.destroy();
+          //   });
         },
         error: function (error) {
           Janus.error("  -- Error attaching plugin...", error);
@@ -534,14 +535,26 @@ function start() {
       });
     },
     destroyed: function () {
-      window.location.reload();
+      // window.location.reload();
     },
   });
 }
 
-function stop() {
-  $("stop").hide();
-  $("start").show();
+function stop_stream() {
+  const stopMsg = {
+    sender: 'player',
+    body: {request: "stop"}
+  };
+
+  let stopStr = JSON.stringify(stopMsg);
+  socket.send(stopStr);
+  socket.close();
+  dispose_rescources();
+}
+
+function dispose_rescources() {
+  $("#stop").hide();
+  $("#start").show();
 
   janus.destroy();
   console.log("Destroyed the session!");
@@ -1303,7 +1316,6 @@ function updateSimulcastSvcButtons(feed, substream, temporal) {
         <div class="info-panel">
           <div class="heading">
             <p class="heading-title">Step 3: Stream training</p>
-            <button @click="socketJoin()">socket</button>
           </div>
 
           <div class="position-info">
@@ -1316,10 +1328,10 @@ function updateSimulcastSvcButtons(feed, substream, temporal) {
           </div>
         </div>
 
-        <button id="start" class="btn-record" @click="start()">
+        <button id="start" class="btn-record" @click="start_stream()">
           Start Recording
         </button>
-        <button id="stop" class="btn-stop" @click="stop()">
+        <button id="stop" class="btn-stop" @click="stop_stream()">
           Stop Recording
         </button>
         <div class="timer">Thursday 21-06-23 01:22</div>
