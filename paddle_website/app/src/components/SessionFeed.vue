@@ -21,14 +21,21 @@ export default {
     },
     methods: {
         fetchData() {
-            axios
-                .get("http://localhost:8081/api/v1/session/results/" + this.userid)
-                .then((response) => {
-                    this.data = response.data;
-                })
-                .catch((error) => {
-                    console.error(error);
-                });
+          axios.get("/session/results/" + this.userid)
+              .then((response) => {
+                if (response.status === 200) {
+                  this.data = response.data;
+                } else {
+                  this.data = [];
+                }
+              })
+              .catch((error) => {
+                if (error.response && error.response.status === 404) {
+                  this.data = []; // Set data to empty array for 404 Not Found
+                } else {
+                  console.error(error);
+                }
+              });
         },
     },
 };

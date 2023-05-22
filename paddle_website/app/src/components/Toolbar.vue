@@ -2,15 +2,20 @@
 export default {
   methods: {
     logout() {
-      this.$store.commit("logout");
-      this.$router.push("/");
+      this.$store.dispatch('logout');
+      this.$router.push("/login");
     },
   },
+    computed:{
+        isLoggedIn () {
+            return this.$store.getters.isLoggedIn
+        }
+    }
 };
 </script>
 
 <template>
-  <div v-if="this.$store.state.loggedIn" class="toolbar">
+  <div v-if="isLoggedIn" class="toolbar">
     <svg
       width="38"
       height="38"
