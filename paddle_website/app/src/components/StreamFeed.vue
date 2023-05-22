@@ -2,7 +2,7 @@
 var janus = null;
 var sfutest = null;
 var opaqueId = "videoroomtest-" + Janus.randomString(12);
-// var streaming = false;
+var loop = true;
 
 if (getQueryStringValue("room") !== "")
   myroom = parseInt(getQueryStringValue("room"));
@@ -49,42 +49,59 @@ $(document).ready(function () {
       myroom = parseInt(url.searchParams.get("room"));
       sessionCode = url.searchParams.get("sessionCode");
       myusername = "Bram";
-      setup()
+      setup_stream();
+      setup_socket();
     },
   });
 });
 
-function start_stream() {
+async function start_stream() {
+  const startMsg = {
+    sender: "player",
+    body: { request: "start" },
+  };
+
+  let startStr = JSON.stringify(startMsg);
+  await socket.send(startStr);
+
   $("#start").hide();
   $("#stop").show();
-  // websocket.js
+}
+
+function setup_socket() {
   socket = new WebSocket(
     "ws://localhost:8081/api/v1/session/ws/" + sessionCode
   );
 
-  // Event handler for when the connection is established
   socket.onopen = function (event) {
     console.log("WebSocket connection established.");
+    
     const initMsg = {
-    sender: 'player',
-    body: {request: "ping"}
+      sender: "player",
+      body: { request: "ping" },
+    };
+
+    let initStr = JSON.stringify(initMsg);
+
+    let counter = 0;
+    const intervalId = setInterval(() => {
+      socket.send(initStr)
+
+      if (!loop || counter >= 25) {
+        clearInterval(intervalId);
+      }
+      counter++;
+    }, 1000);
   };
 
-  const startMsg = {
-    sender: 'player',
-    body: {request: "start"}
-  };
+  socket.onmessage = function(event) {
+    const response = JSON.parse(event.data);
 
-  let initStr = JSON.stringify(initMsg);
-  let startStr = JSON.stringify(startMsg);
-
-  socket.send(initStr);
-  socket.send(startStr);
-  };
-
-  socket.onmessage = function (event) {
-    const message = event.data;
-    console.log("Received message:", message);
+    if (response.body.response == "pong") {
+      console.log("Received response:", response);
+      loop = false;
+      $("#start").show();
+    }
   };
 
   socket.onerror = function (error) {
@@ -94,15 +111,9 @@ function start_stream() {
   socket.onclose = function (event) {
     console.log("WebSocket connection closed:", event);
   };
-
-  // socket.addEventListener('open', function(event) {
-  // // WebSocket connection is now open and ready
-  // socket.send('Hello, WebSocket!');
-// });
 }
 
-
-function setup() {
+function setup_stream() {
   $(this).attr("disabled", true).unbind("click");
   // Make sure the browser supports WebRTC
   if (!Janus.isWebrtcSupported()) {
@@ -540,24 +551,33 @@ function setup() {
   });
 }
 
-function stop_stream() {
-  const stopMsg = {
-    sender: 'player',
-    body: {request: "stop"}
+async function stop_stream() {
+  const pauzeMsg = {
+    sender: "player",
+    body: { request: "pauze" },
   };
 
+  const stopMsg = {
+    sender: "player",
+    body: { request: "stop" },
+  };
+
+  let pauzeStr = JSON.stringify(pauzeMsg);
   let stopStr = JSON.stringify(stopMsg);
-  socket.send(stopStr);
-  socket.close();
+
+  await socket.send(pauzeStr);
+  await socket.send(stopStr);
   dispose_rescources();
 }
 
-function dispose_rescources() {
+async function dispose_rescources() {
   $("#stop").hide();
   $("#start").show();
 
-  janus.destroy();
+  await janus.destroy();
   console.log("Destroyed the session!");
+  await socket.close();
+  console.log("Socket closed!");
 }
 
 function registerUsername() {
@@ -1410,6 +1430,7 @@ function updateSimulcastSvcButtons(feed, substream, temporal) {
   background-color: #3db0f0;
   border: none;
   color: #fff;
+  display: none;
 }
 
 .btn-stop {
