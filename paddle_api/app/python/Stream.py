@@ -272,6 +272,11 @@ async def run(room, session, ws_url):
                                         print("Pause command received")
                                         sessionActive = False
 
+                                    else:
+                                        pauseData = {"sender": "bot", "type": "error", "body": {"response": "invalid request"}}
+                                        await send_message(json.dumps(pauseData))
+                                        print("Invalid request received")
+
                                 except json.JSONDecodeError:
                                     errorData = {"sender": "bot", "type": "error", "body": {"response": "wrong json format"}}
                                     await send_message(json.dumps(errorData))

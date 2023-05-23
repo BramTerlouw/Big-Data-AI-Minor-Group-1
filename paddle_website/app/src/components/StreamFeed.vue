@@ -3,6 +3,9 @@ var janus = null;
 var sfutest = null;
 var opaqueId = "videoroomtest-" + Janus.randomString(12);
 var loop = true;
+var loop2 = true;
+var loop3 = true;
+var loop4 = true;
 
 if (getQueryStringValue("room") !== "")
   myroom = parseInt(getQueryStringValue("room"));
@@ -62,7 +65,16 @@ async function start_stream() {
   };
 
   let startStr = JSON.stringify(startMsg);
-  await socket.send(startStr);
+  let counter = 0
+  const intervalId = setInterval(async () => {
+    await socket.send(startStr);
+
+    if (!loop2 || counter >= 25) {
+      clearInterval(intervalId);
+    }
+    counter++;
+  }, 1000);
+
 
   $("#start").hide();
   $("#stop").show();
@@ -97,11 +109,27 @@ function setup_socket() {
   socket.onmessage = function(event) {
     const response = JSON.parse(event.data);
 
-    if (response.body.response == "pong") {
+    if (response.body.response === "pong") {
       console.log("Received response:", response);
       loop = false;
       $("#start").show();
     }
+
+    if(response.body.response === "started") {
+      console.log("Received response:", response);
+      loop2 = false;
+    }
+
+    if(response.body.response === "paused") {
+      console.log("Received response:", response);
+      loop3 = false;
+    }
+
+    if(response.body.response === "stopped") {
+      console.log("Received response:", response);
+      loop4 = false;
+    }
+
   };
 
   socket.onerror = function (error) {
@@ -554,7 +582,7 @@ function setup_stream() {
 async function stop_stream() {
   const pauzeMsg = {
     sender: "player",
-    body: { request: "pauze" },
+    body: { request: "pause" },
   };
 
   const stopMsg = {
@@ -563,11 +591,29 @@ async function stop_stream() {
   };
 
   let pauzeStr = JSON.stringify(pauzeMsg);
-  let stopStr = JSON.stringify(stopMsg);
+  let counter1 = 0
+  const intervalId1 = setInterval(async () => {
+    await socket.send(pauzeStr);
 
-  await socket.send(pauzeStr);
-  await socket.send(stopStr);
-  dispose_rescources();
+    if (!loop3 || counter1 >= 25) {
+      clearInterval(intervalId1);
+    }
+    counter1++;
+  }, 1000);
+
+
+
+  let stopStr = JSON.stringify(stopMsg);
+  let counter2 = 0
+  const intervalId2 = setInterval(async () => {
+    await socket.send(stopStr);
+
+    if (!loop4 || counter2 >= 25) {
+      clearInterval(intervalId2);
+    }
+    counter2++;
+  }, 1000);
+  // await dispose_rescources();
 }
 
 async function dispose_rescources() {
@@ -1356,6 +1402,7 @@ function updateSimulcastSvcButtons(feed, substream, temporal) {
         </button>
         <div class="timer">Thursday 21-06-23 01:22</div>
         <div class="panel-body" id="videolocal"></div>
+        <button @click="dispose_rescources()">Pindakaas</button>
       </div>
       <div class="message-wrapper"></div>
     </div>
