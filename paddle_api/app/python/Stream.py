@@ -234,7 +234,7 @@ async def run(room, session, ws_url):
 
                         if publishers:
 
-                            pongData = {"sender": "bot", "type": "message", "body": {"response": "pong"}}
+                            pongData = {"sender": "bot", "type": "message", "body": {"response": "pong", "status": "info"}}
                             await send_message(json.dumps(pongData))
                             print("Received 'ping', replied with 'pong'")
 
@@ -256,29 +256,29 @@ async def run(room, session, ws_url):
                                         continue
 
                                     if message_data.get("body", {}).get("request") == "stop":
-                                        stopData = {"sender": "bot", "type": "message", "body": {"response": "stopped"}}
+                                        stopData = {"sender": "bot", "type": "message", "body": {"response": "stopped", "status": "warning"}}
                                         await send_message(json.dumps(stopData))
                                         raise StopSignalReceived()
 
                                     elif message_data.get("body", {}).get("request") == "start":
-                                        startData = {"sender": "bot", "type": "message", "body": {"response": "started"}}
+                                        startData = {"sender": "bot", "type": "message", "body": {"response": "started", "status": "succes"}}
                                         await send_message(json.dumps(startData))
                                         print("Start command received")
                                         sessionActive = True
 
                                     elif message_data.get("body", {}).get("request") == "pause":
-                                        pauseData = {"sender": "bot", "type": "message", "body": {"response": "paused"}}
+                                        pauseData = {"sender": "bot", "type": "message", "body": {"response": "paused", "status": "info"}}
                                         await send_message(json.dumps(pauseData))
                                         print("Pause command received")
                                         sessionActive = False
 
                                     else:
-                                        pauseData = {"sender": "bot", "type": "error", "body": {"response": "invalid request"}}
+                                        pauseData = {"sender": "bot", "type": "error", "body": {"response": "invalid request", "status": "danger"}}
                                         await send_message(json.dumps(pauseData))
                                         print("Invalid request received")
 
                                 except json.JSONDecodeError:
-                                    errorData = {"sender": "bot", "type": "error", "body": {"response": "wrong json format"}}
+                                    errorData = {"sender": "bot", "type": "error", "body": {"response": "wrong json format", "status": "danger"}}
                                     await send_message(json.dumps(errorData))
                                     print("Error: Unable to decode message")
                                     continue

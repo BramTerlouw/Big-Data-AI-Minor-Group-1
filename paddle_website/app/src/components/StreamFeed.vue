@@ -1,47 +1,61 @@
 <script setup>
+import Notification from './Notification.vue';
+
 var janus = null;
 var sfutest = null;
 var opaqueId = "videoroomtest-" + Janus.randomString(12);
-var loop = true;
-var loop2 = true;
-var loop3 = true;
-var loop4 = true;
 
-if (getQueryStringValue("room") !== "")
-  myroom = parseInt(getQueryStringValue("room"));
+var pingLoop = true;
+var startLoop = true;
+var pauzeLoop = true;
+var stopLoop = true;
+
 var myusername = null;
+var myroom = null;
 var sessionCode = null;
+var socket = null;
+var messages = [];
+
 var myid = null;
 var mystream = null;
 var mypvtid = null;
 
-var localTracks = {},
-  localVideos = 0;
-var feeds = [],
-  feedStreams = {};
+var localTracks = {}, localVideos = 0;
+var feeds = [], feedStreams = {};
 var bitrateTimer = [];
 
 var doSimulcast =
   getQueryStringValue("simulcast") === "yes" ||
   getQueryStringValue("simulcast") === "true";
+
 var doSvc = getQueryStringValue("svc");
 if (doSvc === "") doSvc = null;
+
+if (getQueryStringValue("room") !== "")
+  myroom = parseInt(getQueryStringValue("room"));
+
 var acodec =
   getQueryStringValue("acodec") !== "" ? getQueryStringValue("acodec") : null;
+
 var vcodec =
   getQueryStringValue("vcodec") !== "" ? getQueryStringValue("vcodec") : null;
+
 var doDtx =
   getQueryStringValue("dtx") === "yes" || getQueryStringValue("dtx") === "true";
+
 var subscriber_mode =
   getQueryStringValue("subscriber-mode") === "yes" ||
   getQueryStringValue("subscriber-mode") === "true";
+
 var use_msid =
   getQueryStringValue("msid") === "yes" ||
   getQueryStringValue("msid") === "true";
 
-var myroom = null;
-var sessionCode = null;
-var socket = null;
+
+// ##############################################
+// ############## OUR CODE vvvvv ################
+// ##############################################
+
 
 $(document).ready(function () {
   Janus.init({
@@ -52,8 +66,8 @@ $(document).ready(function () {
       myroom = parseInt(url.searchParams.get("room"));
       sessionCode = url.searchParams.get("sessionCode");
       myusername = "Bram";
-      setup_stream();
-      setup_socket();
+      // setup_stream();
+      // setup_socket();
     },
   });
 });
@@ -69,7 +83,7 @@ async function start_stream() {
   const intervalId = setInterval(async () => {
     await socket.send(startStr);
 
-    if (!loop2 || counter >= 25) {
+    if (!startLoop || counter >= 25) {
       clearInterval(intervalId);
     }
     counter++;
@@ -99,7 +113,7 @@ function setup_socket() {
     const intervalId = setInterval(() => {
       socket.send(initStr)
 
-      if (!loop || counter >= 25) {
+      if (!pingLoop || counter >= 25) {
         clearInterval(intervalId);
       }
       counter++;
@@ -111,24 +125,29 @@ function setup_socket() {
 
     if (response.body.response === "pong") {
       console.log("Received response:", response);
-      loop = false;
+      pingLoop = false;
       $("#start").show();
     }
 
     if(response.body.response === "started") {
       console.log("Received response:", response);
-      loop2 = false;
+      startLoop = false;
     }
 
     if(response.body.response === "paused") {
       console.log("Received response:", response);
-      loop3 = false;
+      pauzeLoop = false;
     }
 
     if(response.body.response === "stopped") {
       console.log("Received response:", response);
-      loop4 = false;
+      stopLoop = false;
     }
+
+    messages.append({
+      status: response.body.status,
+      message: response.body.response
+    })
 
   };
 
@@ -140,6 +159,57 @@ function setup_socket() {
     console.log("WebSocket connection closed:", event);
   };
 }
+
+async function stop_stream() {
+  let counter = 0
+
+  let pauzeStr = JSON.stringify(pauzeMsg);
+  let stopStr = JSON.stringify(stopMsg);
+
+  const pauzeMsg = {
+    sender: "player",
+    body: { request: "pause" },
+  };
+
+  const stopMsg = {
+    sender: "player",
+    body: { request: "stop" },
+  };
+
+  const pauzeInterval = setInterval(async () => {
+    await socket.send(pauzeStr);
+
+    if (!pauzeLoop || counter >= 25) {
+      clearInterval(pauzeInterval);
+      counter = 0
+    }
+    counter++;
+  }, 1000);
+
+  const stopInterval = setInterval(async () => {
+    await socket.send(stopStr);
+
+    if (!stopLoop || counter >= 25) {
+      clearInterval(stopInterval);
+    }
+    counter++;
+  }, 1000);
+  // await dispose_rescources();
+}
+
+async function dispose_rescources() {
+  $("#stop").hide();
+  $("#start").show();
+
+  await janus.destroy();
+  await socket.close();
+}
+
+
+// ##############################################
+// ############## DEMO CODE vvvvv ###############
+// ##############################################
+
 
 function setup_stream() {
   $(this).attr("disabled", true).unbind("click");
@@ -577,53 +647,6 @@ function setup_stream() {
       // window.location.reload();
     },
   });
-}
-
-async function stop_stream() {
-  const pauzeMsg = {
-    sender: "player",
-    body: { request: "pause" },
-  };
-
-  const stopMsg = {
-    sender: "player",
-    body: { request: "stop" },
-  };
-
-  let pauzeStr = JSON.stringify(pauzeMsg);
-  let counter1 = 0
-  const intervalId1 = setInterval(async () => {
-    await socket.send(pauzeStr);
-
-    if (!loop3 || counter1 >= 25) {
-      clearInterval(intervalId1);
-    }
-    counter1++;
-  }, 1000);
-
-
-
-  let stopStr = JSON.stringify(stopMsg);
-  let counter2 = 0
-  const intervalId2 = setInterval(async () => {
-    await socket.send(stopStr);
-
-    if (!loop4 || counter2 >= 25) {
-      clearInterval(intervalId2);
-    }
-    counter2++;
-  }, 1000);
-  // await dispose_rescources();
-}
-
-async function dispose_rescources() {
-  $("#stop").hide();
-  $("#start").show();
-
-  await janus.destroy();
-  console.log("Destroyed the session!");
-  await socket.close();
-  console.log("Socket closed!");
 }
 
 function registerUsername() {
@@ -1402,9 +1425,15 @@ function updateSimulcastSvcButtons(feed, substream, temporal) {
         </button>
         <div class="timer">Thursday 21-06-23 01:22</div>
         <div class="panel-body" id="videolocal"></div>
-        <button @click="dispose_rescources()">Pindakaas</button>
+        <button  @click="dispose_rescources()">Pindakaas</button>
       </div>
-      <div class="message-wrapper"></div>
+      <div class="message-wrapper">
+        <Notification 
+          v-for="item in messages" 
+          :key="item.status" 
+          :status="item.status" 
+          :message="item.message"/>
+      </div>
     </div>
   </section>
 </template>
@@ -1441,7 +1470,12 @@ function updateSimulcastSvcButtons(feed, substream, temporal) {
 .message-wrapper {
   width: 50%;
   height: 100%;
-  border: 1px solid darkgray;
+  padding: 10px;
+  /* border-left: 1px solid darkgray; */
+
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
 .info-panel {
