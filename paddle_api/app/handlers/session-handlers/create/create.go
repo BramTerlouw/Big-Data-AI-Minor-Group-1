@@ -53,7 +53,7 @@ func (h *handler) CreateSessionHandler(ctx *gin.Context) {
 	e := h.sessionService.UpdateSession(&model.InputUpdateSession{Id: session.Id, SessionKeyUsed: true})
 
 	if e != nil {
-		log.Fatal(e)
+		log.Println(e)
 	}
 
 	go func() {
@@ -67,14 +67,14 @@ func (h *handler) CreateSessionHandler(ctx *gin.Context) {
 			currentTime := time.Now()
 
 			e := h.sessionService.UpdateSession(&model.InputUpdateSession{Id: session.Id, Status: "Failed", OutputDate: &currentTime})
-	
+
 			if e != nil {
-				log.Fatal(e)
+				log.Println(e)
 			}
 
 			return
 		}
-		fmt.Println(*session.Room)
+
 		fmt.Println(string(output))
 
 		// Ending session
@@ -82,12 +82,11 @@ func (h *handler) CreateSessionHandler(ctx *gin.Context) {
 			ctx.JSON(http.StatusNotFound, gin.H{"error": "Something went wrong, try again."})
 		}
 
-		// logic here for score upload
 		currentTime := time.Now()
 		e := h.sessionService.UpdateSession(&model.InputUpdateSession{Id: session.Id, Status: "Processed", SessionKeyUsed: true, OutputDate: &currentTime})
 
 		if e != nil {
-			log.Fatal(e)
+			log.Println(e)
 		}
 	}()
 

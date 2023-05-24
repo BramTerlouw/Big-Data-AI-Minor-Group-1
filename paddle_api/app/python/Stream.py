@@ -3,13 +3,14 @@ import asyncio
 import json
 import logging
 import random
+import requests
+import numpy as np
 import string
 import time
 import aiohttp
 import websockets
-from StreamLogic import stream_logic
+from StreamLogic import stream_logic_last_score, stream_logic_all_score
 from aiortc import RTCPeerConnection, RTCSessionDescription
-
 
 pcs = set()
 
@@ -135,8 +136,7 @@ async def subscribe(session, room, feed, send_message):
                     img = frame.to_ndarray(format="bgr24")
 
                     if sessionActive:
-                        result = stream_logic(img)
-
+                        result = stream_logic_last_score(img)
                         if not result:
                             sessionActive = False
                             score = []
@@ -150,12 +150,12 @@ async def subscribe(session, room, feed, send_message):
                                         "body": {"response": "Person distance too close with paddle!"}}
                             await send_message(json.dumps(procData))
                         else:
-                            score.append(result)
+                            # score.append(result)
                             print("score saved")
 
-                        procData = {"sender": "bot", "type": "error",
-                                    "body": {"response": "Person distance too close with paddle!"}}
-                        await send_message(json.dumps(procData))
+                            procData = {"sender": "bot", "type": "message",
+                                        "body": {"response": "Score saved"}}
+                            await send_message(json.dumps(procData))
                     else:
                         # wait when session is not active
                         await asyncio.sleep(0.1)
@@ -216,7 +216,8 @@ async def run(room, session, ws_url):
                         await send_message(json.dumps(stopData))
                         raise StopSignalReceived()
 
-                    elif message_data.get("body", {}).get("request") == "ping" and message_data.get("sender") == "player":
+                    elif message_data.get("body", {}).get("request") == "ping" and message_data.get(
+                            "sender") == "player":
                         # join video room
                         await session.create()
                         plugin = await session.attach("janus.plugin.videoroom")
@@ -286,6 +287,7 @@ async def run(room, session, ws_url):
                 print("Stop command received, exiting...")
                 break
 
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Janus")
     parser.add_argument("url", help="Janus root URL, e.g. http://localhost:8088/janus")
@@ -312,11 +314,11 @@ if __name__ == "__main__":
 
     loop = asyncio.get_event_loop()
 
-    global score
-    score = []
+    # global score
+    # score = []
 
     ws_url = "ws://paddle-api:8081/api/v1/session/ws/" + args.key
-
+    score_endpoint_url = "http://paddle-api:8081/api/v1/session/score/" + args.key
     try:
         # Set the timeout to 30 minutes (30*60 seconds), so the bot stops after 30 minutes
         timeout = 30 * 60
@@ -335,7 +337,16 @@ if __name__ == "__main__":
 
     finally:
         # destroy session
-        print(score)
+        scores = stream_logic_all_score()
+
+        data = [{k: int(v) if isinstance(v, np.int32) else v for k, v in d.items()} for d in scores]
+        json_data = json.dumps(data)
+
+        response = requests.post(score_endpoint_url, data=json_data, headers={'Content-Type': 'application/json'})
+
+        # Print the response
+        print(f"Status code: {response.status_code}")
+        print(f"Response text: {response.text}")
 
         loop.run_until_complete(session.destroy())
         # close peer connections

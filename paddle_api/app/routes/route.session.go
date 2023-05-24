@@ -5,6 +5,7 @@ import (
 	handlerPicture "paddle-api/handlers/picture-handlers/verify"
 	handlerCreateSession "paddle-api/handlers/session-handlers/create"
 	handlerResultsSession "paddle-api/handlers/session-handlers/results"
+	handlerScoreSession "paddle-api/handlers/session-handlers/score"
 	handlerSocket "paddle-api/handlers/socket-handlers/create"
 	"paddle-api/repositories"
 	"paddle-api/services"
@@ -20,6 +21,7 @@ func InitSessionRoutes(route *gin.Engine) {
 	pictureHandler := handlerPicture.NewHandlerPicture(sessionService)
 	sessionCreateHandler := handlerCreateSession.NewHandlerCreateSession(sessionService)
 	sessionResultsHandler := handlerResultsSession.NewHandlerResultsSession(sessionService)
+	handlerScoreSession := handlerScoreSession.NewHandlerScoreSession(sessionService)
 	socketHandler := handlerSocket.NewHandlerCreateSocket(sessionService)
 
 	//All video Route.Use(util.Auth()
@@ -27,5 +29,6 @@ func InitSessionRoutes(route *gin.Engine) {
 	groupRoute.GET("/session/ws/:key", socketHandler.CreateSocketHandler)
 	groupRoute.GET("/session/results/:id", sessionResultsHandler.ResultsStreamHandler)
 	groupRoute.POST("/session/start/:key", sessionCreateHandler.CreateSessionHandler)
+	groupRoute.POST("/session/score/:key", handlerScoreSession.ScoreSessionHandler)
 	groupRoute.POST("/session/verify", pictureHandler.CreatePictureHandler)
 }

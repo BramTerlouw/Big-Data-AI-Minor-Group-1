@@ -45,3 +45,6 @@ class Score:
 
     def get_score(self):
         return self.scores
+
+    def get_score_stream(self):
+        return self.scores[-1]
