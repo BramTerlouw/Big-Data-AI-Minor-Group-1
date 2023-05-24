@@ -124,7 +124,7 @@ async def subscribe(session, room, feed, send_message):
     @pc.on("track")
     async def on_track(track):
         global sessionActive
-        global score
+
         print("Track %s received" % track.kind)
 
         if track.kind == "video":
@@ -313,9 +313,6 @@ if __name__ == "__main__":
     session = JanusSession(args.url)
 
     loop = asyncio.get_event_loop()
-
-    # global score
-    # score = []
 
     ws_url = "ws://paddle-api:8081/api/v1/session/ws/" + args.key
     score_endpoint_url = "http://paddle-api:8081/api/v1/session/score/" + args.key
