@@ -17,7 +17,7 @@ class ObjectDetectionV5:
             ObjectDetectionV5.__instance = self
 
     @classmethod
-    def get_instance(cls) -> 'ObjectDetectionV8':
+    def get_instance(cls) -> 'ObjectDetectionV5':
         if ObjectDetectionV5.__instance is None:
             ObjectDetectionV5()
         return ObjectDetectionV5.__instance
