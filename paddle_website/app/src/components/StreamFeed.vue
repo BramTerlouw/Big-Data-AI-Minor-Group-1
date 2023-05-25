@@ -1,34 +1,34 @@
 <script setup>
 import Notification from './Notification.vue';
 
-var janus = null;
-var sfutest = null;
-var opaqueId = "videoroomtest-" + Janus.randomString(12);
+let janus = null;
+let sfutest = null;
+let opaqueId = "videoroomtest-" + Janus.randomString(12);
 
-var pingLoop = true;
-var startLoop = true;
-var pauzeLoop = true;
-var stopLoop = true;
+let pingLoop = true;
+let startLoop = true;
+let pauzeLoop = true;
+let stopLoop = true;
 
-var myusername = null;
-var myroom = null;
-var sessionCode = null;
-var socket = null;
-var messages = [];
+let myusername = null;
+let myroom = null;
+let sessionCode = null;
+let socket = null;
+let messages = [];
 
-var myid = null;
-var mystream = null;
-var mypvtid = null;
+let myid = null;
+let mystream = null;
+let mypvtid = null;
 
-var localTracks = {}, localVideos = 0;
-var feeds = [], feedStreams = {};
-var bitrateTimer = [];
+let localTracks = {}, localVideos = 0;
+let feeds = [], feedStreams = {};
+let bitrateTimer = [];
 
-var doSimulcast =
+let doSimulcast =
   getQueryStringValue("simulcast") === "yes" ||
   getQueryStringValue("simulcast") === "true";
 
-var doSvc = getQueryStringValue("svc");
+let doSvc = getQueryStringValue("svc");
 if (doSvc === "") doSvc = null;
 
 if (getQueryStringValue("room") !== "")
@@ -66,8 +66,8 @@ $(document).ready(function () {
       myroom = parseInt(url.searchParams.get("room"));
       sessionCode = url.searchParams.get("sessionCode");
       myusername = "Bram";
-      // setup_stream();
-      // setup_socket();
+      setup_stream();
+      setup_socket();
     },
   });
 });
@@ -101,7 +101,7 @@ function setup_socket() {
 
   socket.onopen = function (event) {
     console.log("WebSocket connection established.");
-    
+
     const initMsg = {
       sender: "player",
       body: { request: "ping" },
@@ -122,6 +122,9 @@ function setup_socket() {
 
   socket.onmessage = function(event) {
     const response = JSON.parse(event.data);
+
+    if(!response.body.status || !response.body.response)
+      return;
 
     if (response.body.response === "pong") {
       console.log("Received response:", response);
@@ -144,11 +147,11 @@ function setup_socket() {
       stopLoop = false;
     }
 
-    messages.append({
+    console.log("Message:", messages, response)
+    messages.push({
       status: response.body.status,
       message: response.body.response
     })
-
   };
 
   socket.onerror = function (error) {
@@ -163,9 +166,6 @@ function setup_socket() {
 async function stop_stream() {
   let counter = 0
 
-  let pauzeStr = JSON.stringify(pauzeMsg);
-  let stopStr = JSON.stringify(stopMsg);
-
   const pauzeMsg = {
     sender: "player",
     body: { request: "pause" },
@@ -175,6 +175,9 @@ async function stop_stream() {
     sender: "player",
     body: { request: "stop" },
   };
+
+  let pauzeStr = JSON.stringify(pauzeMsg);
+  let stopStr = JSON.stringify(stopMsg);
 
   const pauzeInterval = setInterval(async () => {
     await socket.send(pauzeStr);
@@ -1425,14 +1428,16 @@ function updateSimulcastSvcButtons(feed, substream, temporal) {
         </button>
         <div class="timer">Thursday 21-06-23 01:22</div>
         <div class="panel-body" id="videolocal"></div>
-        <button  @click="dispose_rescources()">Pindakaas</button>
+        <button  @click="dispose_rescources()">Destroy</button>
       </div>
       <div class="message-wrapper">
-        <Notification 
-          v-for="item in messages" 
-          :key="item.status" 
-          :status="item.status" 
+        <Notification
+          v-for="item in messages"
+          :key="item.status"
+          :status="item.status"
           :message="item.message"/>
+
+        {{JSON.stringify(messages)}}
       </div>
     </div>
   </section>
