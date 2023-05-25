@@ -7,7 +7,7 @@ from BoundingBoxRenderer import BoundingBoxRenderer
 
 class Distance:
     def __init__(self):
-        self.reference_width = 32
+        self.reference_width = 39.5
         self.bounding_box_renderer = BoundingBoxRenderer()
 
     def get_distance_humans(
@@ -120,11 +120,13 @@ class Distance:
 
     @classmethod
     def calc_width_paddle(cls, coords_paddle: numpy.ndarray) -> int:
-        return np.int32(np.round(coords_paddle[0][2] - coords_paddle[0][0]))
+        width = np.int32(np.round(coords_paddle[0][2] - coords_paddle[0][0]))
+        height = np.int32(np.round(coords_paddle[0][3] - coords_paddle[0][1]))
+        diagonal = np.sqrt(width ** 2 + height ** 2)
+        return diagonal
 
-    @classmethod
-    def calc_distance(cls, paddle_width: int, big_coord: float, small_coord: float) -> int:
-        return np.int32(np.round(32 / paddle_width * (big_coord - small_coord)))
+    def calc_distance(self, paddle_width: int, big_coord: float, small_coord: float) -> int:
+        return np.int32(np.round(self.reference_width / paddle_width * (big_coord - small_coord)))
 
     @classmethod
     def get_human_left(cls, coords_humans: list[CoordsDTO]) -> CoordsDTO:
@@ -148,11 +150,10 @@ class Distance:
             player = self.get_human_left(coords_humans)
         else:
             player = self.get_human_right(coords_humans)
-
         player_height = self.calc_distance(
-                paddle_width,
-                player.bottom,
-                player.top
+            paddle_width,
+            player.bottom,
+            player.top
         )
 
         self.bounding_box_renderer.draw_player_height(
