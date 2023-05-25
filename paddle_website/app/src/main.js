@@ -3,8 +3,10 @@ import {createApp} from "vue";
 import store from './store'
 import router from "./router";
 import axios from 'axios';
-
 import App from "./App.vue";
+import StreamFeed from "./components/StreamFeed.js";
+
+window.customElements.define('stream-feed', StreamFeed)
 
 axios.defaults.baseURL = 'http://localhost:8081/api/v1'
 const app = createApp(App)

@@ -1,9 +1,6 @@
 <script setup>
 import NavBar from "../components/NavBar.vue";
 import SessionFeed from "../components/SessionFeed.vue";
-// import StreamFeed from "@/components/StreamFeed";
-
-// window.customElements.define('stream-feed', StreamFeed)
 </script>
 
 <template>
@@ -17,7 +14,7 @@ import SessionFeed from "../components/SessionFeed.vue";
       <SessionFeed />
     </main>
 
-<!--    <stream-feed></stream-feed>-->
+    <stream-feed></stream-feed>
   </div>
 </template>
 
