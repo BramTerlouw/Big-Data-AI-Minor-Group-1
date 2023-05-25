@@ -1,9 +1,8 @@
 <script setup>
-import StreamFeed from '../components/StreamFeed.vue';
 </script>
 
 <template>
- <StreamFeed />
+  <stream-feed></stream-feed>
 </template>
 
 <style scoped>

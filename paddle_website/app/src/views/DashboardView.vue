@@ -13,8 +13,6 @@ import SessionFeed from "../components/SessionFeed.vue";
       </header>
       <SessionFeed />
     </main>
-
-    <stream-feed></stream-feed>
   </div>
 </template>
 

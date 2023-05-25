@@ -253,6 +253,7 @@ async def run(room, session, ws_url):
                             async for message in receive_message_generator():
                                 try:
                                     message_data = json.loads(message)
+                                    print(message_data)
                                     if message_data.get("sender") != "player":
                                         continue
 
