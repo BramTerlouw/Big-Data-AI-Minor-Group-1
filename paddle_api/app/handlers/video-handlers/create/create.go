@@ -71,6 +71,7 @@ func (h *handler) CreateVideoHandler(ctx *gin.Context) {
 
 		// Execute the command
 		output, err := cmd.Output()
+		
 		if err != nil {
 			fmt.Println("Error executing ProcessVideo script:", err)
 			// create her a failed sql inject
