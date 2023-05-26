@@ -16,6 +16,7 @@ class StreamFeed extends HTMLElement {
         this.sessionCode = null;
         this.socket = null;
         this.messages = [];
+        this.intervalTimer = 2000;
 
         this.myid = null;
         this.mystream = null;
@@ -378,7 +379,7 @@ class StreamFeed extends HTMLElement {
             return
         this.is_start_stream_clicked = true;
 
-        this.createInterval(this.sendStartMessage.bind(this), 1000);
+        this.createInterval(this.sendStartMessage.bind(this), this.intervalTimer);
 
         this.shadowRoot.querySelector("#start").style.display = "none";
         this.shadowRoot.querySelector("#stop").style.display = "block";
@@ -389,12 +390,12 @@ class StreamFeed extends HTMLElement {
             return;
 
         this.is_stop_stream_clicked = true;
-        this.createInterval(this.sendPauzeMessage.bind(this), 1000);
-        this.createInterval(this.sendStopMessage.bind(this), 1000);
+        this.createInterval(this.sendPauzeMessage.bind(this), this.intervalTimer);
+        this.createInterval(this.sendStopMessage.bind(this), this.intervalTimer);
     }
 
     socketOpen() {
-        this.createInterval(this.sendInitMessage.bind(this), 1000);
+        this.createInterval(this.sendInitMessage.bind(this), this.intervalTimer);
     }
 
     socketOnMessage() {

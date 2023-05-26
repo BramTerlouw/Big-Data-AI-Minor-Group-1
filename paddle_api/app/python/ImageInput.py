@@ -34,7 +34,7 @@ class ImageInput(BaseInput):
         if not self.score.get_score():
             return print(False)
 
-        return print(self.score.get_score()[0]['dist_humans'] > 50)
+        return print(self.score.get_score()[0]['dist_humans'] > 20)
 
 
 image_input = ImageInput()
