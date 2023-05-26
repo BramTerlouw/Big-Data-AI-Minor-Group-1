@@ -26,7 +26,6 @@ class StreamFeed extends HTMLElement {
         this.localVideos = 0;
         this.feeds = [];
         this.feedStreams = {};
-        this.bitrateTimer = [];
 
         this.doSimulcast =
             this.getQueryStringValue("simulcast") === "yes" ||
@@ -46,10 +45,6 @@ class StreamFeed extends HTMLElement {
 
         this.doDtx =
             this.getQueryStringValue("dtx") === "yes" || this.getQueryStringValue("dtx") === "true";
-
-        this.subscriber_mode =
-            this.getQueryStringValue("subscriber-mode") === "yes" ||
-            this.getQueryStringValue("subscriber-mode") === "true";
 
         this.use_msid =
             this.getQueryStringValue("msid") === "yes" ||
