@@ -11,11 +11,6 @@ class StreamFeed extends HTMLElement {
         this.sfutest = null;
         this.opaqueId = "videoroomtest-" + Janus.randomString(12);
 
-        this.pingLoop = true;
-        this.startLoop = true;
-        this.pauzeLoop = true;
-        this.stopLoop = true;
-
         this.myusername = null;
         this.myroom = null;
         this.sessionCode = null;
@@ -321,16 +316,6 @@ class StreamFeed extends HTMLElement {
         });
     }
 
-    attributeChangedCallback(name, oldValue, newValue) {
-        if (oldValue !== newValue) {
-            this[name] = newValue;
-        }
-    }
-
-    static get observedAttributes() {
-        // return ["route", "token", "program_id"];
-    }
-
     janusInit() {
         const currentURL = window.location.href;
         const url = new URL(currentURL);
@@ -349,73 +334,93 @@ class StreamFeed extends HTMLElement {
         await this.socket.close();
     }
 
+    createInterval(callback, interval) {
+        let counter = 0;
+        const intervalId = setInterval(async () => {
+            await callback();
+
+            if (counter >= 25) {
+                clearInterval(intervalId);
+            }
+            counter++;
+        }, interval);
+
+        return intervalId;
+    }
+
+    async sendStartMessage() {
+        await this.socket.send(JSON.stringify({
+            sender: "player",
+            body: { request: "start" },
+        }));
+    }
+
+    async sendPauzeMessage() {
+        await this.socket.send(JSON.stringify({
+            sender: "player",
+            body: {request: "pause"},
+        }));
+    }
+
+    async sendStopMessage() {
+        await this.socket.send(JSON.stringify({
+            sender: "player",
+            body: {request: "stop"},
+        }));
+    }
+
+    async sendInitMessage() {
+        this.socket.send(JSON.stringify({
+            sender: "player",
+            body: { request: "ping" },
+        }));
+    }
+
     async start_stream() {
         if(this.is_start_stream_clicked)
             return
         this.is_start_stream_clicked = true;
 
-        const _this = this;
-        const startMsg = {
-            sender: "player",
-            body: { request: "start" },
-        };
-
-        let startStr = JSON.stringify(startMsg);
-        let counter = 0
-        const intervalId = setInterval(async () => {
-            await _this.socket.send(startStr);
-
-            if (!_this.startLoop || counter >= 25) {
-                clearInterval(intervalId);
-            }
-            counter++;
-        }, 1000);
+        this.createInterval(this.sendStartMessage.bind(this), 1000);
 
         this.shadowRoot.querySelector("#start").style.display = "none";
         this.shadowRoot.querySelector("#stop").style.display = "block";
     }
 
     async stop_stream() {
-
         if(this.is_stop_stream_clicked)
             return;
 
         this.is_stop_stream_clicked = true;
-        const _this = this;
-        let counter = 0
+        this.createInterval(this.sendPauzeMessage.bind(this), 1000);
+        this.createInterval(this.sendStopMessage.bind(this), 1000);
+    }
 
-        const pauzeMsg = {
-            sender: "player",
-            body: { request: "pause" },
+    socketOpen() {
+        this.createInterval(this.sendInitMessage.bind(this), 1000);
+    }
+
+    socketOnMessage() {
+        const response = JSON.parse(event.data);
+
+        if(!response.body.status || !response.body.response)
+            return;
+
+        if(response.body.response === 'invalid request')
+            return;
+
+        if (response.body.response === 'pong') {
+            this.shadowRoot.querySelector("#start").style.display = "block";
+        }
+
+        const message = {
+            status: response.body.status,
+            message: response.body.response
         };
 
-        const stopMsg = {
-            sender: "player",
-            body: { request: "stop" },
-        };
+        this.messages.push(message)
 
-        let pauzeStr = JSON.stringify(pauzeMsg);
-        let stopStr = JSON.stringify(stopMsg);
-
-        const pauzeInterval = setInterval(async () => {
-            await _this.socket.send(pauzeStr);
-
-            if (!_this.pauzeLoop || counter >= 25) {
-                clearInterval(pauzeInterval);
-                counter = 0
-            }
-            counter++;
-        }, 1000);
-
-        const stopInterval = setInterval(async () => {
-            await _this.socket.send(stopStr);
-
-            if (!_this.stopLoop || counter >= 25) {
-                clearInterval(stopInterval);
-            }
-            counter++;
-        }, 1000);
-        // await _this.dispose_rescources();
+        this.shadowRoot.querySelector('.message-wrapper').innerHTML += this.generateMessage(message);
     }
 
     setup_socket() {
@@ -423,63 +428,8 @@ class StreamFeed extends HTMLElement {
             "ws://localhost:8081/api/v1/session/ws/" + this.sessionCode
         );
 
-        const _this = this;
-        this.socket.onopen = function (event) {
-            console.log("WebSocket connection established.");
-
-            const initMsg = {
-                sender: "player",
-                body: { request: "ping" },
-            };
-
-            let initStr = JSON.stringify(initMsg);
-
-            let counter = 0;
-            const intervalId = setInterval(() => {
-                _this.socket.send(initStr)
-                if (!_this.pingLoop || counter >= 25) {
-                    clearInterval(intervalId);
-                }
-                counter++;
-            }, 1000);
-        };
-
-        this.socket.onmessage = function(event) {
-            const response = JSON.parse(event.data);
-
-            console.log('res:')
-            console.log(response)
-
-            if(!response.body.status || !response.body.response)
-                return;
-
-            switch (response.body.response) {
-                case "pong":
-                    console.log("Received response:", response);
-                    _this.pingLoop = false;
-                    _this.shadowRoot.querySelector("#start").style.display = "block";
-                    break;
-                case "started":
-                    console.log("Received response:", response);
-                    _this.startLoop = false;
-                    break;
-                case "paused":
-                    console.log("Received response:", response);
-                    _this.pauzeLoop = false;
-                    break;
-                case "stopped":
-                    console.log("Received response:", response);
-                    _this.stopLoop = false;
-                    break;
-            }
-
-            _this.messages.push({
-                status: response.body.status,
-                message: response.body.response
-            })
-
-            // _this.content()
-        };
+        this.socket.onopen = this.socketOpen.bind(this)
+        this.socket.onmessage = this.socketOnMessage.bind(this)
 
         this.socket.onerror = function (error) {
             console.error("WebSocket error:", error);
@@ -1244,11 +1194,6 @@ class StreamFeed extends HTMLElement {
             .addClass("btn-primary")
             .unbind("click")
             .click(function () {
-                toastr.info(
-                    "Capping " + what + " temporal layer, wait for it... (lowest FPS)",
-                    null,
-                    { timeOut: 2000 }
-                );
                 if (!window.$("#tl" + index + "-2").hasClass("btn-success"))
                     window.$("#tl" + index + "-2")
                         .removeClass("btn-primary btn-info")
@@ -1270,11 +1215,6 @@ class StreamFeed extends HTMLElement {
             .addClass("btn-primary")
             .unbind("click")
             .click(function () {
-                toastr.info(
-                    "Capping " + what + " temporal layer, wait for it... (medium FPS)",
-                    null,
-                    { timeOut: 2000 }
-                );
                 if (!window.$("#tl" + index + "-2").hasClass("btn-success"))
                     window.$("#tl" + index + "-2")
                         .removeClass("btn-primary btn-info")
@@ -1296,11 +1236,6 @@ class StreamFeed extends HTMLElement {
             .addClass("btn-primary")
             .unbind("click")
             .click(function () {
-                toastr.info(
-                    "Capping " + what + " temporal layer, wait for it... (highest FPS)",
-                    null,
-                    { timeOut: 2000 }
-                );
                 window.$("#tl" + index + "-2")
                     .removeClass("btn-primary btn-info btn-success")
                     .addClass("btn-info");
