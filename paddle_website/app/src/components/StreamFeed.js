@@ -372,6 +372,7 @@ class StreamFeed extends HTMLElement {
     async start_stream() {
         if(this.is_start_stream_clicked)
             return
+
         this.is_start_stream_clicked = true;
 
         this.createInterval(this.sendStartMessage.bind(this), this.intervalTimer);
@@ -640,57 +641,11 @@ class StreamFeed extends HTMLElement {
                         Janus.debug("Local track " + (on ? "added" : "removed") + ":", track);
                         // We use the track ID as name of the element, but it may contain invalid characters
                         let trackId = track.id.replace(/[{}]/g, "");
-                        if (!on) {
-                            // Track removed, get rid of the stream and the rendering
-                            let stream = _this.localTracks[trackId];
-                            if (stream) {
-                                try {
-                                    let tracks = stream.getTracks();
-                                    for (let i in tracks) {
-                                        let mst = tracks[i];
-                                        if (mst !== null && mst !== undefined) mst.stop();
-                                    }
-                                } catch (e) {}
-                            }
-                            if (track.kind === "video") {
-                                window.$("#myvideo" + trackId).remove();
-                                _this.localVideos--;
-                                if (_this.localVideos === 0) {
-                                    // No video, at least for now: show a placeholder
-                                    if (window.$("#videolocal .no-video-container").length === 0) {
-                                        window.$("#videolocal").append(
-                                            '<div class="no-video-container">' +
-                                            '<i class="fa fa-video-camera fa-5 no-video-icon"></i>' +
-                                            '<span class="no-video-text">No webcam available</span>' +
-                                            "</div>"
-                                        );
-                                    }
-                                }
-                            }
-                            delete _this.localTracks[trackId];
-                            return;
-                        }
-                        // If we're here, a new track was added
                         let stream = _this.localTracks[trackId];
-                        if (stream) {
-                            // We've been here already
+                        if (stream)
                             return;
-                        }
-                        window.$("#videos").removeClass("hide").show();
-                        if (track.kind === "audio") {
-                            // We ignore local audio tracks, they'd generate echo anyway
-                            if (_this.localVideos === 0) {
-                                // No video, at least for now: show a placeholder
-                                if (window.$("#videolocal .no-video-container").length === 0) {
-                                    window.$("#videolocal").append(
-                                        '<div class="no-video-container">' +
-                                        '<i class="fa fa-video-camera fa-5 no-video-icon"></i>' +
-                                        '<span class="no-video-text">No webcam available</span>' +
-                                        "</div>"
-                                    );
-                                }
-                            }
-                        } else {
+
+                        if(track.kind !== "audio") {
                             // New video track: create a stream out of it
                             _this.localVideos++;
                             window.$("#videolocal .no-video-container").remove();
@@ -700,33 +655,12 @@ class StreamFeed extends HTMLElement {
                             Janus.log(stream.getTracks());
                             Janus.log(stream.getVideoTracks());
 
-                            //@TODO make boolean and cut this html out and put into sepperate function that is just in the content
-                            // And then just call _this.content() here to force reload the rendering of the component
-
                             _this.shadowRoot.querySelector("#videolocal").innerHTML +=
                                 '<video class="rounded centered" id="myvideo' +
                                 trackId +
                                 '" width=100% autoplay playsinline muted="muted"/>'
 
-                            console.log('test  :   ' + trackId)
-                            console.log(_this.shadowRoot.querySelector("#myvideo" + trackId), stream)
                             Janus.attachMediaStream(_this.shadowRoot.querySelector("#myvideo" + trackId), stream);
-                        }
-                        if (
-                            _this.sfutest.webrtcStuff.pc.iceConnectionState !== "completed" &&
-                            _this.sfutest.webrtcStuff.pc.iceConnectionState !== "connected"
-                        ) {
-                            window.$("#videolocal")
-                                .parent()
-                                .parent()
-                                .block({
-                                    message: "<b>Publishing...</b>",
-                                    css: {
-                                        border: "none",
-                                        backgroundColor: "transparent",
-                                        color: "white",
-                                    },
-                                });
                         }
                     },
                     onremotetrack: function (track, mid, on) {
