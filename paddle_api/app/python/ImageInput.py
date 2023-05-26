@@ -31,8 +31,6 @@ class ImageInput(BaseInput):
         super().__init__(args['userid'], args['file'], 'false', 10)
 
     def get_result(self):
-        return print(True)
-
         if not self.score.get_score():
             return print(False)
 
