@@ -246,9 +246,6 @@ class StreamFeed extends HTMLElement {
                     <button id="dispose_rescources">Destroy</button>
                   </div>
                   <div class="message-wrapper">
-                    ${this.messages.map((mes) => {
-                            return this.generateMessage(mes);
-                    }).join('')}
                   </div>
                   <a href="http://localhost:5173/verify-position">LOL ewaeaw</a>
                 </div>
