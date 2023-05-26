@@ -58,95 +58,95 @@ class StreamFeed extends HTMLElement {
     style(){
         return `
         <style>
-           #container {
-              width: 100vw;
-              height: calc(100vh - 5vh);
+            #container {
+               width: 100vw;
+               height: calc(100vh - 5vh);
             
-              display: flex;
-              flex-direction: row;
-              gap: 20px;
-              align-items: center;
-              justify-content: center;
+               display: flex;
+               flex-direction: row;
+               gap: 20px;
+               align-items: center;
+               justify-content: center;
             }
             
             .streaming-wrapper {
-              width: 600px;
-              height: 600px;
+               width: 600px;
+               height: 600px;
             
-              display: flex;
-              flex-direction: column;
-              flex-wrap: wrap;
+               display: flex;
+               flex-direction: column;
+               flex-wrap: wrap;
             
-              background-color: #f4f4f4;
+               background-color: #f4f4f4;
             }
             
             .side-wrapper {
-              width: 50%;
-              height: 95%;
-              padding: 10px;
+               width: 50%;
+               height: 95%;
+               padding: 10px;
             }
             
             .message-wrapper {
-              width: 50%;
-              height: 100%;
-              padding: 10px;
-              /* border-left: 1px solid darkgray; */
+               width: 50%;
+               height: 100%;
+               padding: 10px;
+               /* border-left: 1px solid darkgray; */
             
-              display: flex;
-              flex-direction: column;
-              gap: 10px;
+               display: flex;
+               flex-direction: column;
+               gap: 10px;
             }
             
             .info-panel {
-              padding: 5px 15px 10px 15px;
-              background-color: #e0e0e0;
+               padding: 5px 15px 10px 15px;
+               background-color: #e0e0e0;
             }
             
             .heading {
-              padding: 5px 0;
-              border-bottom: 1px solid #3db0f0;
+               padding: 5px 0;
+               border-bottom: 1px solid #3db0f0;
             }
             
             .heading-title {
-              font-style: italic;
-              font-size: 14px;
-              color: darkgrey;
+               font-style: italic;
+               font-size: 14px;
+               color: darkgrey;
             }
             
             .position-info {
-              margin: 10px 20px;
+               margin: 10px 20px;
             
-              color: darkgray;
-              font-style: italic;
-              font-size: 12px;
+               color: darkgray;
+               font-style: italic;
+               font-size: 12px;
             }
             
             .position-info ol {
-              padding: 0;
+               padding: 0;
             }
             
             .btn-record {
-              width: 100%;
-              background-color: #3db0f0;
-              border: none;
-              color: #fff;
-              display: none;
+               width: 100%;
+               background-color: #3db0f0;
+               border: none;
+               color: #fff;
+               display: none;
             }
             
             .btn-stop {
-              width: 100%;
-              background-color: red;
-              border: none;
-              color: #fff;
-              display: none;
+               width: 100%;
+               background-color: red;
+               border: none;
+               color: #fff;
+               display: none;
             }
             
             .timer {
-              width: 100%;
-              padding: 0 0 0 5px;
+               width: 100%;
+               padding: 0 0 0 5px;
             
-              font-style: italic;
-              background-color: #fff;
+               font-style: italic;
+               background-color: #fff;
             }
             
              .wrapper {
@@ -161,54 +161,54 @@ class StreamFeed extends HTMLElement {
             }
         
             .wrapper-succes {
-                background-color: #DCECDF;
-                border-left: 10px solid #00A825;
+               background-color: #DCECDF;
+               border-left: 10px solid #00A825;
             }
         
             .wrapper-danger {
-                background-color: #EEDCDC;
-                border-left: 10px solid #BA0000;
+               background-color: #EEDCDC;
+               border-left: 10px solid #BA0000;
             }
         
             .wrapper-warning {
-                background-color: #ffe8c3;
-                border-left: 10px solid #e7a029;
+               background-color: #ffe8c3;
+               border-left: 10px solid #e7a029;
             }
         
             .wrapper-info {
-                background-color: #cce3ff;
-                border-left: 10px solid #3e84e5;
+               background-color: #cce3ff;
+               border-left: 10px solid #3e84e5;
             }
         
             .message {
-                margin: 0;
-                font-weight: 500;
+               margin: 0;
+               font-weight: 500;
             }
         
             .status-wrapper {
-                display: flex;
-                align-items: center;
-                gap: 10px;
+               display: flex;
+               align-items: center;
+               gap: 10px;
             }
         
             .status {
-                font-style: italic;
+               font-style: italic;
             }
         
             .status-succes {
-                color: #00A825;
+               color: #00A825;
             }
         
             .status-danger {
-                color: #BA0000;
+               color: #BA0000;
             }
         
             .status-warning {
-                color: #e7a029;
+               color: #e7a029;
             }
         
             .status-info {
-                color: #3e84e5;
+               color: #3e84e5;
             }
         </style>    
        `;
