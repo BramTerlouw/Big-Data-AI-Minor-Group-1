@@ -6,6 +6,11 @@ class StreamFeed extends HTMLElement {
 
         this.is_stop_stream_clicked = false;
         this.is_start_stream_clicked = false;
+        
+        this.stop_init_loop = false;
+        this.stop_start_loop = false;
+        this.stop_pause_loop = false;
+        this.stop_stop_loop = false;
 
         this.janus = null;
         this.sfutest = null;
@@ -16,7 +21,7 @@ class StreamFeed extends HTMLElement {
         this.sessionCode = null;
         this.socket = null;
         this.messages = [];
-        this.intervalTimer = 2000;
+        this.intervalTimer = 3000;
 
         this.myid = null;
         this.mystream = null;
@@ -60,7 +65,6 @@ class StreamFeed extends HTMLElement {
             
                display: flex;
                flex-direction: row;
-               gap: 20px;
                align-items: center;
                justify-content: center;
             }
@@ -78,15 +82,15 @@ class StreamFeed extends HTMLElement {
             
             .side-wrapper {
                width: 50%;
-               height: 95%;
+               height: 100%;
                padding: 10px;
             }
             
             .message-wrapper {
-               width: 50%;
+               width: 45%;
                height: 100%;
                padding: 10px;
-               /* border-left: 1px solid darkgray; */
+               box-sizing: border-box;
             
                display: flex;
                flex-direction: column;
@@ -239,11 +243,9 @@ class StreamFeed extends HTMLElement {
                     </button>
                     <div class="timer">Thursday 21-06-23 01:22</div>
                     <div class="panel-body" id="videolocal"></div>
-                    <button id="dispose_rescources">Destroy</button>
                   </div>
                   <div class="message-wrapper">
                   </div>
-                  <a href="http://localhost:5173/verify-position">LOL ewaeaw</a>
                 </div>
               </section>
         `
@@ -252,7 +254,6 @@ class StreamFeed extends HTMLElement {
 
         this.shadowRoot.querySelector('#start').addEventListener('click', this.start_stream.bind(this))
         this.shadowRoot.querySelector('#stop').addEventListener('click', this.stop_stream.bind(this))
-        this.shadowRoot.querySelector('#dispose_rescources').addEventListener('click', this.dispose_rescources.bind(this))
     }
 
     generateMessage(message) {
@@ -301,8 +302,6 @@ class StreamFeed extends HTMLElement {
     }
 
     connectedCallback(){
-        this.content();
-
         Janus.init({
             debug: "all",
             callback: this.janusInit.bind(this)
@@ -325,20 +324,6 @@ class StreamFeed extends HTMLElement {
 
         await this.janus.destroy();
         await this.socket.close();
-    }
-
-    createInterval(callback, interval) {
-        let counter = 0;
-        const intervalId = setInterval(async () => {
-            await callback();
-
-            if (counter >= 25) {
-                clearInterval(intervalId);
-            }
-            counter++;
-        }, interval);
-
-        return intervalId;
     }
 
     async sendStartMessage() {
@@ -381,6 +366,26 @@ class StreamFeed extends HTMLElement {
         this.shadowRoot.querySelector("#stop").style.display = "block";
     }
 
+    createInterval(callback, interval) {
+        let counter = 0;
+        const intervalId = setInterval(async () => {
+            await callback();
+
+            if (
+                counter >= 25 || 
+                this.stop_init_loop|| 
+                this.stop_start_loop || 
+                this.stop_pause_loop || 
+                this.stop_stop_loop
+                ) {
+                clearInterval(intervalId);
+            }
+            counter++;
+        }, interval);
+
+        return intervalId;
+    }
+
     async stop_stream() {
         if(this.is_stop_stream_clicked)
             return;
@@ -404,7 +409,21 @@ class StreamFeed extends HTMLElement {
             return;
 
         if (response.body.response === 'pong') {
+            this.stop_init_loop = true;
             this.shadowRoot.querySelector("#start").style.display = "block";
+        }
+
+        if (response.body.response === 'started') {
+            this.stop_start_loop = true;
+        }
+
+        if (response.body.response === 'paused') {
+            this.stop_pause_loop = true;
+        }
+
+        if (response.body.response === 'stopped') {
+            this.stop_stop_loop = true;
+            this.dispose_rescources();
         }
 
         const message = {
