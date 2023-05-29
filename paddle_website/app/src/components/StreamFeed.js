@@ -302,6 +302,8 @@ class StreamFeed extends HTMLElement {
     }
 
     connectedCallback(){
+        this.content()
+
         Janus.init({
             debug: "all",
             callback: this.janusInit.bind(this)
@@ -399,7 +401,7 @@ class StreamFeed extends HTMLElement {
         this.createInterval(this.sendInitMessage.bind(this), this.intervalTimer);
     }
 
-    socketOnMessage() {
+    socketOnMessage(event) {
         const response = JSON.parse(event.data);
 
         if(!response.body.status || !response.body.response)
@@ -674,6 +676,7 @@ class StreamFeed extends HTMLElement {
                             Janus.log(stream.getTracks());
                             Janus.log(stream.getVideoTracks());
 
+                            console.log(_this.shadowRoot)
                             _this.shadowRoot.querySelector("#videolocal").innerHTML +=
                                 '<video class="rounded centered" id="myvideo' +
                                 trackId +
