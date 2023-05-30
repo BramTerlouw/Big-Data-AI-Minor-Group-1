@@ -19,6 +19,7 @@ func (s *SessionService) CreateSession(input *model.InputCreateSession) (*model.
 		SessionKeyUsed:    &input.SessionKeyUsed,
 		AmountSocketJoins: &input.AmountSocketJoins,
 		Picture:           &input.Picture,
+		GameData:          &input.GameData,
 		Room:              &input.Room,
 		Status:            &input.Status,
 		UserId:            &input.UserId,

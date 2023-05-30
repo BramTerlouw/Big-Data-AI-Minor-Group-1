@@ -11,6 +11,7 @@ type EntitySession struct {
 	SessionKeyUsed    *bool              `bson:"session_key_used,omitempty"  json:"session_key_used,omitempty"`
 	AmountSocketJoins *int               `bson:"amount_socket_joins,omitempty"  json:"amount_socket_joins,omitempty"`
 	Picture           *string            `bson:"picture,omitempty"  json:"picture,omitempty"`
+	GameData          *GameData          `bson:"game_data"  json:"game_data,omitempty"`
 	Room              *string            `bson:"room,omitempty"  json:"room,omitempty"`
 	UserId            *string            `bson:"userId,omitempty"  json:"userId,omitempty"`
 	Status            *string            `bson:"status,omitempty"  json:"status,omitempty"`
@@ -25,6 +26,7 @@ type InputCreateSession struct {
 	SessionKeyUsed    bool
 	AmountSocketJoins int
 	Picture           string
+	GameData          GameData
 	Status            string
 	Room              string
 	UserId            string
@@ -38,4 +40,10 @@ type InputUpdateSession struct {
 	AmountSocketJoins int
 	OutputDate        *time.Time
 	Score             []ScoreData
+}
+
+type GameData struct {
+	AthleteName string `bson:"athlete_name,omitempty" json:"athlete_name"`
+	CoachName   string `bson:"coach_name,omitempty" json:"coach_name"`
+	Location    string `bson:"location,omitempty" json:"location"`
 }

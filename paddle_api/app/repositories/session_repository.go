@@ -117,6 +117,10 @@ func (r *SessionRepository) UpdateSession(session *model.EntitySession) error {
 		updateFields["session_key_used"] = session.SessionKeyUsed
 	}
 
+	if session.AmountSocketJoins != nil {
+		updateFields["amount_socket_joins"] = session.AmountSocketJoins
+	}
+
 	if session.OutputDate != nil {
 		updateFields["outputDate"] = session.OutputDate
 	}

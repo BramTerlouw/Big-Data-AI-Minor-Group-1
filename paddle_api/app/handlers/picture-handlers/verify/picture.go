@@ -27,6 +27,15 @@ func NewHandlerPicture(sessionService *services.SessionService) *handler {
 
 func (h *handler) CreatePictureHandler(ctx *gin.Context) {
 
+	athleteName := ctx.PostForm("athlete_name")
+	location := ctx.PostForm("location")
+	coachName := ctx.PostForm("coach_name")
+
+	if len(athleteName) < 3 || len(location) < 3 || len(coachName) < 3 {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "please, enter all details"})
+		return
+	}
+
 	//check if file is set
 	file, err := ctx.FormFile("file")
 	if err != nil {
@@ -115,7 +124,10 @@ func (h *handler) CreatePictureHandler(ctx *gin.Context) {
 	}
 
 	if outputBool {
-		createdSession, createdSessionError := h.sessionService.CreateSession(&model.InputCreateSession{SessionKey: generateSessionKey().String(), Picture: uploadPictureBlob, SessionKeyUsed: false, Room: strconv.FormatInt(generateRoom(), 10), UserId: userid, CreatedAt: time.Now(), Status: "Created", AmountSocketJoins: 0})
+
+		GameData := model.GameData{AthleteName: athleteName, CoachName: coachName, Location: location}
+
+		createdSession, createdSessionError := h.sessionService.CreateSession(&model.InputCreateSession{SessionKey: generateSessionKey().String(), Picture: uploadPictureBlob, SessionKeyUsed: false, Room: strconv.FormatInt(generateRoom(), 10), UserId: userid, CreatedAt: time.Now(), Status: "Created", AmountSocketJoins: 0, GameData: GameData})
 		if createdSessionError != nil {
 			fmt.Println("Error executing createSession at service", err)
 			ctx.JSON(http.StatusBadRequest, gin.H{"error": "Something went wrong, try again."})
