@@ -17,27 +17,30 @@ class BaseInput:
 
     def load_input(self):
         if self.file_type == 'true':
-            video = cv2.VideoCapture("input/videos/" + self.filename)
+            # video = cv2.VideoCapture("C:/Users/merli/Downloads/2.mp4")
+            video = cv2.VideoCapture("C:/Users/merli/Downloads/good.mp4")
 
             fps = video.get(cv2.CAP_PROP_FPS)
 
-            frame_width = int(video.get(cv2.CAP_PROP_FRAME_WIDTH))
-            frame_height = int(video.get(cv2.CAP_PROP_FRAME_HEIGHT))
+            out_video = self.create_output(fps, (640, 360))
 
-            out_video = self.create_output(fps, (frame_width, frame_height))
+            # Process and write frames to the output video
             self.proces.iterate_frames(video, out_video, fps)
+
+            # Release the video resources and finalize the output video
             self.final(out_video, video)
         else:
             im = cv2.imread("processedImages/" + str(self.userid) + "/" + self.filename)
             self.proces.get_prediction(im)
 
     def create_output(self, fps: float, frame_size: tuple):
+        output_path = "test.mp4"
         fourcc = cv2.VideoWriter_fourcc(*'mp4v')
-        return cv2.VideoWriter(
-            "processedVideos/" + str(self.userid) + "/" + self.filename, fourcc, fps, (frame_size[0], frame_size[1])
-        )
+        return cv2.VideoWriter(output_path, fourcc, fps, (frame_size[0], frame_size[1]))
 
     def final(self, out_video, video):
-        video.release()
+        # Release the video writer and input video objects
         out_video.release()
-        self.score.serialize()
+        video.release()
+        # self.score.serialize()
+

@@ -8,6 +8,7 @@ from BoundingBoxRenderer import BoundingBoxRenderer
 class Distance:
     def __init__(self):
         self.reference_width = 39.5
+        # self.reference_width = 35.5504
         self.bounding_box_renderer = BoundingBoxRenderer()
 
     def get_distance_humans(

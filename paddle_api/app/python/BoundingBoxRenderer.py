@@ -20,13 +20,14 @@ class BoundingBoxRenderer:
             color: tuple,
             thickness: int
     ) -> None:
-        cv2.line(
-            frame,
-            (x1, y1),
-            (x2, y2),
-            color,
-            thickness
-        )
+        return
+        # cv2.line(
+        #     frame,
+        #     (x1, y1),
+        #     (x2, y2),
+        #     color,
+        #     thickness
+        # )
 
     @classmethod
     def draw_text(
@@ -195,8 +196,11 @@ class BoundingBoxRenderer:
             bounding_box: CoordsDTO,
             class_id: int
     ) -> Union[ndarray, ndarray]:
+        print('class_id' + class_id)
+        print('paddle height' + str(numpy.int32(numpy.round(39.5 / 70.09 * (bounding_box.bottom - bounding_box.top)))))
+        print('paddle width' + str(numpy.int32(numpy.round(39.5 / 70.09 * (bounding_box.right - bounding_box.left)))))
 
-        if class_id == 0:
+        if class_id == 'paddle':
             self.draw_paddle(
                 frame,
                 int(bounding_box.left),
