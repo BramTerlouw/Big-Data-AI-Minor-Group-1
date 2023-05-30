@@ -83,7 +83,7 @@ func (h *handler) CreateSocketHandler(ctx *gin.Context) {
 		return
 	}
 
-	if session.SessionKey == nil || *session.AmountSocketJoins > 2 {
+	if session.SessionKey == nil || *session.AmountSocketJoins >= 2 {
 		ctx.JSON(http.StatusNotFound, gin.H{"error": "Incorrect or already used session key!"})
 		return
 	} else {
