@@ -28,7 +28,7 @@ parser.add_argument(
     "--fps",
     type=int,
     help="Processing frames per second",
-    default=5
+    default=20
 )
 
 parser.add_argument(

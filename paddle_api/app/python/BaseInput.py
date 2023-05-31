@@ -18,11 +18,24 @@ class BaseInput:
     def load_input(self):
         if self.file_type == 'true':
             # video = cv2.VideoCapture("C:/Users/merli/Downloads/2.mp4")
-            video = cv2.VideoCapture("C:/Users/merli/Downloads/good.mp4")
+            video = cv2.VideoCapture("C:/Users/bramt/Downloads/test videos/Normal.mp4")
 
             fps = video.get(cv2.CAP_PROP_FPS)
 
-            out_video = self.create_output(fps, (640, 360))
+            width = int(video.get(cv2.CAP_PROP_FRAME_WIDTH))
+            height = int(video.get(cv2.CAP_PROP_FRAME_HEIGHT))
+
+            # width = 640
+            # height = 640
+            # aspect_ratio = width / float(height)
+            # if width > height:
+            #     new_width = 640
+            #     new_height = int(new_width / aspect_ratio)
+            # else:
+            #     new_height = 640
+            #     new_width = int(new_height * aspect_ratio)
+
+            out_video = self.create_output(fps, (width, height))
 
             # Process and write frames to the output video
             self.proces.iterate_frames(video, out_video, fps)

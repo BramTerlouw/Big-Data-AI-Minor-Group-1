@@ -34,6 +34,9 @@ class ProcessVideo:
             if not ret:
                 break
 
+            # frame = cv2.resize(frame, (new_width, new_height))
+            # frame = cv2.resize(frame, (640, 640))
+
             frame_count += 1
             if frame_count % round(fps / self.fps_processing) != 0:
                 continue
@@ -46,26 +49,6 @@ class ProcessVideo:
             out_video.write(frame)  # Write the frame to the output video
 
     def get_prediction(self, frame):
-
-        height, width = frame.shape[:2]
-
-        # Calculate the aspect ratio
-        aspect_ratio = width / float(height)
-
-        # Determine the target dimensions
-
-        # @TODO DONT FORGET TO CHANGE THIS BACK IN BASEINPUT RENDER CAUSE HEIGHT IS NOT EQUAL TO 640
-        if width > height:
-            new_width = 640
-            new_height = int(new_width / aspect_ratio)
-        else:
-            new_height = 640
-            new_width = int(new_height * aspect_ratio)
-
-        # Resize the image while preserving the aspect ratio
-        frame = cv2.resize(frame, (new_width, new_height))
-
-        # frame = cv2.resize(frame, (640, 640))
         # !!!!! ----- Step 1: Detection ----- !!!!!
         predictions = self.v8.generate_predictions(frame)
 

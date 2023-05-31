@@ -7,8 +7,8 @@ from BoundingBoxRenderer import BoundingBoxRenderer
 
 class Distance:
     def __init__(self):
-        self.reference_width = 39.5
-        # self.reference_width = 35.5504
+        # self.reference_width = 39.5
+        self.reference_width = 42
         self.bounding_box_renderer = BoundingBoxRenderer()
 
     def get_distance_humans(
@@ -19,25 +19,32 @@ class Distance:
     ) -> int:
         coords_human_1 = coords_human[0]
         coords_human_2 = coords_human[1]
-
         if coords_human_1.left < coords_human_2.left:
-            distance = self.calc_distance(paddle_width, coords_human_2.left, coords_human_1.right)
+            distance = self.calc_distance(
+                paddle_width,
+                coords_human_2.left,
+                (coords_human_1.right - ((coords_human_1.right - coords_human_1.left) / 2))
+            )
             self.bounding_box_renderer.draw_distance(
                 frame,
                 coords_human_2.left,
-                coords_human_1.right,
+                (coords_human_1.right - ((coords_human_1.right - coords_human_1.left) / 2)),
                 max(coords_human_1.top, coords_human_2.top),
                 coords_human_1.right,
                 distance
             )
             return distance
         else:
-            distance = self.calc_distance(paddle_width, coords_human_1.left, coords_human_2.right)
+            distance = self.calc_distance(
+                paddle_width,
+                (coords_human_1.right - ((coords_human_1.right - coords_human_1.left) / 2)),
+                coords_human_2.right
+            )
             self.bounding_box_renderer.draw_distance(
                 frame,
-                coords_human_1.left,
+                (coords_human_1.right - ((coords_human_1.right - coords_human_1.left) / 2)),
                 coords_human_2.right,
-                max(coords_human_1.top, coords_human_2.top),
+                max(coords_human_1.top, coords_human_2.top) - 10,
                 coords_human_2.right,
                 distance
             )
@@ -123,6 +130,10 @@ class Distance:
     def calc_width_paddle(cls, coords_paddle: numpy.ndarray) -> int:
         width = np.int32(np.round(coords_paddle[0][2] - coords_paddle[0][0]))
         height = np.int32(np.round(coords_paddle[0][3] - coords_paddle[0][1]))
+
+        width = width*0.953
+        height = height*0.90
+
         diagonal = np.sqrt(width ** 2 + height ** 2)
         return diagonal
 
