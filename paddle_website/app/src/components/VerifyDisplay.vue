@@ -2,7 +2,7 @@
 import axios from 'axios';
 
 export default {
-  props: ['name_coach', 'name_athlete', 'location'],
+  props: {name_coach:{type: String, required: true}, name_athlete:{type: String, required: true}, location:{type: String, required: true}},
   computed: {
     userid () {
       return this.$store.getters.getUserId
@@ -44,8 +44,6 @@ export default {
       this.uploadImage()
     },
     uploadImage() {
-      console.log(this.props)
-      console.log(this.name_athlete)
       const formData = new FormData();
       const imageFile = this.dataURLtoFile(this.imgDataURL, 'image.png');
       formData.append('file', imageFile);
