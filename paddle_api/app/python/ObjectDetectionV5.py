@@ -10,7 +10,7 @@ class ObjectDetectionV5:
         if ObjectDetectionV5.__instance is not None:
             raise Exception("Singleton instance already exists. Use get_instance() method to get the instance.")
         else:
-            self.model_name = 'C:/Users/bramt/Documents/Prive/Big-Data-AI-Minor-Group-1/paddle_api/app/python/model/yolov5.pt'
+            self.model_name = 'python/model/yolov5.pt'
             self.model = self._load_model(self.model_name)
             self.classes = self.model.names
             self.device = 'cuda' if torch.cuda.is_available() else 'cpu'

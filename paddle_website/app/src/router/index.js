@@ -26,7 +26,9 @@ const router = createRouter({
       path: '/verify-position',
       name: 'verify position',
       component: () => import('../views/VerifyPositionView.vue'),
-      meta: {requiresAuth: true, title: 'Verify Position'}
+      meta: {requiresAuth: true, title: 'Verify Position'},
+      props: true
+
     },
     {
       path: '/stream',

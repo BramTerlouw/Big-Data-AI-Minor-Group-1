@@ -23,7 +23,7 @@ export default {
         }
         return;
       }
-      this.$router.push("/verify-position");
+      this.$router.push({name: 'verify position', params: {name_coach: this.name_coach, name_athlete: this.name_athlete, location: this.location }});
     },
   },
 };

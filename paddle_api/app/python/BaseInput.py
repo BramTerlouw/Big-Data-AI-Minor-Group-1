@@ -17,8 +17,9 @@ class BaseInput:
 
     def load_input(self):
         if self.file_type == 'true':
-            # video = cv2.VideoCapture("C:/Users/merli/Downloads/2.mp4")
-            video = cv2.VideoCapture("C:/Users/bramt/Downloads/test videos/Normal.mp4")
+            # # video = cv2.VideoCapture("C:/Users/merli/Downloads/2.mp4")
+            # video = cv2.VideoCapture("C:/Users/bramt/Downloads/test videos/Normal.mp4")
+            video = cv2.VideoCapture("input/videos/" + self.filename)
 
             fps = video.get(cv2.CAP_PROP_FPS)
 

@@ -2,6 +2,12 @@
 import axios from 'axios';
 
 export default {
+  props: ['name_coach', 'name_athlete', 'location'],
+  computed: {
+    userid () {
+      return this.$store.getters.getUserId
+    }
+  },
   data() {
     return {
       pictureTaken: false,
@@ -38,14 +44,18 @@ export default {
       this.uploadImage()
     },
     uploadImage() {
+      console.log(this.props)
+      console.log(this.name_athlete)
       const formData = new FormData();
       const imageFile = this.dataURLtoFile(this.imgDataURL, 'image.png');
       formData.append('file', imageFile);
-      formData.append('user_id', 3)
-
+      formData.append('user_id', this.userid)
+      formData.append('athlete_name',  this.name_athlete)
+      formData.append('coach_name', this.name_coach)
+      formData.append('location', this.location)
       this.pictureProcessing = true;
 
-      axios.post('http://localhost:8081/api/v1/session/verify', formData)
+      axios.post('session/verify', formData)
         .then(response => {
           console.log('approved!')
           this.pictureProcessing = false;
@@ -73,7 +83,7 @@ export default {
       return new File([u8arr], filename, { type: mime });
     },
     startSession() {
-      axios.post('http://localhost:8081/api/v1/session/start/' + this.session)
+      axios.post('session/start/' + this.session)
         .then(response => {
           console.log(response)
           this.$router.push("/stream?room=" + this.room + '&sessionCode=' + this.session);
