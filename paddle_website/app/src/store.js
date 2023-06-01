@@ -5,7 +5,10 @@ import createPersistedState from 'vuex-persistedstate'
 const getDefaultState = () => {
     return {
         user_id: 0,
-        logged_in: false
+        logged_in: false,
+        name_coach: "",
+        name_athlete: "",
+        location: "",
     }
 }
 
@@ -17,6 +20,20 @@ const mutations = {
     },
     SET_USER_ID: (state, user_id) => {
         state.user_id = user_id
+    },
+    SET_NAME_COACH: (state, coach) => {
+        state.name_coach = coach
+    },
+    SET_NAME_ATHLETE: (state, athlete) => {
+        state.name_athlete = athlete
+    },
+    SET_LOCATION: (state, location) => {
+        state.location = location
+    },
+    RESET_GAME_DATA: (state) => {
+      state.name_coach = "";
+      state.name_athlete = "";
+      state.location = "";
     },
     RESET: state => {
         Object.assign(state, getDefaultState());
@@ -30,6 +47,15 @@ const getters = {
     },
     getUserId: state => {
         return state.user_id
+    },
+    getNameCoach: state => {
+        return state.name_coach
+    },
+    getNameAthlete: state => {
+        return state.name_athlete
+    },
+    getLocation: state => {
+        return state.location
     }
 }
 
@@ -40,6 +66,18 @@ const actions = {
     },
     setUserId: ({ commit }, user_id) => {
         commit('SET_USER_ID', user_id)
+    },
+    setNameCoach: ({ commit }, coach) => {
+        commit('SET_NAME_COACH', coach)
+    },
+    setNameAthlete: ({ commit }, ahtlete) => {
+        commit('SET_NAME_ATHLETE', ahtlete)
+    },
+    setLocation: ({ commit }, location) => {
+        commit('SET_LOCATION', location)
+    },
+    resetGameData: ({ commit}) => {
+        commit('RESET_GAME_DATA')
     },
     logout: ({ commit }) => {
         commit('RESET', '');

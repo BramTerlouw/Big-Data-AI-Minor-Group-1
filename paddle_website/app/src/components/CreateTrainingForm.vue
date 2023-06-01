@@ -24,7 +24,11 @@ export default {
         return;
       }
 
-      this.$router.push({name: 'verify position', params: {name_coach: this.name_coach, name_athlete: this.name_athlete, location: this.location }});
+      this.$store.commit('SET_NAME_COACH', this.name_coach)
+      this.$store.commit('SET_NAME_ATHLETE', this.name_athlete)
+      this.$store.commit('SET_LOCATION', this.location)
+
+      this.$router.push({name: 'verify position'});
     },
   },
 };

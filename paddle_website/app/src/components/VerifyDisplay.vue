@@ -2,11 +2,19 @@
 import axios from 'axios';
 
 export default {
-  props: {name_coach:{type: String, required: true}, name_athlete:{type: String, required: true}, location:{type: String, required: true}},
   computed: {
     userid () {
       return this.$store.getters.getUserId
-    }
+    },
+    name_coach () {
+      return this.$store.getters.getNameCoach
+    },
+    name_athlete () {
+      return this.$store.getters.getNameAthlete
+    },
+    location () {
+      return this.$store.getters.getLocation
+    },
   },
   data() {
     return {
@@ -43,31 +51,31 @@ export default {
       this.pictureTaken = true;
       this.uploadImage()
     },
-    uploadImage() {
+    async uploadImage() {
       const formData = new FormData();
       const imageFile = this.dataURLtoFile(this.imgDataURL, 'image.png');
       formData.append('file', imageFile);
       formData.append('user_id', this.userid)
-      formData.append('athlete_name',  this.name_athlete)
+      formData.append('athlete_name', this.name_athlete)
       formData.append('coach_name', this.name_coach)
       formData.append('location', this.location)
       this.pictureProcessing = true;
 
-      axios.post('session/verify', formData)
-        .then(response => {
-          console.log('approved!')
-          this.pictureProcessing = false;
-          this.pictureApproved = true;
-          
-          let data = response.data;
-          this.message = data['message'];
-          this.room = data['room'];
-          this.session = data['sessionCode'];
-        })
-        .catch(error => {
-          this.pictureProcessing = false;
-          console.error('Error uploading image:', error);
-        });
+      await axios.post('session/verify', formData)
+          .then(response => {
+            console.log('approved!')
+            this.pictureProcessing = false;
+            this.pictureApproved = true;
+
+            let data = response.data;
+            this.message = data['message'];
+            this.room = data['room'];
+            this.session = data['sessionCode'];
+          })
+          .catch(error => {
+            this.pictureProcessing = false;
+            console.error('Error uploading image:', error);
+          });
     },
     dataURLtoFile(dataURL, filename) {
       const arr = dataURL.split(',');
