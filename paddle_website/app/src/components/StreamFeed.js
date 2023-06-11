@@ -210,6 +210,34 @@ class StreamFeed extends HTMLElement {
             .status-info {
                color: #3e84e5;
             }
+            
+            .loading {
+              display: none; /* Hide the loading element by default */
+              /* Add any styling you want for the loading element */
+              /* Make sure to set a fixed width and height for the loading element */
+              position: absolute;
+              top: 50%;
+              left: 50%;
+              transform: translate(-50%, -50%);
+            }
+            
+            .spinner {
+              width: 40px;
+              height: 40px;
+              border-radius: 50%;
+              border: 4px solid #ccc;
+              border-top-color: #777;
+              animation: spin 1s infinite linear;
+            }
+            
+            @keyframes spin {
+              0% {
+                transform: rotate(0deg);
+              }
+              100% {
+                transform: rotate(360deg);
+              }
+            }
         </style>    
        `;
     }
@@ -246,6 +274,10 @@ class StreamFeed extends HTMLElement {
                   </div>
                   <div class="message-wrapper">
                   </div>
+                </div>
+                
+                <div id="loadingElement" class="loading">
+                  <div class="spinner"></div>
                 </div>
               </section>
         `
@@ -331,10 +363,14 @@ class StreamFeed extends HTMLElement {
     }
 
     async sendStartMessage() {
+        this.shadowRoot.querySelector("#loadingElement").style.display = "block";
+
         await this.socket.send(JSON.stringify({
             sender: "player",
             body: { request: "start" },
         }));
+
+        this.shadowRoot.querySelector("#loadingElement").style.display = "none";
     }
 
     async sendPauzeMessage() {
