@@ -359,7 +359,7 @@ class StreamFeed extends HTMLElement {
         await this.janus.destroy();
         await this.socket.close();
 
-        window.location.href = window.location.href + '/dashboard'
+        window.location.href = window.location.origin + '/dashboard'
     }
 
     async sendStartMessage() {
