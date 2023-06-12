@@ -367,6 +367,8 @@ class StreamFeed extends HTMLElement {
 
     async disconnectedCallback() {
         await this.dispose_rescources();
+
+        //@todo Delete all active event listererns in js for omtimization
     }
 
     janusInit() {
