@@ -303,6 +303,12 @@ class StreamFeed extends HTMLElement {
         return `${dayOfWeek} ${day}-${month}-${year} ${hours}:${minutes}`;
     }
 
+     updateTimer() {
+        const timerElement = this.shadowRoot.querySelector(".timer");
+        if (timerElement) {
+            timerElement.textContent = this.generateDateTime();
+        }
+    }
 
     generateMessage(message) {
         let htmlExtra = ``;
@@ -352,7 +358,7 @@ class StreamFeed extends HTMLElement {
     connectedCallback(){
         this.content()
         this.shadowRoot.querySelector("#loadingElement").style.display = "block";
-
+        setInterval(this.updateTimer.bind(this), 1000);
         Janus.init({
             debug: "all",
             callback: this.janusInit.bind(this)
