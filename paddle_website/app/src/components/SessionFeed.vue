@@ -43,7 +43,10 @@ export default {
 
 <template>
   <section class="feed">
-    <SessionCard v-for="item in data" :key="item.id" :session="item['session_key']" :blob="item['picture']" />
+    <SessionCard
+        v-for="item in data"
+        :key="item.id"
+        :data="item"/>
   </section>
 </template>
 
