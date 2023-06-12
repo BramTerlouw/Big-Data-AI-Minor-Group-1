@@ -42,11 +42,20 @@ export default {
     },
     capture() {
       const video = this.$refs.video;
-      const canvas = this.$refs.canvas;
+
+      const canvas = this.$refs['canvas'];
+      const canvas_hidden = this.$refs["canvas-hidden"];
+
       const context = canvas.getContext('2d');
-      
+      const context_hidden = canvas_hidden.getContext('2d');
+
+      canvas_hidden.width = video.videoWidth;
+      canvas_hidden.height = video.videoHeight;
+
       context.drawImage(video, 0, 0, canvas.width, canvas.height);
-      this.imgDataURL = canvas.toDataURL('image/png');
+      context_hidden.drawImage(video, 0, 0);
+
+      this.imgDataURL = canvas_hidden.toDataURL('image/png');
       
       this.pictureTaken = true;
       this.uploadImage()
@@ -179,7 +188,8 @@ export default {
 
     <div class="image-wrapper">
       <video :style="{ display: pictureTaken ? 'none' : 'block' }" ref="video" width="400" height="300" autoplay></video>
-      <canvas :style="{ display: pictureTaken ? 'block' : 'none' }" ref="canvas" width="400" height="300"></canvas>
+      <canvas class="canvas" :style="{ display: pictureTaken ? 'block' : 'none' }" ref="canvas" width="400" height="300"></canvas>
+      <canvas class="hidden-canvas" ref="canvas-hidden"></canvas>
     </div>
   </section>
 </template>
@@ -308,5 +318,9 @@ export default {
 .disabled-btn {
   background-color: #86d1fb !important;
   pointer-events: none;
+}
+
+.hidden-canvas {
+  display: none;
 }
 </style>

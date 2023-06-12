@@ -34,7 +34,32 @@ class ImageInput(BaseInput):
         if not self.score.get_score():
             return print(False)
 
-        return print(self.score.get_score()[0]['dist_humans'] > 20)
+        # return print(self.score.get_score()[0]['dist_humans'] > 20)
+        self.check_score()
+
+    def check_score(self):
+        try:
+            score = self.score.get_score()[0]
+            height = int(score['player_height'])
+            distance = int(score['dist_humans'])
+
+            # with open('score_output.txt', 'w') as file:
+            #     file.write(f"Height: {height}\n")
+            #     file.write(f"Distance: {distance}\n")
+
+            height_ranges = [
+                (140, 170, 60, 80),
+                (170, 200, 80, 100),
+                (200, 220, 100, 120),
+            ]
+
+            for height_min, height_max, distance_min, distance_max in height_ranges:
+                if height_min <= height < height_max and distance_min < distance <= distance_max:
+                    return print('true')
+
+            return print('false')
+        except Exception as e:
+            print(e)
 
 
 image_input = ImageInput()
