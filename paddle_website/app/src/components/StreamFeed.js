@@ -269,7 +269,7 @@ class StreamFeed extends HTMLElement {
                     <button id="stop" class="btn-stop">
                       Stop Recording
                     </button>
-                    <div class="timer">Thursday 21-06-23 01:22</div>
+                    <div class="timer">${this.generateDateTime()}</div>
                     <div class="panel-body" id="videolocal"></div>
                   </div>
                   <div class="message-wrapper">
@@ -287,6 +287,22 @@ class StreamFeed extends HTMLElement {
         this.shadowRoot.querySelector('#start').addEventListener('click', this.start_stream.bind(this))
         this.shadowRoot.querySelector('#stop').addEventListener('click', this.stop_stream.bind(this))
     }
+
+     generateDateTime() {
+        const daysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+        const months = ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"];
+
+        const now = new Date();
+        const dayOfWeek = daysOfWeek[now.getDay()];
+        const year = now.getFullYear().toString().slice(-2);
+        const month = months[now.getMonth()];
+        const day = String(now.getDate()).padStart(2, "0");
+        const hours = String(now.getHours()).padStart(2, "0");
+        const minutes = String(now.getMinutes()).padStart(2, "0");
+
+        return `${dayOfWeek} ${day}-${month}-${year} ${hours}:${minutes}`;
+    }
+
 
     generateMessage(message) {
         let htmlExtra = ``;
@@ -335,11 +351,16 @@ class StreamFeed extends HTMLElement {
 
     connectedCallback(){
         this.content()
+        this.shadowRoot.querySelector("#loadingElement").style.display = "block";
 
         Janus.init({
             debug: "all",
             callback: this.janusInit.bind(this)
         });
+    }
+
+    async disconnectedCallback() {
+        await this.dispose_rescources();
     }
 
     janusInit() {
@@ -363,14 +384,10 @@ class StreamFeed extends HTMLElement {
     }
 
     async sendStartMessage() {
-        this.shadowRoot.querySelector("#loadingElement").style.display = "block";
-
         await this.socket.send(JSON.stringify({
             sender: "player",
             body: { request: "start" },
         }));
-
-        this.shadowRoot.querySelector("#loadingElement").style.display = "none";
     }
 
     async sendPauzeMessage() {
@@ -397,6 +414,8 @@ class StreamFeed extends HTMLElement {
     async start_stream() {
         if(this.is_start_stream_clicked)
             return
+
+        this.shadowRoot.querySelector("#loadingElement").style.display = "block";
 
         this.is_start_stream_clicked = true;
 
@@ -451,10 +470,12 @@ class StreamFeed extends HTMLElement {
         if (response.body.response === 'pong') {
             this.stop_init_loop = true;
             this.shadowRoot.querySelector("#start").style.display = "block";
+            this.shadowRoot.querySelector("#loadingElement").style.display = "none";
         }
 
         if (response.body.response === 'started') {
             this.stop_start_loop = true;
+            this.shadowRoot.querySelector("#loadingElement").style.display = "none";
         }
 
         if (response.body.response === 'paused') {
