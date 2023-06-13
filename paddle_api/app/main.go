@@ -22,15 +22,6 @@ func main() {
 
 func SetupRouter() *gin.Engine {
 
-	//Init router
-	router := gin.Default()
-
-	router.Use(cors.New(cors.Config{
-		AllowOrigins: []string{"*"},
-		AllowMethods: []string{"GET", "POST", "PUT", "DELETE"},
-		AllowHeaders: []string{"Origin", "Content-Type", "Authorization"},
-	}))
-
 	//Setup Mode Application
 	if util.GodotEnv("GO_ENV") != "production" && util.GodotEnv("GO_ENV") != "test" {
 		gin.SetMode(gin.DebugMode)
@@ -39,6 +30,15 @@ func SetupRouter() *gin.Engine {
 	} else {
 		gin.SetMode(gin.ReleaseMode)
 	}
+
+	//Init router
+	router := gin.Default()
+
+	router.Use(cors.New(cors.Config{
+		AllowOrigins: []string{"*"},
+		AllowMethods: []string{"GET", "POST", "PUT", "DELETE"},
+		AllowHeaders: []string{"Origin", "Content-Type", "Authorization"},
+	}))
 
 	// Create the input directory if it does not exist
 	if _, err := os.Stat("input"); os.IsNotExist(err) {

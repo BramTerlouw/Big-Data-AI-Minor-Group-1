@@ -144,11 +144,9 @@ async def subscribe(session, room, feed, send_message):
                             procData = {"sender": "bot", "type": "error",
                                         "body": {"response": "No Persons or paddle detected!"}}
                             await send_message(json.dumps(procData))
-                        elif result[0]['dist_humans'] < 30:
-                            sessionActive = False
-                            score = []
+                        elif result[0]['dist_player_paddle'] < 10:
                             procData = {"sender": "bot", "type": "error",
-                                        "body": {"response": "Person distance too close with paddle!"}}
+                                        "body": {"response": "Intersect"}}
                             await send_message(json.dumps(procData))
                         else:
                             # score.append(result)

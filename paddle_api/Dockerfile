@@ -37,7 +37,7 @@ RUN apt-get update && \
 # Add Python 3.9 to the PATH
 ENV PATH="/usr/bin/python3.9:${PATH}"
 
-RUN pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
+RUN pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118 --no-cache-dir
 RUN pip install opencv-python aiortc aiohttp websockets ultralytics
 RUN pip install matplotlib numpy Pillow PyYAML requests scipy tqdm pandas seaborn
 
