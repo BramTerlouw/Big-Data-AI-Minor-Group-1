@@ -1,3 +1,5 @@
+import sys
+
 import argparse
 import asyncio
 import json
@@ -21,7 +23,6 @@ class StopSignalReceived(Exception):
 
 async def chat_client(websocket):
     print("Connection opened")
-
     async def send_message(message):
         await websocket.send(message)
 
@@ -200,7 +201,7 @@ async def run(room, session, ws_url):
         async with websockets.connect(ws_url) as websocket:
             send_message, receive_message_generator = await chat_client(websocket)
 
-            # Wait for "ping" message and reply with "pong"
+            # Wait for "connect" message and reply with "connected"
             try:
                 async for message in receive_message_generator():
                     try:
@@ -260,6 +261,7 @@ async def run(room, session, ws_url):
                                     if message_data.get("body", {}).get("request") == "stop":
                                         stopData = {"sender": "bot", "type": "message", "body": {"response": "stopped", "status": "warning"}}
                                         await send_message(json.dumps(stopData))
+                                        sessionActive = False
                                         raise StopSignalReceived()
 
                                     elif message_data.get("body", {}).get("request") == "start":
@@ -286,6 +288,14 @@ async def run(room, session, ws_url):
                                     continue
             except StopSignalReceived:
                 print("Stop command received, exiting...")
+                break
+            finally:
+                scores = stream_logic_all_score()
+                data = [{k: int(v) if isinstance(v, np.int32) else v for k, v in d.items()} for d in scores]
+                json_data = json.dumps(data)
+                response = requests.post(score_endpoint_url, data=json_data, headers={'Content-Type': 'application/json'})
+                print(f"Status code: {response.status_code}")
+                print(f"Response text: {response.text}")
                 break
 
 
@@ -318,7 +328,7 @@ if __name__ == "__main__":
     ws_url = "ws://paddle-api:8081/api/v1/session/ws/" + args.key
     score_endpoint_url = "http://paddle-api:8081/api/v1/session/score/" + args.key
     try:
-        # Set the timeout to 30 minutes (30*60 seconds), so the bot stops after 30 minutes
+        # # Set the timeout to 30 minutes (30*60 seconds), so the bot stops after 30 minutes
         timeout = 30 * 60
         loop.run_until_complete(
             asyncio.wait_for(
@@ -326,28 +336,18 @@ if __name__ == "__main__":
                 timeout=timeout,
             )
         )
-    except KeyboardInterrupt:
-        pass
+
+
     except StopSignalReceived:
         print("Exiting due to stop command")
     except asyncio.TimeoutError:
         print("Exiting due to 30-minute timeout")
-
     finally:
-        # destroy session
-        scores = stream_logic_all_score()
+        # Forcefully shutdown all background tasks
+        pending = asyncio.all_tasks(loop=loop)
+        for task in pending:
+            task.cancel()
 
-        data = [{k: int(v) if isinstance(v, np.int32) else v for k, v in d.items()} for d in scores]
-        json_data = json.dumps(data)
-
-        response = requests.post(score_endpoint_url, data=json_data, headers={'Content-Type': 'application/json'})
-
-        # Print the response
-        print(f"Status code: {response.status_code}")
-        print(f"Response text: {response.text}")
-
-        loop.run_until_complete(session.destroy())
-        # close peer connections
-        coros = [pc.close() for pc in pcs]
-        loop.run_until_complete(asyncio.gather(*coros))
-        exit(0)
+        # Now the loop can be closed.
+        loop.run_until_complete(loop.shutdown_asyncgens())
+        loop.close()

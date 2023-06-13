@@ -53,19 +53,19 @@ export default {
         <div class="form-item">
           <label>Name coach:</label>
           <input type="text" v-model="name_coach" />
-          <p v-if="error_coach" class="error-msg">Must enter a user ID!</p>
+          <p v-if="error_coach" class="error-msg">Must enter a Coach name!</p>
         </div>
 
         <div class="form-item">
           <label>Name Athlete:</label>
           <input type="text" v-model="name_athlete" />
-          <p v-if="error_athlete" class="error-msg">Must enter a user ID!</p>
+          <p v-if="error_athlete" class="error-msg">Must enter a Athlete name!</p>
         </div>
 
         <div class="form-item">
           <label>Location:</label>
           <input type="text" v-model="location" />
-          <p v-if="error_location" class="error-msg">Must enter a user ID!</p>
+          <p v-if="error_location" class="error-msg">Must enter a location!</p>
         </div>
 
         <button type="submit">Start</button>

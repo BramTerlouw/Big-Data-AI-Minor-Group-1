@@ -10,7 +10,7 @@ services:
       args:
         GO_VERSION: "1.20"
         API_KEY: "Ht;2[u?P[fJoyNe1tZHZ/y?W@x.iSr\".d,uCWQBYOE6v9:v2JbDy<Y!Cc**J]rR"
-        GO_ENV: "test"
+        GO_ENV: "production"
         GO_PORT: "8081"
         MONGO_PORT: "27017"
         MONGO_IP: "mongo"
