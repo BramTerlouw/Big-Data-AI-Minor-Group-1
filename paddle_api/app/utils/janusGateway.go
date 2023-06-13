@@ -73,13 +73,13 @@ func createVideoRoom(room int) bool {
 	// Encode the data as JSON
 	jsonData, err := json.Marshal(data)
 	if err != nil {
-		panic(err)
+		log.Println(err)
 	}
 
 	// Create a new HTTP request with the desired URL and HTTP method
 	req, err := http.NewRequest("POST", baseUrl, bytes.NewBuffer(jsonData))
 	if err != nil {
-		panic(err)
+		log.Println(err)
 	}
 
 	// Set the content type header
@@ -89,7 +89,7 @@ func createVideoRoom(room int) bool {
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
-		panic(err)
+		log.Println(err)
 	}
 	defer func(Body io.ReadCloser) {
 		err := Body.Close()
@@ -146,13 +146,13 @@ func destroyVideoRoom(room int) bool {
 	// Encode the data as JSON
 	jsonData, err := json.Marshal(data)
 	if err != nil {
-		panic(err)
+		log.Println(err)
 	}
 
 	// Create a new HTTP request with the desired URL and HTTP method
 	req, err := http.NewRequest("POST", baseUrl, bytes.NewBuffer(jsonData))
 	if err != nil {
-		panic(err)
+		log.Println(err)
 	}
 
 	// Set the content type header
@@ -162,7 +162,7 @@ func destroyVideoRoom(room int) bool {
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
-		panic(err)
+		log.Println(err)
 	}
 	defer func(Body io.ReadCloser) {
 		err := Body.Close()
@@ -194,13 +194,13 @@ func createSessionEndpoint(transactionId string) (string, error) {
 	// Encode the data as JSON
 	jsonData, err := json.Marshal(data)
 	if err != nil {
-		panic(err)
+		log.Println(err)
 	}
 
 	// Create a new HTTP request with the desired URL and HTTP method
 	req, err := http.NewRequest("POST", baseUrl, bytes.NewBuffer(jsonData))
 	if err != nil {
-		panic(err)
+		log.Println(err)
 	}
 
 	// Set the content type header
@@ -210,7 +210,7 @@ func createSessionEndpoint(transactionId string) (string, error) {
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
-		panic(err)
+		log.Println(err)
 	}
 	defer func(Body io.ReadCloser) {
 		err := Body.Close()
@@ -245,13 +245,13 @@ func createPluginEndpoint(transactionId, sessionId, plugin string) (string, erro
 	// Encode the data as JSON
 	jsonData, err := json.Marshal(data)
 	if err != nil {
-		panic(err)
+		log.Println(err)
 	}
 
 	// Create a new HTTP request with the desired URL and HTTP method
 	req, err := http.NewRequest("POST", baseUrl, bytes.NewBuffer(jsonData))
 	if err != nil {
-		panic(err)
+		log.Println(err)
 	}
 
 	// Set the content type header
@@ -261,7 +261,7 @@ func createPluginEndpoint(transactionId, sessionId, plugin string) (string, erro
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
-		panic(err)
+		log.Println(err)
 	}
 	defer func(Body io.ReadCloser) {
 		err := Body.Close()

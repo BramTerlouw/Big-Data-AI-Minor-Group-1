@@ -5,6 +5,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
+	"log"
 	"paddle-api/database"
 	model "paddle-api/models"
 	"time"
@@ -29,7 +30,7 @@ func (r *VideoRepository) InsertVideo(video *model.EntityVideo) (error, primitiv
 
 	result, err := r.collection.InsertOne(ctx, video)
 	if err != nil {
-		panic(err)
+		log.Println(err)
 	}
 
 	insertedID := result.InsertedID.(primitive.ObjectID)

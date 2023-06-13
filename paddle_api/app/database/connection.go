@@ -2,6 +2,7 @@ package database
 
 import (
 	"context"
+	"log"
 	util "paddle-api/utils"
 	"sync"
 	"time"
@@ -23,7 +24,7 @@ func GetMongoClient() *mongo.Client {
 
 		client, err := mongo.Connect(ctx, options.Client().ApplyURI(util.GodotEnv("MONGODB_URL")))
 		if err != nil {
-			panic(err)
+			log.Println(err)
 		}
 
 		clientInstance = client

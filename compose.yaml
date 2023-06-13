@@ -3,6 +3,7 @@ services:
 # Paddle API
   paddle-api:
     container_name: paddle_api
+    restart: always
     build:
       context: .
       dockerfile: paddle_api/Dockerfile
@@ -35,6 +36,7 @@ services:
 #WebRTC Server
   janus-gateway:
     container_name: janus_gateway
+    restart: always
     build:
       context: .
       dockerfile: janus_gateway/Dockerfile
@@ -50,6 +52,7 @@ services:
 # Database
   mongo:
     image: mongo:latest
+    restart: always
     container_name: mongo_database
     environment:
       MONGO_INITDB_ROOT_USERNAME: root
