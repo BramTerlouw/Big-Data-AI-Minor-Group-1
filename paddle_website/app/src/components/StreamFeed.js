@@ -240,6 +240,35 @@ class StreamFeed extends HTMLElement {
                 transform: rotate(360deg);
               }
             }
+            
+            .redirect-modal {
+              display: none;
+              position: fixed;
+              top: 50%;
+              left: 50%;
+              transform: translate(-50%, -50%);
+            
+              flex-direction: column;
+              align-items: center;
+              padding: 10px;
+            
+              border: 1px solid lightgrey;
+              border-radius: 5px;
+              background-color: white;
+            }
+            
+            .redirect-modal h1 {
+              margin: 0;
+              font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+              font-weight: 500;
+              line-height: 1.2;
+              color: #317eac;
+            }
+            
+            .redirect-modal p {
+              color: gray;
+              font-style: italic;
+            }
         </style>    
        `;
     }
@@ -282,6 +311,14 @@ class StreamFeed extends HTMLElement {
                   <div class="spinner"></div>
                 </div>
               </section>
+              
+              <div id="redirect-modal" class="redirect-modal">
+                <h1>
+                  Session finished
+                </h1>
+                <p>You will be redirected in a few seconds.</p>
+                <span id="countdown"></span>
+              </div>
         `
 
         console.log(this.messages)
@@ -310,6 +347,21 @@ class StreamFeed extends HTMLElement {
         if (timerElement) {
             timerElement.textContent = this.generateDateTime();
         }
+    }
+
+    countdown() {
+      var span = this.shadowRoot.querySelector("#countdown")
+      var count = 5;
+
+      var interval = setInterval(() => {
+        span.textContent = count
+        count--;
+
+        if (count < 0) {
+          clearInterval(interval);
+          window.location.href = window.location.origin + '/dashboard'
+        }
+      }, 1000);
     }
 
     generateMessage(message) {
@@ -390,7 +442,8 @@ class StreamFeed extends HTMLElement {
         await this.janus.destroy();
         await this.socket.close();
 
-        window.location.href = window.location.origin + '/dashboard'
+        this.shadowRoot.querySelector("#redirect-modal").style.display = "flex";
+        this.countdown()
     }
 
     async sendStartMessage() {
