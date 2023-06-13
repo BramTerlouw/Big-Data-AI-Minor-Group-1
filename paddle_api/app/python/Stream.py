@@ -216,7 +216,7 @@ async def run(room, session, ws_url):
                         await send_message(json.dumps(stopData))
                         raise StopSignalReceived()
 
-                    elif message_data.get("body", {}).get("request") == "ping" and message_data.get(
+                    elif message_data.get("body", {}).get("request") == "connect" and message_data.get(
                             "sender") == "player":
                         # join video room
                         await session.create()
@@ -235,7 +235,7 @@ async def run(room, session, ws_url):
 
                         if publishers:
 
-                            pongData = {"sender": "bot", "type": "message", "body": {"response": "pong", "status": "info"}}
+                            pongData = {"sender": "bot", "type": "message", "body": {"response": "connected", "status": "info"}}
                             await send_message(json.dumps(pongData))
                             print("Received 'ping', replied with 'pong'")
 
