@@ -13,16 +13,19 @@ export default {
   methods: {
     submitForm(event) {
       event.preventDefault();
-      if (this.name_coach == "") {
+      this.resetErrors();
+
+      if (this.name_coach === "")
         this.error_coach = true;
-        if (this.name_athlete == "") {
-          this.error_athlete = true;
-          if (this.location == "") {
-            this.error_location = true;
-          }
-        }
-        return;
-      }
+
+      if (this.name_athlete === "")
+        this.error_athlete = true;
+
+      if (this.location === "")
+        this.error_location = true;
+
+      if (this.error_coach || this.error_athlete || this.error_location)
+        return
 
       this.$store.commit('SET_NAME_COACH', this.name_coach)
       this.$store.commit('SET_NAME_ATHLETE', this.name_athlete)
@@ -30,6 +33,11 @@ export default {
 
       this.$router.push({name: 'verify position'});
     },
+    resetErrors() {
+      this.error_coach = false;
+      this.error_athlete = false;
+      this.error_location = false;
+    }
   },
 };
 </script>

@@ -12,6 +12,9 @@ export default {
     computed: {
         userid () {
             return this.$store.getters.getUserId
+        },
+        filteredData () {
+          return this.data.filter(item => item['status'] === 'Processed')
         }
     },
     data() {
@@ -44,7 +47,7 @@ export default {
 <template>
   <section class="feed">
     <SessionCard
-        v-for="item in data"
+        v-for="item in filteredData"
         :key="item.id"
         :data="item"/>
   </section>

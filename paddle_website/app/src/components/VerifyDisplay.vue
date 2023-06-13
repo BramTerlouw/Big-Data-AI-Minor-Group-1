@@ -172,7 +172,7 @@ export default {
       </div>
 
       <div class="button-section" v-if="pictureTaken && !pictureProcessing">
-        <button @click="retry">Retry</button>
+        <button v-if="pictureTaken && !pictureProcessing && !pictureApproved" @click="retry">Retry</button>
         <button
           @click="startSession"
           :class="{
@@ -270,7 +270,7 @@ export default {
   width: 100%;
   margin: 40px auto 10px auto;
   display: flex;
-  justify-content: space-between;
+  justify-content: space-around;
 }
 
 .button-section button {

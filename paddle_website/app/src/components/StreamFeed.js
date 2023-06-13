@@ -130,6 +130,7 @@ class StreamFeed extends HTMLElement {
                background-color: #3db0f0;
                border: none;
                color: #fff;
+               cursor: pointer;
                display: none;
             }
             
@@ -138,6 +139,7 @@ class StreamFeed extends HTMLElement {
                background-color: red;
                border: none;
                color: #fff;
+               cursor: pointer;
                display: none;
             }
             
@@ -415,7 +417,7 @@ class StreamFeed extends HTMLElement {
     async sendInitMessage() {
         this.socket.send(JSON.stringify({
             sender: "player",
-            body: { request: "ping" },
+            body: { request: "connect" },
         }));
     }
 
@@ -475,7 +477,7 @@ class StreamFeed extends HTMLElement {
         if(response.body.response === 'invalid request')
             return;
 
-        if (response.body.response === 'pong') {
+        if (response.body.response === 'connected') {
             this.stop_init_loop = true;
             this.shadowRoot.querySelector("#start").style.display = "block";
             this.shadowRoot.querySelector("#loadingElement").style.display = "none";
