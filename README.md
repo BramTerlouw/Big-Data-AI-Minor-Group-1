@@ -27,17 +27,115 @@ To install the docker
 ## How does it work?
 
 
+## API communication
 
-### verify position
 
 
-####
+### Verify position endpoint
+
+
+#### Post
 ```json
 {
     
 }
 ```
-#### verify position
+#### Expected reply
+```json
+{
+    
+}
+```
+
+### Start session endpoint
+
+
+#### Post
+```json
+{
+    
+}
+```
+#### Expected reply
+```json
+{
+    
+}
+```
+
+### Get session results endpoint
+
+
+#### Get
+```json
+{
+    
+}
+```
+#### Expected reply
+```json
+{
+    
+}
+```
+
+
+## Websocket communication
+
+
+#### Make the bot lock on to your stream
+```json
+{
+    
+}
+```
+#### Expected reply
+```json
+{
+    
+}
+```
+
+
+---
+
+
+#### Make the bot lock on to your stream
+```json
+{
+    
+}
+```
+#### Expected reply
+```json
+{
+    
+}
+```
+
+---
+
+
+#### Make the bot start rating the session
+```json
+{
+    
+}
+```
+#### Expected reply
+```json
+{
+    
+}
+```
+
+#### End the stream session with the bot
+```json
+{
+    
+}
+```
+#### Expected reply
 ```json
 {
     
