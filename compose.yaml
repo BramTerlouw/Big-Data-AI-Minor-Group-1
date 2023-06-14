@@ -33,6 +33,15 @@ services:
               count: 1
               capabilities: [gpu]
 
+# Website
+  paddle-website:
+    container_name: paddle_website
+    build:
+      context: .
+      dockerfile: paddle_website/Dockerfile
+    ports:
+      - 80:80
+
 #WebRTC Server
   janus-gateway:
     container_name: janus_gateway
