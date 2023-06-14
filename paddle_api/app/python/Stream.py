@@ -138,6 +138,7 @@ async def subscribe(session, room, feed, send_message):
 
                     if sessionActive:
                         result = stream_logic_last_score(img)
+
                         if not result:
                             sessionActive = False
                             score = []
