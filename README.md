@@ -28,7 +28,7 @@ To install the docker
 
 
 ## API communication
-
+API runs on port 8081
 
 
 ### Verify position endpoint
@@ -166,6 +166,8 @@ connect to the websocket on: ws://localhost:8081/api/v1/session/ws/YOUR SESSIONC
 }
 ```
 ## Webinterface guide
+
+Website runs on localhost:80
 
 **Step 1:** Login with a user ID of your own choosing (_Does not matter if you have never logged in before_).
 
