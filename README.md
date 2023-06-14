@@ -1,9 +1,5 @@
 
 # Paddle API with Computer vision
-
-bliep
-
-
 ## Creators
 
 - Merlijn Busch, Bram Terlouw and Bastiaan van der Bijl
