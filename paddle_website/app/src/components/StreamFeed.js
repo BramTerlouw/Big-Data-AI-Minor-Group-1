@@ -214,9 +214,7 @@ class StreamFeed extends HTMLElement {
             }
             
             .loading {
-              display: none; /* Hide the loading element by default */
-              /* Add any styling you want for the loading element */
-              /* Make sure to set a fixed width and height for the loading element */
+              display: none; 
               position: absolute;
               top: 50%;
               left: 50%;
