@@ -74,7 +74,7 @@ location: <location>
   "_id": {
     "$oid": "6488c3ca86e6fab21ea10c1c"
   },
-  "session_key": "8ba0537b-6d4b-4d0e-b467-7b2a60f1a0f8",
+  "session_key": "b65a728d-0904-4bbd-80d4-cdd7d72094ba",
   "session_key_used": true,
   "amount_socket_joins": 2,
   "picture": "data:image/png;base64",
@@ -113,11 +113,13 @@ location: <location>
 
 ## Websocket communication
 
+connect to the websocket on: ws://localhost:8081/api/v1/session/ws/YOUR SESSIONCODE
 
 #### Make the bot lock on to your stream
 ```json
 {
-    
+  "sender": "player",
+  "body": {"request": "connect"}
 }
 ```
 #### Expected reply
@@ -134,7 +136,10 @@ location: <location>
 
 #### Make the bot start rating the session
 ```json
-{}
+{
+  "sender": "player",
+  "body": {"request": "start"}
+}
 ```
 #### Expected reply
 ```json
@@ -148,7 +153,8 @@ location: <location>
 #### End the stream session with the bot
 ```json
 {
-    
+  "sender": "player",
+  "body": {"request": "stop"}
 }
 ```
 #### Expected reply
